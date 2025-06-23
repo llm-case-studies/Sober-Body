@@ -1,5 +1,21 @@
 # React + TypeScript + Vite
 
+This directory contains the React + TypeScript front end for **Sober‑Body** built with [Vite](https://vitejs.dev/).
+
+## Basic usage
+
+```bash
+npm install      # install dependencies
+npm run dev      # start the dev server
+npm test         # run unit tests
+npm run build    # create a production build
+```
+
+For more project information see the [root README](../README.md) and the
+[contribution guide](../docs/Contributing.md).
+
+---
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
