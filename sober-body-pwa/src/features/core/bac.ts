@@ -68,11 +68,32 @@ export function estimateBAC(
   physiology: Physiology,
   at: Date = new Date()
 ): number {
-  return drinks.reduce((sum, d) => {
-    const hours =
-      (at.getTime() - d.date.getTime()) / (1000 * 60 * 60);
-    return sum + widmark(gramsFromDrink(d), physiology, hours);
-  }, 0);
+  if (drinks.length === 0) return 0;
+
+  const beta = physiology.beta ?? DEFAULT_BETA;
+  const r = physiology.r ?? R_CONST[physiology.sex];
+
+  const sorted = [...drinks].sort(
+    (a, b) => a.date.getTime() - b.date.getTime(),
+  );
+
+  let bac = 0;
+  let last = sorted[0].date;
+
+  for (const d of sorted) {
+    const gap = (d.date.getTime() - last.getTime()) / (1000 * 60 * 60);
+    bac = Math.max(bac - beta * gap, 0);
+
+    const raw = (gramsFromDrink(d) / (physiology.weightKg * r)) * 100;
+    bac += raw;
+
+    last = d.date;
+  }
+
+  const finalGap = (at.getTime() - last.getTime()) / (1000 * 60 * 60);
+  bac = Math.max(bac - beta * finalGap, 0);
+
+  return bac;
 }
 
 /** Hours until BAC reaches targetBAC (default 0.000 %) */
