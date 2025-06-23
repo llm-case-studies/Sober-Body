@@ -12,7 +12,7 @@ This file is the **constitutional charter** for every other Sober‑Body documen
 
 ---
 
-\## 1 · Document Map
+## 1 · Document Map
 
 | WP ID    | Title                                       | Primary Owner      | Status   |
 | -------- | ------------------------------------------- | ------------------ | -------- |
