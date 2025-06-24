@@ -16,7 +16,7 @@ npm run dev
 
 - `sober-body-pwa/` &mdash; Vite React+TypeScript codebase
 - `docs/ARCHITECTURE.md` &mdash; developer architecture overview
-- `docs/Backlog.md` &mdash; upcoming features and milestones
+- `docs/BACKLOG.md` &mdash; upcoming features and milestones
 - `docs/whitepapers/` &mdash; white-paper drafts and context
 
 ## Contributing
