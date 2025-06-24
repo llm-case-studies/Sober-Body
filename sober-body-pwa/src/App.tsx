@@ -1,11 +1,13 @@
 import './App.css'
-import DrinkButtons from './features/ui/DrinkButtons'
+import BacDashboard from './components/BacDashboard'
+import { DrinkLogProvider } from './features/core/drink-context'
 function App() {
   return (
-    <div className="app">
-      <h1>Sober-Body</h1>
-      <DrinkButtons />
-    </div>
+    <DrinkLogProvider>
+      <div className="app">
+        <BacDashboard />
+      </div>
+    </DrinkLogProvider>
   )
 }
 
