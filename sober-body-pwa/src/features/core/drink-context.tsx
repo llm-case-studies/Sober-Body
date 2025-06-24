@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react'
 import { type DrinkEvent } from './bac'
 import { loadDrinks, saveDrinks } from './storage'
 
@@ -13,13 +13,19 @@ const DrinkLogContext = createContext<DrinkLogValue | undefined>(undefined)
 
 export function DrinkLogProvider({ children }: { children: React.ReactNode }) {
   const [drinks, setDrinks] = useState<DrinkEvent[]>([])
+  const loaded = useRef(false)
 
   useEffect(() => {
-    loadDrinks().then(setDrinks)
+    loadDrinks().then(arr => {
+      setDrinks(arr)
+      loaded.current = true
+    })
   }, [])
 
   useEffect(() => {
-    saveDrinks(drinks)
+    if (loaded.current) {
+      saveDrinks(drinks)
+    }
   }, [drinks])
 
   const addDrink = (d: DrinkEvent) => setDrinks(prev => [...prev, d])
