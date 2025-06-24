@@ -58,7 +58,7 @@ export function widmark(
   const r = physiology.r ?? R_CONST[physiology.sex];
   const beta = physiology.beta ?? DEFAULT_BETA;
 
-  const raw = (grams / (physiology.weightKg * r)) * 100; // %BAC
+  const raw = (grams / (physiology.weightKg * 1000 * r)) * 100; // %BAC
   const adjusted = raw - beta * hoursSinceDrink;
   return Math.max(adjusted, 0);
 }
@@ -88,7 +88,7 @@ export function estimateBAC(
     if (gap < 0) gap = 0;
     bac = Math.max(bac - beta * gap, 0);
 
-    const raw = (gramsFromDrink(d) / (physiology.weightKg * r)) * 100;
+    const raw = (gramsFromDrink(d) / (physiology.weightKg * 1000 * r)) * 100;
     bac += raw;
 
     last = d.date;

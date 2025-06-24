@@ -13,7 +13,7 @@ describe('BAC core utilities', () => {
     const physiology = { weightKg: 70, sex: 'm' } as const
     const hours = 1
     const r = 0.68
-    const expected = Math.max((grams / (physiology.weightKg * r)) * 100 - DEFAULT_BETA * hours, 0)
+    const expected = Math.max((grams / (physiology.weightKg * 1000 * r)) * 100 - DEFAULT_BETA * hours, 0)
     expect(widmark(grams, physiology, hours)).toBeCloseTo(expected)
   })
 
@@ -27,9 +27,9 @@ describe('BAC core utilities', () => {
     const r = 0.68
     const g1 = drink1.volumeMl * drink1.abv * dens
     const g2 = drink2.volumeMl * drink2.abv * dens
-    let bac = (g1 / (physiology.weightKg * r)) * 100
+    let bac = (g1 / (physiology.weightKg * 1000 * r)) * 100
     bac = Math.max(bac - DEFAULT_BETA * 1, 0)
-    bac += (g2 / (physiology.weightKg * r)) * 100
+    bac += (g2 / (physiology.weightKg * 1000 * r)) * 100
     bac = Math.max(bac - DEFAULT_BETA * 1, 0)
 
     const expected = bac
