@@ -1,10 +1,9 @@
 import './App.css'
-import DrinkButtons from './features/ui/DrinkButtons'
+import BacDashboard from './features/ui/BacDashboard'
 function App() {
   return (
     <div className="app">
-      <h1>Sober-Body</h1>
-      <DrinkButtons />
+      <BacDashboard />
     </div>
   )
 }
