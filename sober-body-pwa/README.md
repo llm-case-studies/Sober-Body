@@ -12,7 +12,7 @@ npm run build    # create a production build
 ```
 
 For more project information see the [root README](../README.md) and the
-[contribution guide](../docs/Contributing.md).
+[contribution guide](../docs/CONTRIBUTING.md).
 
 ---
 
