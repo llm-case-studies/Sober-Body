@@ -4,9 +4,9 @@ import { useDrinkLog } from '../features/core/drink-context'
 import DrinkButtons from './DrinkButtons'
 
 export default function BacDashboard() {
-  const { log } = useDrinkLog()
+  const { drinks } = useDrinkLog()
   const physiology = { weightKg: 70, sex: 'm' } as const
-  const bac = estimateBAC(log, physiology)
+  const bac = estimateBAC(drinks, physiology)
   const sober = hoursToSober(bac, physiology)
 
   return (

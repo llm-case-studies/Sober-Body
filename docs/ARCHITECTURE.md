@@ -22,7 +22,7 @@ For engineers & AI contributors – see white‑papers for business context.
 │  ├─ games/   🎮 ReactionTap, Stroop                                      │
 │  └─ group/   👥 QR join + WebSocket hub                                  │
 │                                                                         │
-│  Storage: IndexedDB (idb‑keyval)                                         │
+│  Storage: IndexedDB (idb‑keyval) – drink log & settings persistence      │
 └───────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -34,7 +34,7 @@ For engineers & AI contributors – see white‑papers for business context.
 | ------- | ----------------------------------- | -------------------------------------- |
 | UI      | **React 18 + TypeScript 5**         | Vite dev server, Tailwind optional     |
 | State   | Context → Redux Toolkit (future)    | TBD after DrinkButtons                 |
-| Storage | **IndexedDB** via `idb-keyval@6`    | fallback to in‑memory for unit tests   |
+| Storage | **IndexedDB** via `idb-keyval@6`    | drink log & settings, in‑memory for tests |
 | Core    | TS → **Rust 1.79 → WASM** (phase 2) | FFI boundary typed via ts‑wasm‑bindgen |
 | Tests   | **Vitest 1.6** + jsdom              | Live in `src/**/__tests__`             |
 | CI      | GitHub Actions Node 20              | see `ci.yml`                           |
