@@ -21,7 +21,7 @@ npm run dev
 
 ## Contributing
 
-See [docs/Contributing.md](docs/Contributing.md) for commit rules, PR workflow and testing requirements.
+See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for commit rules, PR workflow and testing requirements.
 
 ## License & contact
 
