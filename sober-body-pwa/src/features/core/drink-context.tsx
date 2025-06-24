@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState } from 'react'
-import { DrinkEvent } from './bac'
+import { type DrinkEvent } from './bac'
 
 export interface DrinkLogValue {
   log: DrinkEvent[]
