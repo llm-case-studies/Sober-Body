@@ -1,12 +1,16 @@
 import './App.css'
+import { Routes, Route } from 'react-router-dom'
 import BacDashboard from './components/BacDashboard'
+import LandingPage from './components/LandingPage'
 import { DrinkLogProvider } from './features/core/drink-context'
+
 function App() {
   return (
     <DrinkLogProvider>
-      <div className="app">
-        <BacDashboard />
-      </div>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/app" element={<BacDashboard />} />
+      </Routes>
     </DrinkLogProvider>
   )
 }

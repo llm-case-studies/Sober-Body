@@ -10,6 +10,7 @@ The front end lives in [`sober-body-pwa/`](sober-body-pwa/):
 cd sober-body-pwa
 npm install
 npm run dev
+# open http://localhost:5173/app
 ```
 
 ## Repository layout
