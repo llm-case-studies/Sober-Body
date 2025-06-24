@@ -48,7 +48,8 @@ export function gramsFromDrink(d: DrinkEvent): number {
   return d.volumeMl * d.abv * ETHANOL_DENSITY;
 }
 
-/** Widmark single-point BAC estimate for *one* drink at time now */
+/** Widmark single-point BAC estimate for one drink after a
+ *  specified time interval */
 export function widmark(
   grams: number,
   physiology: Physiology,
