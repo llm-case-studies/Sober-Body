@@ -20,6 +20,7 @@ Legend: **↑ = next up** · ✅ done · ⬜ open
 * ✅ **feat(ui):** DrinkButtons component (Beer 🍺 Wine 🍷 Shot 🥃)
 * ⬜ **feat(ui):** Settings modal (weight, sex, beta slider)
 * ✅ **feat(ui):** landing page & routing (#12)
+* ⬜ **feat(ui):** energetic landing hero
 
 ## Storage & PWA
 
