@@ -77,11 +77,14 @@ export function estimateBAC(
     (a, b) => a.date.getTime() - b.date.getTime(),
   );
 
-  let bac = 0;
-  let last = sorted[0].date;
+  const relevant = sorted.filter(d => d.date.getTime() <= at.getTime());
+  if (relevant.length === 0) return 0;
 
-  for (const d of sorted) {
-    const gap = (d.date.getTime() - last.getTime()) / (1000 * 60 * 60);
+  let bac = 0;
+  let last = relevant[0].date;
+
+  for (const d of relevant) {
+    const gap = Math.max(0, (d.date.getTime() - last.getTime()) / (1000 * 60 * 60));
     bac = Math.max(bac - beta * gap, 0);
 
     const raw = (gramsFromDrink(d) / (physiology.weightKg * r)) * 100;
@@ -90,7 +93,7 @@ export function estimateBAC(
     last = d.date;
   }
 
-  const finalGap = (at.getTime() - last.getTime()) / (1000 * 60 * 60);
+  const finalGap = Math.max(0, (at.getTime() - last.getTime()) / (1000 * 60 * 60));
   bac = Math.max(bac - beta * finalGap, 0);
 
   return bac;
