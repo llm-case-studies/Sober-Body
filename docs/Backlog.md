@@ -1,7 +1,7 @@
 # Project Backlog – Sober‑Body
 
 **v0.2 · 23 Jun 2025**
-Last updated: 23 Jun 2025
+Last updated: 23 Jun 2025
 
 Legend: **↑ = next up** · ✅ done · ⬜ open
 
@@ -11,8 +11,8 @@ Legend: **↑ = next up** · ✅ done · ⬜ open
 
 * ✅ **chore:** Vite React‑TS scaffold on ext4 (`efab0e4`)
 * ✅ **feat(core):** Widmark `bac.ts` stub 〣 PR #1
-* ⬜ **test(core):** baseline BAC unit tests ↑ *(Codex branch ready)*
-* ⬜ **feat(core):** parameterise elimination β from settings
+* ✅ **test(core):** baseline BAC unit tests (`e367648`)
+* ✅ **feat(core):** parameterise elimination β from settings (`b4f609a`)
 
 ## UI & UX
 
