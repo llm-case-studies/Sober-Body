@@ -1,8 +1,28 @@
 # Sober-Body
 
-Sober-Body is a progressive web app (PWA) that helps users track their blood alcohol concentration. The PWA lives in the `sober-body-pwa/` directory and tests run with `npm test`.
+Sober-Body™ is a real-time alcohol harm-reduction companion that helps users "party smart and wake up winning." It combines one-tap drink logging with BAC estimates and playful guidance.
 
-For more details see:
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) – architecture overview
-- [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) – how to contribute
-- [docs/BACKLOG.md](docs/BACKLOG.md) – planned work
+## Quick start
+
+The front end lives in [`sober-body-pwa/`](sober-body-pwa/):
+
+```bash
+cd sober-body-pwa
+npm install
+npm run dev
+```
+
+## Repository layout
+
+- `sober-body-pwa/` &mdash; Vite React+TypeScript codebase
+- `docs/ARCHITECTURE.md` &mdash; developer architecture overview
+- `docs/Backlog.md` &mdash; upcoming features and milestones
+- `docs/whitepapers/` &mdash; white-paper drafts and context
+
+## Contributing
+
+See [docs/Contributing.md](docs/Contributing.md) for commit rules, PR workflow and testing requirements.
+
+## License & contact
+
+License information will be added in a future release. For questions, open an issue or refer to maintainer details in the white papers.
