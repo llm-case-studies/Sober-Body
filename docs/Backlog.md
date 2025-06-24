@@ -16,7 +16,7 @@ Legend: **↑ = next up** · ✅ done · ⬜ open
 
 ## UI & UX
 
-* ⬜ **feat(ui):** replace Vite splash with `<BacDashboard>` (hard‑coded demo)
+* ✅ **feat(ui):** replace Vite splash with `<BacDashboard>` (hard‑coded demo)
 * ✅ **feat(ui):** DrinkButtons (Beer 🍺 Wine 🍷 Shot 🥃)
 * ⬜ **feat(ui):** Settings modal (weight, sex, beta slider)
 
