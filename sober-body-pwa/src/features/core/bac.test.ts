@@ -37,6 +37,14 @@ describe('BAC core utilities', () => {
     expect(estimateBAC([drink1, drink2], physiology, at)).toBeCloseTo(expected)
   })
 
+  it('clamps negative time intervals to zero', () => {
+    const drinkTime = new Date('2025-01-01T01:00:00Z')
+    const drink = { volumeMl: 200, abv: 0.1, date: drinkTime }
+    const physiology = { weightKg: 70, sex: 'm' } as const
+    const beforeDrink = new Date('2025-01-01T00:00:00Z')
+    expect(estimateBAC([drink], physiology, beforeDrink)).toBe(0)
+  })
+
   it('computes hours to reach a target BAC', () => {
     const physiology = { weightKg: 70, sex: 'm' } as const
     const expected = (0.08 - 0.02) / DEFAULT_BETA
