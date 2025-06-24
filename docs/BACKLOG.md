@@ -24,7 +24,7 @@ Legend: **↑ = next up** · ✅ done · ⬜ open
 
 ## Storage & PWA
 
-* ⬜ **feat(storage):** IndexedDB wrapper (`idb-keyval`) for drink log
+* ✅ **feat(storage):** IndexedDB wrapper (`idb-keyval`) for drink log
 * ⬜ **chore(pwa):** add `vite-plugin-pwa` + minimal manifest
 
 ## Group Features

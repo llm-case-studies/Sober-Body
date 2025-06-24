@@ -1,19 +1,32 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import { type DrinkEvent } from './bac'
+import { loadDrinks, saveDrinks } from './storage'
 
 export interface DrinkLogValue {
-  log: DrinkEvent[]
+  drinks: DrinkEvent[]
   addDrink: (d: DrinkEvent) => void
+  clear: () => void
 }
 
 const DrinkLogContext = createContext<DrinkLogValue | undefined>(undefined)
 
 export function DrinkLogProvider({ children }: { children: React.ReactNode }) {
-  const [log, setLog] = useState<DrinkEvent[]>([])
-  const addDrink = (d: DrinkEvent) => setLog(prev => [...prev, d])
+  const [drinks, setDrinks] = useState<DrinkEvent[]>([])
+
+  useEffect(() => {
+    loadDrinks().then(setDrinks)
+  }, [])
+
+  useEffect(() => {
+    saveDrinks(drinks)
+  }, [drinks])
+
+  const addDrink = (d: DrinkEvent) => setDrinks(prev => [...prev, d])
+  const clear = () => setDrinks([])
+
   return (
-    <DrinkLogContext.Provider value={{ log, addDrink }}>
+    <DrinkLogContext.Provider value={{ drinks, addDrink, clear }}>
       {children}
     </DrinkLogContext.Provider>
   )
