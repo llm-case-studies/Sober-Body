@@ -31,6 +31,10 @@ Legend: **↑ = next up** · ✅ done · ⬜ open
 
 * ⬜ **feat(group):** stub WebSocket host + QR join flow
 
+## Engagement & Games
+
+* ⬜ **feat(games):** Pronunciation Challenge mini-game (WP‑5)
+
 ## Docs & Governance
 
 * ⬜ **docs:** WP‑1 compliant core (algorithms & privacy) first draft
