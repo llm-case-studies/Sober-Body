@@ -26,6 +26,8 @@ export default function PronunciationChallenge({ onClose }: { onClose: () => voi
   const [transcript, setTranscript] = useState('')
   const [score, setScore] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [recording, setRecording] = useState(false)
+  const recRef = useRef<SpeechRecognition | null>(null)
   const transcriptRef = useRef('')
 
   const play = () => {
@@ -34,7 +36,7 @@ export default function PronunciationChallenge({ onClose }: { onClose: () => voi
     speechSynthesis.speak(u)
   }
 
-  const start = async () => {
+  const startRecording = async () => {
     const w = window as unknown as {
       SpeechRecognition?: new () => SpeechRecognition
       webkitSpeechRecognition?: new () => SpeechRecognition
@@ -59,6 +61,7 @@ export default function PronunciationChallenge({ onClose }: { onClose: () => voi
       }
     }
     const r: SpeechRecognition = new Rec()
+    recRef.current = r
     r.lang = phrase.locale
     r.onresult = (e: SpeechRecognitionEvent) => {
       transcriptRef.current = e.results[0][0].transcript
@@ -71,33 +74,68 @@ export default function PronunciationChallenge({ onClose }: { onClose: () => voi
       setScore(s)
       emit({ topic: 'PRONUN_SCORE', payload: { phrase: phrase.text, transcript: transcriptRef.current, score: s }, profile: 'standard' })
       if (s >= 80) confetti({ particleCount: 80, spread: 60 })
+      setRecording(false)
     }
     r.start()
+    setRecording(true)
     setError(null)
     setTimeout(() => r.stop(), 4000)
+  }
+
+  const stopRecording = () => {
+    recRef.current?.stop()
   }
 
   const next = () => {
     setPhrase(randomPhrase())
     setTranscript('')
     setScore(null)
+    setError(null)
+    setRecording(false)
   }
 
   return (
     <div className="bg-white rounded-md p-4 w-72">
       <h3 className="font-semibold mb-2">Tongue Twister</h3>
       <p className="mb-2">“{phrase.text}”</p>
-      <div className="flex gap-2 mb-2">
-        <button onClick={play} aria-label="play">▶️</button>
-        <button onClick={start} aria-label="record">🎙️</button>
+      <div className="flex gap-3 mt-4">
+        <button
+          onClick={play}
+          aria-label="play"
+          className="px-3 py-1 rounded-md bg-white/10 hover:bg-white/20 backdrop-blur"
+        >
+          ▶️ Play
+        </button>
+        <button
+          onClick={recording ? stopRecording : startRecording}
+          aria-label="record"
+          title={recording ? 'Stop & score' : 'Record'}
+          className={`px-3 py-1 rounded-md bg-white/10 hover:bg-white/20 backdrop-blur flex items-center ${recording ? 'bg-red-600 text-white animate-pulse' : ''}`}
+        >
+          {recording ? '■ Stop' : '⏺ Record'}
+        </button>
+        <button
+          onClick={next}
+          aria-label="next"
+          disabled={score === null}
+          className={`px-3 py-1 rounded-md bg-white/10 hover:bg-white/20 backdrop-blur ${score === null ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          🔄 Next Twister
+        </button>
         <button onClick={onClose} aria-label="close">✖︎</button>
       </div>
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
       {score !== null && (
         <div className="mt-2 text-sm">
-          <p>Heard: {transcript}</p>
+          <p>You said: “{transcript}”</p>
           <p>Score: {score}%</p>
-          <button className="mt-2" onClick={next}>Next</button>
+          <p className="mt-1">
+            {score >= 80
+              ? '🔥 Nailed it!'
+              : score >= 50
+              ? 'Not bad, try again?'
+              : '🍺 Maybe log that last drink…'}
+          </p>
         </div>
       )}
     </div>
