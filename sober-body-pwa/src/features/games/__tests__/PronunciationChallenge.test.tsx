@@ -52,4 +52,17 @@ describe('PronunciationChallenge', () => {
     fireEvent.click(screen.getByLabelText('record'))
     expect(await screen.findByText(/Microphone access denied/i)).toBeTruthy()
   })
+
+  it('enables Next button after scoring', async () => {
+    globalThis.SpeechRecognition = MockSpeechRecognition as unknown as typeof SpeechRecognition
+    ;(globalThis as unknown as { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition =
+      MockSpeechRecognition as unknown as typeof SpeechRecognition
+    vi.spyOn(Math, 'random').mockReturnValue(0)
+    render(<PronunciationChallenge onClose={() => {}} />)
+    const nextBtn = screen.getByLabelText('next')
+    expect(nextBtn.hasAttribute('disabled')).toBe(true)
+    fireEvent.click(screen.getByLabelText('record'))
+    await screen.findByText(/Score: 100%/)
+    expect(nextBtn.hasAttribute('disabled')).toBe(false)
+  })
 })
