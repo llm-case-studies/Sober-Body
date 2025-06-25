@@ -25,6 +25,7 @@ export default function PronunciationChallenge({ onClose }: { onClose: () => voi
   const [phrase, setPhrase] = useState<TwisterPhrase>(randomPhrase())
   const [transcript, setTranscript] = useState('')
   const [score, setScore] = useState<number | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const transcriptRef = useRef('')
 
   const play = () => {
@@ -33,13 +34,30 @@ export default function PronunciationChallenge({ onClose }: { onClose: () => voi
     speechSynthesis.speak(u)
   }
 
-  const start = () => {
+  const start = async () => {
     const w = window as unknown as {
       SpeechRecognition?: new () => SpeechRecognition
       webkitSpeechRecognition?: new () => SpeechRecognition
     }
     const Rec = w.SpeechRecognition || w.webkitSpeechRecognition
-    if (!Rec) return
+    if (!Rec) {
+      console.warn('Speech recognition not supported')
+      setError('Speech recognition is unavailable.')
+      return
+    }
+    if (navigator.permissions?.query) {
+      try {
+        const status = await navigator.permissions.query({
+          name: 'microphone' as PermissionName,
+        })
+        if (status.state === 'denied') {
+          setError('Microphone access denied.')
+          return
+        }
+      } catch {
+        /* ignore */
+      }
+    }
     const r: SpeechRecognition = new Rec()
     r.lang = phrase.locale
     r.onresult = (e: SpeechRecognitionEvent) => {
@@ -55,6 +73,7 @@ export default function PronunciationChallenge({ onClose }: { onClose: () => voi
       if (s >= 80) confetti({ particleCount: 80, spread: 60 })
     }
     r.start()
+    setError(null)
     setTimeout(() => r.stop(), 4000)
   }
 
@@ -73,6 +92,7 @@ export default function PronunciationChallenge({ onClose }: { onClose: () => voi
         <button onClick={start} aria-label="record">🎙️</button>
         <button onClick={onClose} aria-label="close">✖︎</button>
       </div>
+      {error && <p className="text-red-600 text-sm">{error}</p>}
       {score !== null && (
         <div className="mt-2 text-sm">
           <p>Heard: {transcript}</p>
