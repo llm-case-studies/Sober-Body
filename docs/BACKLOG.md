@@ -35,6 +35,7 @@ Legend: **↑ = next up** · ✅ done · ⬜ open
 
 * ⬜ **feat(games):** Pronunciation Challenge mini-game (WP‑5)
 * ⬜ **feat(games):** improve Pronunciation UI (record/next flow, verdicts)
+* ⬜ **feat(games):** Portuguese tongue-twister deck & lang switcher
 
 ## Docs & Governance
 

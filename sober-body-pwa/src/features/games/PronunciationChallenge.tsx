@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import confetti from 'canvas-confetti'
 import { phrases, type TwisterPhrase } from './twister-phrases'
 import { emit } from '../core/bus'
@@ -17,18 +17,24 @@ function levenshtein(a: string, b: string): number {
   return dp[a.length]
 }
 
-function randomPhrase(): TwisterPhrase {
-  return phrases[Math.floor(Math.random() * phrases.length)]
+function randomPhrase(locale: string): TwisterPhrase {
+  const opts = phrases.filter((p) => p.locale === locale)
+  return opts[Math.floor(Math.random() * opts.length)]
 }
 
 export default function PronunciationChallenge({ onClose }: { onClose: () => void }) {
-  const [phrase, setPhrase] = useState<TwisterPhrase>(randomPhrase())
+  const [lang, setLang] = useState<'en-US' | 'pt-BR'>('en-US')
+  const [phrase, setPhrase] = useState<TwisterPhrase>(randomPhrase('en-US'))
   const [transcript, setTranscript] = useState('')
   const [score, setScore] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [recording, setRecording] = useState(false)
   const recRef = useRef<SpeechRecognition | null>(null)
   const transcriptRef = useRef('')
+
+  useEffect(() => {
+    setPhrase(randomPhrase(lang))
+  }, [lang])
 
   const play = () => {
     const u = new SpeechSynthesisUtterance(phrase.text)
@@ -87,7 +93,7 @@ export default function PronunciationChallenge({ onClose }: { onClose: () => voi
   }
 
   const next = () => {
-    setPhrase(randomPhrase())
+    setPhrase(randomPhrase(lang))
     setTranscript('')
     setScore(null)
     setError(null)
@@ -97,6 +103,22 @@ export default function PronunciationChallenge({ onClose }: { onClose: () => voi
   return (
     <div className="bg-white rounded-md p-4 w-72">
       <h3 className="font-semibold mb-2">Tongue Twister</h3>
+      <div className="flex gap-2 mb-2">
+        <button
+          aria-label="en-US"
+          onClick={() => setLang('en-US')}
+          className={lang === 'en-US' ? 'font-bold' : ''}
+        >
+          🇺🇸 EN
+        </button>
+        <button
+          aria-label="pt-BR"
+          onClick={() => setLang('pt-BR')}
+          className={lang === 'pt-BR' ? 'font-bold' : ''}
+        >
+          🇧🇷 PT
+        </button>
+      </div>
       <p className="mb-2">“{phrase.text}”</p>
       <div className="flex gap-3 mt-4">
         <button
