@@ -19,6 +19,7 @@ npm run dev
 - `docs/ARCHITECTURE.md` &mdash; developer architecture overview
 - `docs/BACKLOG.md` &mdash; upcoming features and milestones
 - `docs/whitepapers/` &mdash; white-paper drafts and context
+- `docs/HTMX_SETUP.md` &mdash; repo root instructions for htmx
 
 ## Contributing
 
