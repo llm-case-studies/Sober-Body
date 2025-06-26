@@ -5,10 +5,10 @@ This directory contains the React + TypeScript front end for **Sober‑Body** bu
 ## Basic usage
 
 ```bash
-npm install      # install dependencies
-npm run dev      # start the dev server
-npm test         # run unit tests
-npm run build    # create a production build
+pnpm install    # install dependencies
+pnpm dev        # start the dev server
+pnpm test       # run unit tests
+pnpm build      # create a production build
 ```
 
 For more project information see the [root README](../README.md) and the

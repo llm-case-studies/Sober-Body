@@ -15,8 +15,8 @@ This document explains **how humans *and* AI agents (Codex/Copilot)** should int
 
 1. **Conventional commits**: `feat(ui): …`, `fix(core): …`, `test(core): …`, etc.
 2. **PR size**: ≤ 200 LOC (diff), one behaviour per PR.
-3. **Tests**: every PR must keep `npm test` green. New features require Vitest tests.
-4. **Lint/format**: run `npm run lint` (ESLint + Prettier); CI will fail otherwise.
+3. **Tests**: every PR must keep `pnpm -r test` green. New features require Vitest tests.
+4. **Lint/format**: run `pnpm -r lint` (ESLint + Prettier); CI will fail otherwise.
 5. **CI**: GitHub Actions in `.github/workflows/ci.yml` must pass.
 6. **Docs**: Update `BACKLOG.md` check‑box and relevant white‑paper links if scope changes.
 
