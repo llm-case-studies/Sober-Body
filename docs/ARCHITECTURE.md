@@ -55,14 +55,29 @@ interface BusEnvelope<TPayload> {
 
 ---
 
+## 3 · Monorepo Layout
+
+```
+/               # repo root
+├─ apps/
+│   └─ sober-body/            # main PWA
+├─ packages/
+│   └─ pronunciation-coach/   # coach playground
+└─ pnpm-workspace.yaml        # workspace config
+```
+
+Start both dev servers with `pnpm run dev:all`.
+
+---
+
 ## 4 · Build Commands
 
 | Script          | What it does                                                      |
 | --------------- | ----------------------------------------------------------------- |
-| `npm run dev`   | Vite hot‑reload at [http://localhost:5173](http://localhost:5173) |
-| `npm run build` | Production PWA bundle in `dist/`                                  |
-| `npm test`      | Vitest suite                                                      |
-| `npm run lint`  | ESLint + Prettier fix                                             |
+| `pnpm dev:sober`   | Vite hot-reload at http://localhost:5173 |
+| `pnpm dev:coach`   | Coach playground at http://localhost:5174 |
+| `pnpm dev:all`    | Run both servers concurrently |
+| `pnpm test`       | Vitest suite |
 
 ---
 

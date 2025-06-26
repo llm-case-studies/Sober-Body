@@ -30,7 +30,8 @@ docs/
   ├─ BACKLOG.md            # evolving task list
   ├─ ARCHITECTURE.md       # dev‑facing design
   └─ whitepapers/          # WP‑0 … WP‑n
-sober-body-pwa/            # Vite React‑TS codebase
+apps/sober-body/           # Vite React‑TS PWA
+packages/pronunciation-coach/  # Coach playground
 ```
 
 ---

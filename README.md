@@ -4,18 +4,20 @@ Sober-Body™ is a real-time alcohol harm-reduction companion that helps users "
 
 ## Quick start
 
-The front end lives in [`sober-body-pwa/`](sober-body-pwa/):
+The project now uses a **pnpm workspace** with two packages under `apps/` and `packages/`.
+The main PWA lives in [`apps/sober-body/`](apps/sober-body/):
 
 ```bash
-cd sober-body-pwa
-npm install
-npm run dev
+cd apps/sober-body
+pnpm install
+pnpm run dev
 # open http://localhost:5173/app
 ```
 
 ## Repository layout
 
-- `sober-body-pwa/` &mdash; Vite React+TypeScript codebase
+- `apps/sober-body/` &mdash; main PWA codebase
+- `packages/pronunciation-coach/` &mdash; standalone playground
 - `docs/ARCHITECTURE.md` &mdash; developer architecture overview
 - `docs/BACKLOG.md` &mdash; upcoming features and milestones
 - `docs/whitepapers/` &mdash; white-paper drafts and context
