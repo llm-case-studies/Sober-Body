@@ -14,6 +14,15 @@ pnpm run dev
 # open http://localhost:5173/app
 ```
 
+The Pronunciation Coach playground is in [`packages/pronunciation-coach/`](packages/pronunciation-coach/):
+
+```bash
+cd packages/pronunciation-coach
+pnpm install
+pnpm run dev
+# open http://localhost:5174
+```
+
 ## Repository layout
 
 - `apps/sober-body/` &mdash; main PWA codebase
