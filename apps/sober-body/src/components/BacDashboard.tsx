@@ -22,9 +22,12 @@ export default function BacDashboard() {
         <button aria-label="settings" onClick={() => open('settings')}>
           ⚙︎
         </button>
-        <button aria-label="play game" onClick={() => open('twister')}>
-          🎮
-        </button>
+        <div className="space-x-2">
+          <button aria-label="play game" onClick={() => open('twister')}>
+            🎮
+          </button>
+          <a href="/coach" aria-label="teacher ui">🧑‍🏫</a>
+        </div>
       </header>
       <SettingsModal open={active === 'settings'} onClose={close} />
       <PronunciationModal open={active === 'twister'} onClose={close} />
