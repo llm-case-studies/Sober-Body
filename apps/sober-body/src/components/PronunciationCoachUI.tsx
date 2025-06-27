@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { usePronunciationCoach } from '../features/games/PronunciationCoach'
-import LineNavigator from './LineNavigator'
 
 export default function PronunciationCoachUI() {
   const [raw, setRaw] = useState('She sells seashells')
   const [deck, setDeck] = useState<string[]>([])
   const [index, setIndex] = useState(0)
   const [locale, setLocale] = useState<'en-US' | 'pt-BR'>('en-US')
+  const [gran, setGran] = useState('Line')
 
   const start = () => {
     const lines = raw
@@ -21,15 +21,26 @@ export default function PronunciationCoachUI() {
   const coach = usePronunciationCoach({ phrase: current, locale })
 
   return (
-    <div className="p-4 flex gap-4 items-start">
-      <div className="flex flex-col w-1/2 pr-4 border-r">
-        <h2 className="text-xl font-semibold mb-2">Pronunciation Coach</h2>
+    <div className="pc-container p-4">
+      <section className="pc-left">
         <textarea
-          className="border p-2 w-full mb-2 resize-y min-h-[80vh]"
+          rows={10}
+          className="w-full resize-y min-h-40 max-h-[80vh] overflow-y-auto border p-2"
           value={raw}
           onChange={(e) => setRaw(e.target.value)}
         />
-        <div className="space-x-2 mb-2">
+        <div className="flex gap-2 my-2 items-center">
+          <select
+            className="border p-1"
+            value={gran}
+            onChange={(e) => setGran(e.target.value)}
+          >
+            <option>Word</option>
+            <option>Line</option>
+            <option>Sentence</option>
+            <option>Paragraph</option>
+            <option>Full</option>
+          </select>
           <select
             className="border p-1"
             value={locale}
@@ -43,12 +54,22 @@ export default function PronunciationCoachUI() {
           </button>
         </div>
         {deck.length > 0 && (
-          <LineNavigator lines={deck} active={index} onSelect={setIndex} />
+          <ul className="list-disc pl-6 space-y-1 overflow-y-auto">
+            {deck.map((line, i) => (
+              <li
+                key={i}
+                onClick={() => setIndex(i)}
+                className={i === index ? 'font-bold cursor-pointer' : 'cursor-pointer'}
+              >
+                {line.slice(0, 80)}
+              </li>
+            ))}
+          </ul>
         )}
-      </div>
-      <div className="flex-1 pl-4 space-y-2">
-        <p>{current}</p>
-        <div className="space-x-2">
+      </section>
+      <section className="pc-right">
+        <h2 className="text-xl mb-2">{current}</h2>
+        <div className="space-x-2 mb-2">
           <button onClick={coach.play}>▶ Play</button>
           <button
             disabled={!(('SpeechRecognition' in window) || ('webkitSpeechRecognition' in window))}
@@ -74,7 +95,7 @@ export default function PronunciationCoachUI() {
             </button>
           </div>
         )}
-      </div>
+      </section>
     </div>
   )
 }
