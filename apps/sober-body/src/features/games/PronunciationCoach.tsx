@@ -9,7 +9,7 @@ export interface PronunciationCoachProps {
   onScore?: (r: { score: number; transcript: string; millis: number }) => void
 }
 
-export default function PronunciationCoach({ phrase, locale, maxSecs, onScore }: PronunciationCoachProps) {
+export function usePronunciationCoach({ phrase, locale, maxSecs, onScore }: PronunciationCoachProps) {
   const [recording, setRecording] = useState(false)
   const [result, setResult] = useState<number | null>(null)
   const recRef = useRef<SpeechRecognition | null>(null)
@@ -57,14 +57,22 @@ export default function PronunciationCoach({ phrase, locale, maxSecs, onScore }:
     setTimeout(() => r.stop(), limit)
   }
 
+  const stop = () => recRef.current?.stop()
+
+  return { play, start, stop, recording, result }
+}
+
+export default function PronunciationCoach(props: PronunciationCoachProps) {
+  const coach = usePronunciationCoach(props)
+
   return (
     <div className="space-x-2">
-      <button onClick={play}>▶ Play</button>
+      <button onClick={coach.play}>▶ Play</button>
       <button
         disabled={!(('SpeechRecognition' in window) || ('webkitSpeechRecognition' in window))}
-        onClick={recording ? () => recRef.current?.stop() : start}
-      >{recording ? '■ Stop' : '⏺ Record'}</button>
-      {result !== null && <span>Score {result}%</span>}
+        onClick={coach.recording ? coach.stop : coach.start}
+      >{coach.recording ? '■ Stop' : '⏺ Record'}</button>
+      {coach.result !== null && <span>Score {coach.result}%</span>}
     </div>
   )
 }

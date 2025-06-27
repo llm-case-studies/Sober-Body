@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import PronunciationCoach from '../features/games/PronunciationCoach'
+import { usePronunciationCoach } from '../features/games/PronunciationCoach'
+import LineNavigator from './LineNavigator'
 
 export default function PronunciationCoachUI() {
   const [raw, setRaw] = useState('She sells seashells')
@@ -17,13 +18,14 @@ export default function PronunciationCoachUI() {
   }
 
   const current = deck[index] ?? raw
+  const coach = usePronunciationCoach({ phrase: current, locale })
 
   return (
-    <div className="p-4 space-y-4 flex">
-      <div className="w-1/4 pr-4 border-r">
+    <div className="p-4 flex gap-4 items-start">
+      <div className="flex flex-col w-1/2 pr-4 border-r">
         <h2 className="text-xl font-semibold mb-2">Pronunciation Coach</h2>
         <textarea
-          className="border p-2 w-full mb-2"
+          className="border p-2 w-full mb-2 resize-y min-h-[80vh]"
           value={raw}
           onChange={(e) => setRaw(e.target.value)}
         />
@@ -41,23 +43,19 @@ export default function PronunciationCoachUI() {
           </button>
         </div>
         {deck.length > 0 && (
-          <ul className="space-y-1 text-sm">
-            {deck.map((line, i) => (
-              <li key={i}>
-                <button
-                  className={
-                    'w-full text-left ' + (i === index ? 'font-bold' : '')
-                  }
-                  onClick={() => setIndex(i)}
-                >
-                  {line}
-                </button>
-              </li>
-            ))}
-          </ul>
+          <LineNavigator lines={deck} active={index} onSelect={setIndex} />
         )}
       </div>
       <div className="flex-1 pl-4 space-y-2">
+        <p>{current}</p>
+        <div className="space-x-2">
+          <button onClick={coach.play}>▶ Play</button>
+          <button
+            disabled={!(('SpeechRecognition' in window) || ('webkitSpeechRecognition' in window))}
+            onClick={coach.recording ? coach.stop : coach.start}
+          >{coach.recording ? '■ Stop' : '⏺ Record'}</button>
+          {coach.result !== null && <span>Score {coach.result}%</span>}
+        </div>
         {deck.length > 0 && (
           <div className="space-x-2">
             <button
@@ -76,7 +74,6 @@ export default function PronunciationCoachUI() {
             </button>
           </div>
         )}
-        <PronunciationCoach phrase={current} locale={locale} />
       </div>
     </div>
   )
