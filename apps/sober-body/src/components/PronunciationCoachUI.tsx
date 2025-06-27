@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePronunciationCoach } from "../features/games/PronunciationCoach";
 
 type Scope = "Word" | "Line" | "Sentence" | "Paragraph" | "Full";
@@ -32,22 +32,21 @@ function splitText(raw: string, scope: Scope): string[] {
 
 export default function PronunciationCoachUI() {
   const [raw, setRaw] = useState("She sells seashells");
+  const [scope, setScope] = useState<Scope>("Line");
   const [deck, setDeck] = useState<string[]>([]);
   const [index, setIndex] = useState(0);
   const [locale, setLocale] = useState<"en-US" | "pt-BR">("en-US");
-  const [gran, setGran] = useState("Line");
 
-  const start = () => {
-    const lines = splitText(raw, gran as Scope);
-    setDeck(lines);
+  useEffect(() => {
+    setDeck(splitText(raw, scope));
     setIndex(0);
-  };
+  }, [raw, scope]);
 
   const current = deck[index] ?? raw;
   const coach = usePronunciationCoach({ phrase: current, locale });
 
   return (
-    <div className="grid gap-6 w-full p-4 sm:grid-cols-2">
+    <div className="grid gap-6 w-full p-4 grid-cols-2">
       <section className="flex flex-col space-y-2">
         <textarea
           rows={14}
@@ -58,8 +57,8 @@ export default function PronunciationCoachUI() {
         <div className="flex gap-2 items-center">
           <select
             className="border p-1"
-            value={gran}
-            onChange={(e) => setGran(e.target.value)}
+            value={scope}
+            onChange={(e) => setScope(e.target.value as Scope)}
           >
             <option>Word</option>
             <option>Line</option>
@@ -75,8 +74,8 @@ export default function PronunciationCoachUI() {
             <option value="en-US">English</option>
             <option value="pt-BR">Portuguese</option>
           </select>
-          <button onClick={start} className="border px-2 py-1">
-            Start Drill
+          <button onClick={() => setIndex(0)} className="border px-2 py-1">
+            Restart Drill
           </button>
         </div>
       </section>
