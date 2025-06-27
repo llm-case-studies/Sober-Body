@@ -46,11 +46,12 @@ export default function PronunciationCoachUI() {
   const coach = usePronunciationCoach({ phrase: current, locale });
 
   return (
-    <div className="grid gap-10 w-full p-4 grid-cols-2">
+    <div className="min-h-screen flex justify-center pt-8">
+      <div className="grid grid-cols-2 gap-12 w-full max-w-5xl p-4">
       <section className="flex flex-col space-y-2">
         <textarea
           rows={14}
-          className="w-full resize-y min-h-40 max-h-[70vh] overflow-y-auto border p-2"
+          className="w-full resize-y min-h-40 max-h-[70vh] overflow-y-auto border p-2 bg-[rgba(255,255,255,0.8)] backdrop-blur-sm"
           value={raw}
           onChange={(e) => setRaw(e.target.value)}
         />
@@ -137,6 +138,7 @@ export default function PronunciationCoachUI() {
           )}
         </div>
       </section>
+      </div>
     </div>
   );
 }
