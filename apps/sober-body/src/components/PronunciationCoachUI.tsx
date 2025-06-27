@@ -21,10 +21,10 @@ export default function PronunciationCoachUI() {
   const coach = usePronunciationCoach({ phrase: current, locale })
 
   return (
-    <div className="pc-container p-4">
-      <section className="pc-left">
+    <div className="flex flex-col md:flex-row gap-6 w-full p-4">
+      <section className="w-full md:w-5/12 flex flex-col">
         <textarea
-          rows={10}
+          rows={14}
           className="w-full resize-y min-h-40 max-h-[80vh] overflow-y-auto border p-2"
           value={raw}
           onChange={(e) => setRaw(e.target.value)}
@@ -67,7 +67,7 @@ export default function PronunciationCoachUI() {
           </ul>
         )}
       </section>
-      <section className="pc-right">
+      <section className="w-full md:w-7/12 flex flex-col items-center">
         <h2 className="text-xl mb-2">{current}</h2>
         <div className="space-x-2 mb-2">
           <button onClick={coach.play}>▶ Play</button>
