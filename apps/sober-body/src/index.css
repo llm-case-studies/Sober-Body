@@ -2,3 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ivy-league backdrop for entire PWA */
+body {
+  background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=2000')
+    center / cover fixed;
+}
+
+/* subtle veil so text remains legible */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+  z-index: -1;
+}
+
