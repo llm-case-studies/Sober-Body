@@ -17,8 +17,10 @@ export function DrinkLogProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     loadDrinks().then(arr => {
-      setDrinks(arr)
-      loaded.current = true
+      setDrinks(prev => {
+        loaded.current = true
+        return prev.length > 0 ? [...arr, ...prev] : arr
+      })
     })
   }, [])
 
