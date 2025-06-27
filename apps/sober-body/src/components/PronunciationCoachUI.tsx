@@ -44,15 +44,15 @@ export default function PronunciationCoachUI() {
   const coach = usePronunciationCoach({ phrase: current, locale })
 
   return (
-    <div className="flex flex-col sm:flex-row gap-6 w-full p-4">
-      <section className="w-full sm:w-5/12 flex flex-col">
+    <div className="grid gap-6 w-full p-4 sm:grid-cols-2">
+      <section className="flex flex-col space-y-2">
         <textarea
           rows={14}
-          className="w-full resize-y min-h-40 max-h-[80vh] overflow-y-auto border p-2"
+          className="w-full resize-y min-h-40 max-h-[70vh] overflow-y-auto border p-2"
           value={raw}
           onChange={(e) => setRaw(e.target.value)}
         />
-        <div className="flex gap-2 my-2 items-center">
+        <div className="flex gap-2 items-center">
           <select
             className="border p-1"
             value={gran}
@@ -77,24 +77,24 @@ export default function PronunciationCoachUI() {
           </button>
         </div>
         {deck.length > 0 && (
-          <div className="overflow-y-auto flex-1">
-            <ul className="list-disc pl-6 space-y-1">
-              {deck.map((line, i) => (
+          <ul className="list-disc pl-6 space-y-1 overflow-y-auto flex-1">
+            {deck.map((line, i) =>
+              line && (
                 <li
                   key={i}
                   onClick={() => setIndex(i)}
                   className={i === index ? 'font-bold cursor-pointer' : 'cursor-pointer'}
                 >
-                  {line.slice(0, 80)}
+                  {line}
                 </li>
-              ))}
-            </ul>
-          </div>
+              )
+            )}
+          </ul>
         )}
       </section>
-      <section className="w-full sm:w-7/12 flex flex-col items-center">
-        <h2 className="text-xl mb-2">{current}</h2>
-        <div className="space-x-2 mb-2">
+      <section className="flex flex-col items-center space-y-4">
+        <h2 className="text-2xl text-center">{current}</h2>
+        <div className="flex gap-2 items-center">
           <button onClick={coach.play}>▶ Play</button>
           <button
             disabled={!(('SpeechRecognition' in window) || ('webkitSpeechRecognition' in window))}
@@ -103,7 +103,7 @@ export default function PronunciationCoachUI() {
           {coach.result !== null && <span>Score {coach.result}%</span>}
         </div>
         {deck.length > 0 && (
-          <div className="space-x-2">
+          <div className="flex gap-2">
             <button
               onClick={() => setIndex((i) => i - 1)}
               disabled={index === 0}
