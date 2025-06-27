@@ -106,3 +106,10 @@ While the **Tongue‑Twister modal** lives inside *Sober‑Body*, the teacher‑
 | 6 | Post‑session report JSON download                             | placeholder until full teacher dashboard later                                                                |
 | 7 | Link from BAC header (🧑‍🏫 icon)                             | optional shortcut                                                                                             |
 | 8 | **Granularity selector** (line / sentence / paragraph / full) | student chooses drill scope; UI toggles chunk size before starting                                            |
+
+## 8 · UI refinement proposal
+
+* Add a flex container around the lesson builder and drill panes so the layout stretches with the viewport.
+* Textarea uses `min-height: 80vh` to give more room for multi-line lessons.
+* `<LineNavigator>` renders the parsed line list and calls `setIndex` when a line is clicked.
+* Play/Record controls sit in the right-hand drill pane next to the active phrase.
