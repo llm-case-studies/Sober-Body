@@ -2,17 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-  .pc-container {
-    @apply flex gap-4 w-full;
-  }
-
-  .pc-left {
-    @apply flex flex-col flex-1 min-w-80;
-  }
-
-  .pc-right {
-    @apply flex flex-col;
-    flex: 1.5 1 0%;
-  }
-}
