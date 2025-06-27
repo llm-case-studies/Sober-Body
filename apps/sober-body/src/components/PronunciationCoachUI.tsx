@@ -77,17 +77,19 @@ export default function PronunciationCoachUI() {
           </button>
         </div>
         {deck.length > 0 && (
-          <ul className="list-disc pl-6 space-y-1 overflow-y-auto flex-1">
-            {deck.map((line, i) => (
-              <li
-                key={i}
-                onClick={() => setIndex(i)}
-                className={i === index ? 'font-bold cursor-pointer' : 'cursor-pointer'}
-              >
-                {line.slice(0, 80)}
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-y-auto flex-1">
+            <ul className="list-disc pl-6 space-y-1">
+              {deck.map((line, i) => (
+                <li
+                  key={i}
+                  onClick={() => setIndex(i)}
+                  className={i === index ? 'font-bold cursor-pointer' : 'cursor-pointer'}
+                >
+                  {line.slice(0, 80)}
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </section>
       <section className="w-full sm:w-7/12 flex flex-col items-center">
