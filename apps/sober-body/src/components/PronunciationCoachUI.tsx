@@ -46,7 +46,7 @@ export default function PronunciationCoachUI() {
   const coach = usePronunciationCoach({ phrase: current, locale });
 
   return (
-    <div className="grid gap-6 w-full p-4 grid-cols-2">
+    <div className="grid gap-10 w-full p-4 grid-cols-2">
       <section className="flex flex-col space-y-2">
         <textarea
           rows={14}
@@ -79,9 +79,9 @@ export default function PronunciationCoachUI() {
           </button>
         </div>
       </section>
-      <section className="flex flex-col items-center space-y-4">
+      <section className="flex flex-col space-y-4">
         {deck.length > 0 && (
-          <ul className="list-disc pl-6 space-y-1 overflow-y-auto w-full max-w-md">
+          <ul className="list-disc pl-8 space-y-1 overflow-y-auto w-full max-w-md text-left">
             {deck.map(
               (line, i) =>
                 line && (
