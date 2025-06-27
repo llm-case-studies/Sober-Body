@@ -100,40 +100,42 @@ export default function PronunciationCoachUI() {
             )}
           </ul>
         )}
-        <h2 className="text-2xl text-center">{current}</h2>
-        <div className="flex gap-2 items-center">
-          <button onClick={coach.play}>▶ Play</button>
-          <button
-            disabled={
-              !(
-                "SpeechRecognition" in window ||
-                "webkitSpeechRecognition" in window
-              )
-            }
-            onClick={coach.recording ? coach.stop : coach.start}
-          >
-            {coach.recording ? "■ Stop" : "⏺ Record"}
-          </button>
-          {coach.result !== null && <span>Score {coach.result}%</span>}
-        </div>
-        {deck.length > 0 && (
-          <div className="flex gap-2">
+        <div className="flex flex-col items-center space-y-3 self-center">
+          <h2 className="text-2xl font-semibold text-center">{current}</h2>
+          <div className="flex gap-2 items-center">
+            <button onClick={coach.play}>▶ Play</button>
             <button
-              onClick={() => setIndex((i) => i - 1)}
-              disabled={index === 0}
-              className="border px-2 py-1"
+              disabled={
+                !(
+                  "SpeechRecognition" in window ||
+                  "webkitSpeechRecognition" in window
+                )
+              }
+              onClick={coach.recording ? coach.stop : coach.start}
             >
-              Prev
+              {coach.recording ? "■ Stop" : "⏺ Record"}
             </button>
-            <button
-              onClick={() => setIndex((i) => i + 1)}
-              disabled={index >= deck.length - 1}
-              className="border px-2 py-1"
-            >
-              Next
-            </button>
+            {coach.result !== null && <span>Score {coach.result}%</span>}
           </div>
-        )}
+          {deck.length > 0 && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIndex((i) => i - 1)}
+                disabled={index === 0}
+                className="border px-2 py-1"
+              >
+                Prev
+              </button>
+              <button
+                onClick={() => setIndex((i) => i + 1)}
+                disabled={index >= deck.length - 1}
+                className="border px-2 py-1"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
       </section>
     </div>
   );
