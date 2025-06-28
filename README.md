@@ -22,6 +22,15 @@ pnpm run dev
 # open http://localhost:5174
 ```
 
+Create a `.env.local` file at the repository root with your translation API
+credentials. All workspaces load environment variables from that shared file:
+
+```dotenv
+VITE_TRANSLATOR_KEY=your-azure-key
+VITE_TRANSLATOR_REGION=your-region
+VITE_TRANSLATOR_ENDPOINT=https://<your-translator>.cognitiveservices.azure.com
+```
+
 ## Testing
 
 Run the unit tests for the PWA workspace:
