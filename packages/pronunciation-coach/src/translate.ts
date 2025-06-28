@@ -1,5 +1,12 @@
 import { cacheTranslation, getCachedTranslation } from './storage'
 
+console.log(
+  'ENV DEBUG →',
+  import.meta.env.VITE_TRANSLATOR_KEY,
+  import.meta.env.VITE_TRANSLATOR_REGION,
+  import.meta.env.VITE_TRANSLATOR_ENDPOINT
+)
+
 export async function translateAPI(word: string, lang: string): Promise<string> {
   const key = import.meta.env.VITE_TRANSLATOR_KEY
   const region = import.meta.env.VITE_TRANSLATOR_REGION
