@@ -21,7 +21,10 @@ export default function Tooltip({ word, lang, x, y, onClose }: Props) {
   }, [onClose])
 
   const speak = () => {
-    const u = new SpeechSynthesisUtterance(word)
+    if (!translation) return
+    const u = new SpeechSynthesisUtterance(translation)
+    const voice = speechSynthesis.getVoices().find(v => v.lang.startsWith(lang)) ?? null
+    if (voice) u.voice = voice
     u.lang = lang
     speechSynthesis.speak(u)
   }

@@ -9,7 +9,8 @@ export interface SettingsValue {
 const DEFAULTS: Required<Settings> = {
   weightKg: 70,
   sex: 'm',
-  beta: DEFAULT_BETA
+  beta: DEFAULT_BETA,
+  nativeLang: 'en'
 }
 const SettingsContext = createContext<SettingsValue | undefined>(undefined)
 export function SettingsProvider({ children }: { children: React.ReactNode }) {

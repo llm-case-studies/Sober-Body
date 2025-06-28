@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { usePronunciationCoach } from "../features/games/PronunciationCoach";
-import Tooltip from "../../../../packages/pronunciation-coach/src/Tooltip";
+import useTranslation from "../../../../packages/pronunciation-coach/src/useTranslation";
+import { useSettings } from "../features/core/settings-context";
 
 type Scope = "Word" | "Line" | "Sentence" | "Paragraph" | "Full";
 
@@ -38,7 +39,7 @@ export default function PronunciationCoachUI() {
   const [index, setIndex] = useState(0);
   const [locale, setLocale] = useState<"en-US" | "pt-BR">("en-US");
   const [lookupWord, setLookupWord] = useState<string | null>(null);
-  const [tipPos, setTipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const { settings, setSettings } = useSettings();
 
   useEffect(() => {
     setDeck(splitText(raw, scope));
@@ -47,6 +48,17 @@ export default function PronunciationCoachUI() {
 
   const current = deck[index] ?? raw;
   const coach = usePronunciationCoach({ phrase: current, locale });
+  const translation = useTranslation(lookupWord ?? '', settings.nativeLang);
+  const speak = () => {
+    if (!translation) return;
+    const utter = new SpeechSynthesisUtterance(translation);
+    const voice = speechSynthesis
+      .getVoices()
+      .find(v => v.lang.startsWith(settings.nativeLang)) ?? null;
+    if (voice) utter.voice = voice;
+    utter.lang = settings.nativeLang;
+    speechSynthesis.speak(utter);
+  };
 
   return (
     <div className="min-h-screen flex justify-center pt-8">
@@ -78,6 +90,20 @@ export default function PronunciationCoachUI() {
             <option value="en-US">English</option>
             <option value="pt-BR">Portuguese</option>
           </select>
+          <label className="text-sm">Translate to
+            <select
+              value={settings.nativeLang}
+              onChange={e => setSettings(s => ({ ...s, nativeLang: e.target.value }))}
+              className="border p-1 ml-1"
+            >
+              <option value="en">English</option>
+              <option value="es">Spanish</option>
+              <option value="de">German</option>
+              <option value="fr">French</option>
+              <option value="ru">Russian</option>
+              <option value="zh-Hans">Chinese (Simplified)</option>
+            </select>
+          </label>
           <button onClick={() => setIndex(0)} className="border px-2 py-1">
             Restart Drill
           </button>
@@ -109,9 +135,7 @@ export default function PronunciationCoachUI() {
             {current.split(/\s+/).map((w, i) => (
               <span
                 key={i}
-                onDoubleClick={e => {
-                  const rect = (e.target as HTMLElement).getBoundingClientRect()
-                  setTipPos({ x: rect.left, y: rect.bottom })
+                onDoubleClick={() => {
                   setLookupWord(w)
                 }}
                 className="cursor-help mx-0.5"
@@ -135,6 +159,12 @@ export default function PronunciationCoachUI() {
             </button>
             {coach.result !== null && <span>Score {coach.result}%</span>}
           </div>
+          {translation && (
+            <div className="px-3 py-2 bg-white/90 rounded-md shadow border text-sm max-w-xs text-center">
+              {translation}
+              <button onClick={speak} className="ml-2">🔊</button>
+            </div>
+          )}
           {deck.length > 0 && (
             <div className="flex gap-2">
               <button
@@ -156,15 +186,6 @@ export default function PronunciationCoachUI() {
         </div>
       </section>
       </div>
-      {lookupWord && (
-        <Tooltip
-          word={lookupWord}
-          lang={locale.split('-')[0]}
-          x={tipPos.x}
-          y={tipPos.y}
-          onClose={() => setLookupWord(null)}
-        />
-      )}
     </div>
   );
 }

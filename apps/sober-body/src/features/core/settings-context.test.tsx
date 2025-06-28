@@ -33,7 +33,7 @@ describe('SettingsProvider persistence', () => {
     await waitFor(() => expect(storage.loadSettings).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: /change/i }))
     await waitFor(() => {
-      expect(storage.saveSettings).toHaveBeenCalledWith({ weightKg: 80, sex: 'm', beta: DEFAULT_BETA })
+      expect(storage.saveSettings).toHaveBeenCalledWith({ weightKg: 80, sex: 'm', beta: DEFAULT_BETA, nativeLang: 'en' })
     })
     first.unmount()
     render(
