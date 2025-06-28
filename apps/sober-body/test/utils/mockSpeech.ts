@@ -6,6 +6,10 @@ export function installSpeechMocks() {
     cancel: vi.fn(),
     getVoices: () => [{ name: 'MockVoice', lang: 'en-US' }],
   } as unknown as SpeechSynthesis
+  ;(globalThis as Record<string, unknown>).SpeechSynthesisUtterance = function(this: SpeechSynthesisUtterance, text: string) {
+    this.text = text
+    this.lang = 'en-US'
+  } as unknown as typeof SpeechSynthesisUtterance
 
   class MockRecognition extends EventTarget {
     lang = 'en-US'

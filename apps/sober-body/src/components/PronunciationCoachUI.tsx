@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { usePronunciationCoach } from "../features/games/PronunciationCoach";
 import useTranslation from "../../../../packages/pronunciation-coach/src/useTranslation";
+import { LANGS } from "../../../../packages/pronunciation-coach/src/langs";
 import { useSettings } from "../features/core/settings-context";
 
 type Scope = "Word" | "Line" | "Sentence" | "Paragraph" | "Full";
@@ -37,8 +38,8 @@ export default function PronunciationCoachUI() {
   const [scope, setScope] = useState<Scope>("Line");
   const [deck, setDeck] = useState<string[]>([]);
   const [index, setIndex] = useState(0);
-  const [locale, setLocale] = useState<"en-US" | "pt-BR">("en-US");
   const [lookupWord, setLookupWord] = useState<string | null>(null);
+  const [showTranslation, setShowTranslation] = useState(true);
   const { settings, setSettings } = useSettings();
 
   useEffect(() => {
@@ -46,8 +47,16 @@ export default function PronunciationCoachUI() {
     setIndex(0);
   }, [raw, scope]);
 
+  function handleLookup(e: React.MouseEvent<HTMLElement>) {
+    const sel = window.getSelection()?.toString().trim();
+    const target = (e.target as HTMLElement).innerText;
+    const query = sel ? sel : target;
+    const cleaned = query.replace(/[^\p{L}\p{N}\s]+/gu, '');
+    setLookupWord(cleaned);
+  }
+
   const current = deck[index] ?? raw;
-  const coach = usePronunciationCoach({ phrase: current, locale });
+  const coach = usePronunciationCoach({ phrase: current, locale: settings.locale });
   const translation = useTranslation(lookupWord ?? '', settings.nativeLang);
   const speak = () => {
     if (!translation) return;
@@ -59,6 +68,18 @@ export default function PronunciationCoachUI() {
     utter.lang = settings.nativeLang;
     speechSynthesis.speak(utter);
   };
+
+  useEffect(() => {
+    if (translation) speak();
+  }, [translation]);
+
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 't') setShowTranslation(s => !s);
+    };
+    window.addEventListener('keydown', key);
+    return () => window.removeEventListener('keydown', key);
+  }, []);
 
   return (
     <div className="min-h-screen flex justify-center pt-8">
@@ -84,11 +105,12 @@ export default function PronunciationCoachUI() {
           </select>
           <select
             className="border p-1"
-            value={locale}
-            onChange={(e) => setLocale(e.target.value as "en-US" | "pt-BR")}
+            value={settings.locale}
+            onChange={e => setSettings(s => ({ ...s, locale: e.target.value }))}
           >
-            <option value="en-US">English</option>
-            <option value="pt-BR">Portuguese</option>
+            {LANGS.map(l => (
+              <option key={l.code} value={l.code}>{l.label}</option>
+            ))}
           </select>
           <label className="text-sm">Translate to
             <select
@@ -96,12 +118,9 @@ export default function PronunciationCoachUI() {
               onChange={e => setSettings(s => ({ ...s, nativeLang: e.target.value }))}
               className="border p-1 ml-1"
             >
-              <option value="en">English</option>
-              <option value="es">Spanish</option>
-              <option value="de">German</option>
-              <option value="fr">French</option>
-              <option value="ru">Russian</option>
-              <option value="zh-Hans">Chinese (Simplified)</option>
+              {LANGS.map(l => (
+                <option key={l.code} value={l.code}>{l.label}</option>
+              ))}
             </select>
           </label>
           <button onClick={() => setIndex(0)} className="border px-2 py-1">
@@ -109,7 +128,7 @@ export default function PronunciationCoachUI() {
           </button>
         </div>
       </section>
-      <section className="flex flex-col space-y-4">
+      <section className="flex flex-col items-center">
         {deck.length > 0 && (
           <ul className="list-disc pl-8 space-y-1 overflow-y-auto w-full max-w-md text-left">
             {deck.map(
@@ -130,21 +149,22 @@ export default function PronunciationCoachUI() {
             )}
           </ul>
         )}
-        <div className="flex flex-col items-center space-y-4 self-center">
-          <h2 className="text-2xl font-semibold text-center">
+        <div className="flex flex-col items-center">
+          <h2
+            className="text-2xl text-center mb-4"
+            onDoubleClick={handleLookup}
+          >
             {current.split(/\s+/).map((w, i) => (
               <span
                 key={i}
-                onDoubleClick={() => {
-                  setLookupWord(w)
-                }}
+                onDoubleClick={handleLookup}
                 className="cursor-help mx-0.5"
               >
                 {w + ' '}
               </span>
             ))}
           </h2>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-3 mb-4">
             <button onClick={coach.play}>▶ Play</button>
             <button
               disabled={
@@ -159,14 +179,14 @@ export default function PronunciationCoachUI() {
             </button>
             {coach.result !== null && <span>Score {coach.result}%</span>}
           </div>
-          {translation && (
-            <div className="px-3 py-2 bg-white/90 rounded-md shadow border text-sm max-w-xs text-center">
-              {translation}
-              <button onClick={speak} className="ml-2">🔊</button>
+          {translation && showTranslation && (
+            <div className="flex items-center gap-2 mb-4 rounded-md border px-3 py-1.5 bg-white/90 shadow">
+              <span className="text-sm">{translation}</span>
+              <button onClick={speak}>🔊</button>
             </div>
           )}
           {deck.length > 0 && (
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 onClick={() => setIndex((i) => i - 1)}
                 disabled={index === 0}
