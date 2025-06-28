@@ -16,6 +16,7 @@ export interface Settings {
   sex?: 'm' | 'f'
   beta?: number
   nativeLang?: string
+  locale?: string
 }
 
 export async function loadSettings(): Promise<Settings | undefined> {

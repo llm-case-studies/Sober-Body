@@ -10,7 +10,8 @@ const DEFAULTS: Required<Settings> = {
   weightKg: 70,
   sex: 'm',
   beta: DEFAULT_BETA,
-  nativeLang: 'en'
+  nativeLang: 'en',
+  locale: 'en'
 }
 const SettingsContext = createContext<SettingsValue | undefined>(undefined)
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
