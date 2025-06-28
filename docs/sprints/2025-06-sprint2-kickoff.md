@@ -89,7 +89,7 @@ While the **Tongue‑Twister modal** lives inside *Sober‑Body*, the teacher‑
 
 | Mode                        | How to launch                                    | URL                                                                     |
 | --------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
-| **Local dev** (single Vite) | `pnpm --filter apps/sober-body dev`              | [http://localhost:5173/coach](http://localhost:5173/coach)              |
+| **Local dev** (single Vite) | `pnpm --filter sober-body dev`              | [http://localhost:5173/coach](http://localhost:5173/coach)              |
 | **Package playground**      | `pnpm --filter packages/pronunciation-coach dev` | [http://localhost:5174/](http://localhost:5174/) (Storybook / mini‑app) |
 
 *(Both will exist; teachers can use either, while the BAC Dashboard can link to **`/coach`**.)*

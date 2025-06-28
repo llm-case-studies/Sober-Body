@@ -2,7 +2,7 @@
   "private": true,
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev:sober": "pnpm --filter apps/sober-body dev",
+    "dev:sober": "pnpm --filter sober-body dev",
     "dev:coach": "pnpm --filter packages/pronunciation-coach dev",
     "dev:all": "pnpm -r dev",
     "test": "pnpm -r --parallel test"
