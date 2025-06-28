@@ -8,9 +8,8 @@ The project now uses a **pnpm workspace** with two packages under `apps/` and `p
 The main PWA lives in [`apps/sober-body/`](apps/sober-body/):
 
 ```bash
-cd apps/sober-body
 pnpm install
-pnpm run dev
+pnpm --filter sober-body dev
 # open http://localhost:5173/app
 ```
 
@@ -21,6 +20,14 @@ cd packages/pronunciation-coach
 pnpm install
 pnpm run dev
 # open http://localhost:5174
+```
+
+## Testing
+
+Run the unit tests for the PWA workspace:
+
+```bash
+pnpm --filter sober-body test
 ```
 
 ## Repository layout
