@@ -3,3 +3,4 @@ pnpm-lock.yaml
 package-lock.json
 packages/*/dist
 apps/*/dist
+.env.local
