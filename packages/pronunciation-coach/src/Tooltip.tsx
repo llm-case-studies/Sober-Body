@@ -31,9 +31,9 @@ export default function Tooltip({ word, lang, x, y, onClose }: Props) {
       className="pc-tooltip absolute bg-white border rounded shadow-md p-2 text-sm"
       style={{ top: y, left: x }}
     >
-      <div className="flex items-center gap-2">
-        <span>{translation ?? '…'}</span>
+      <div className="flex flex-col items-center gap-1">
         <button onClick={speak} aria-label="play word">🔊</button>
+        <span className="mt-1">{translation ?? '…'}</span>
       </div>
     </div>
   )
