@@ -12,6 +12,7 @@ describe('translate util', () => {
     await clearDB()
     vi.stubEnv('VITE_TRANSLATOR_KEY', 'x')
     vi.stubEnv('VITE_TRANSLATOR_REGION', 'y')
+    vi.stubEnv('VITE_TRANSLATOR_ENDPOINT', 'https://example.com')
     vi.stubGlobal('fetch', vi.fn(async () => ({
       json: async () => [{ translations: [{ text: 'hola' }] }]
     })) as unknown as typeof fetch)

@@ -7,13 +7,14 @@ console.log(
   import.meta.env.VITE_TRANSLATOR_ENDPOINT
 )
 
-export async function translateAPI(word: string, lang: string): Promise<string> {
+export async function translateAPI(word: string, to: string): Promise<string> {
   const key = import.meta.env.VITE_TRANSLATOR_KEY
   const region = import.meta.env.VITE_TRANSLATOR_REGION
-  if (!key || !region) {
+  const endpoint = import.meta.env.VITE_TRANSLATOR_ENDPOINT
+  if (!key || !region || !endpoint) {
     throw new Error('Missing VITE_TRANSLATOR_KEY or VITE_TRANSLATOR_REGION')
   }
-  const url = `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=${lang}`
+  const url = `${endpoint}/translate?api-version=3.0&to=${to}`
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -27,10 +28,10 @@ export async function translateAPI(word: string, lang: string): Promise<string> 
   return data[0].translations[0].text as string
 }
 
-export async function translate(word: string, lang: string): Promise<string> {
-  const cached = await getCachedTranslation(lang, word)
+export async function translate(word: string, to: string): Promise<string> {
+  const cached = await getCachedTranslation(to, word)
   if (cached) return cached
-  const text = await translateAPI(word, lang)
-  await cacheTranslation(lang, word, text)
+  const text = await translateAPI(word, to)
+  await cacheTranslation(to, word, text)
   return text
 }

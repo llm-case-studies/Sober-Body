@@ -15,6 +15,7 @@ export interface Settings {
   weightKg?: number
   sex?: 'm' | 'f'
   beta?: number
+  nativeLang?: string
 }
 
 export async function loadSettings(): Promise<Settings | undefined> {
