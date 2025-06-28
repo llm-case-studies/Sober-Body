@@ -1,9 +1,8 @@
 import { cacheTranslation, getCachedTranslation } from './storage'
 
 export async function translateAPI(word: string, lang: string): Promise<string> {
-  const env = import.meta as any
-  const key = env.env.VITE_TRANSLATOR_KEY
-  const region = env.env.VITE_TRANSLATOR_REGION
+  const key = import.meta.env.VITE_TRANSLATOR_KEY
+  const region = import.meta.env.VITE_TRANSLATOR_REGION
   if (!key || !region) {
     throw new Error('Missing VITE_TRANSLATOR_KEY or VITE_TRANSLATOR_REGION')
   }
