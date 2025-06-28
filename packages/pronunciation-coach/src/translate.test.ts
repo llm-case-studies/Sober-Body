@@ -10,6 +10,8 @@ async function clearDB() {
 describe('translate util', () => {
   beforeEach(async () => {
     await clearDB()
+    vi.stubEnv('VITE_TRANSLATOR_KEY', 'x')
+    vi.stubEnv('VITE_TRANSLATOR_REGION', 'y')
     vi.stubGlobal('fetch', vi.fn(async () => ({
       json: async () => [{ translations: [{ text: 'hola' }] }]
     })) as unknown as typeof fetch)
