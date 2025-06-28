@@ -130,7 +130,7 @@ export default function PronunciationCoachUI() {
             )}
           </ul>
         )}
-        <div className="flex flex-col items-center space-y-3 self-center">
+        <div className="flex flex-col items-center space-y-4 self-center">
           <h2 className="text-2xl font-semibold text-center">
             {current.split(/\s+/).map((w, i) => (
               <span
