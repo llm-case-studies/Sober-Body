@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { join } from 'path'
 
 export default defineConfig({
+  // 👉  point two levels up to the repo root
   envDir: join(__dirname, '../../'),
   plugins: [react()],
   server: {
