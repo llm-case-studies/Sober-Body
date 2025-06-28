@@ -1,8 +1,12 @@
 import { cacheTranslation, getCachedTranslation } from './storage'
 
 export async function translateAPI(word: string, lang: string): Promise<string> {
-  const key = (import.meta as any).env.VITE_TRANSLATOR_KEY
-  const region = (import.meta as any).env.VITE_TRANSLATOR_REGION
+  const env = import.meta as any
+  const key = env.env.VITE_TRANSLATOR_KEY
+  const region = env.env.VITE_TRANSLATOR_REGION
+  if (!key || !region) {
+    throw new Error('Missing VITE_TRANSLATOR_KEY or VITE_TRANSLATOR_REGION')
+  }
   const url = `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=${lang}`
   const res = await fetch(url, {
     method: 'POST',
