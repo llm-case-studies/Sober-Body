@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { usePronunciationCoach } from "../features/games/PronunciationCoach";
+import Tooltip from "../../../../packages/pronunciation-coach/src/Tooltip";
 
 type Scope = "Word" | "Line" | "Sentence" | "Paragraph" | "Full";
 
@@ -36,6 +37,8 @@ export default function PronunciationCoachUI() {
   const [deck, setDeck] = useState<string[]>([]);
   const [index, setIndex] = useState(0);
   const [locale, setLocale] = useState<"en-US" | "pt-BR">("en-US");
+  const [lookupWord, setLookupWord] = useState<string | null>(null);
+  const [tipPos, setTipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
   useEffect(() => {
     setDeck(splitText(raw, scope));
@@ -102,7 +105,21 @@ export default function PronunciationCoachUI() {
           </ul>
         )}
         <div className="flex flex-col items-center space-y-3 self-center">
-          <h2 className="text-2xl font-semibold text-center">{current}</h2>
+          <h2 className="text-2xl font-semibold text-center">
+            {current.split(/\s+/).map((w, i) => (
+              <span
+                key={i}
+                onDoubleClick={e => {
+                  const rect = (e.target as HTMLElement).getBoundingClientRect()
+                  setTipPos({ x: rect.left, y: rect.bottom })
+                  setLookupWord(w)
+                }}
+                className="cursor-help mx-0.5"
+              >
+                {w + ' '}
+              </span>
+            ))}
+          </h2>
           <div className="flex gap-2 items-center">
             <button onClick={coach.play}>▶ Play</button>
             <button
@@ -139,6 +156,15 @@ export default function PronunciationCoachUI() {
         </div>
       </section>
       </div>
+      {lookupWord && (
+        <Tooltip
+          word={lookupWord}
+          lang={locale.split('-')[0]}
+          x={tipPos.x}
+          y={tipPos.y}
+          onClose={() => setLookupWord(null)}
+        />
+      )}
     </div>
   );
 }
