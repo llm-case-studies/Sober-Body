@@ -19,7 +19,7 @@ export async function saveDecks(arr: Deck[]): Promise<void> {
   await set(KEY, arr)
 }
 
-const modules = import.meta.glob<{ default: Deck }>('/public/presets/*.json', { eager: true })
+const modules = import.meta.glob<{ default: Deck }>('/src/presets/*.json', { eager: true })
 const presets: Deck[] = Object.values(modules).map(m => m.default)
 
 export async function seedPresetDecks() {
