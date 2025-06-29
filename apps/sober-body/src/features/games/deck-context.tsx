@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { Deck, loadDecks, saveDecks } from './deck-storage'
+import { loadDecks, saveDecks } from './deck-storage'
+import type { Deck } from './deck-storage'
 
 export interface DeckValue {
   decks: Deck[]
