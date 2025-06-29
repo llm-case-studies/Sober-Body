@@ -3,6 +3,7 @@ import { usePronunciationCoach } from "../features/games/PronunciationCoach";
 import useTranslation from "../../../../packages/pronunciation-coach/src/useTranslation";
 import { LANGS } from "../../../../packages/pronunciation-coach/src/langs";
 import { useSettings } from "../features/core/settings-context";
+import SituationsModal from "./SituationsModal";
 
 type Scope = "Word" | "Line" | "Sentence" | "Paragraph" | "Full";
 
@@ -40,6 +41,7 @@ export default function PronunciationCoachUI() {
   const [index, setIndex] = useState(0);
   const [lookupWord, setLookupWord] = useState<string | null>(null);
   const [showTranslation, setShowTranslation] = useState(true);
+  const [showSituations, setShowSituations] = useState(false);
   const { settings, setSettings } = useSettings();
 
   useEffect(() => {
@@ -120,6 +122,9 @@ export default function PronunciationCoachUI() {
               ))}
             </select>
           </label>
+          <button onClick={() => setShowSituations(true)} className="border px-2 py-1">
+            🎒 Browse Situations
+          </button>
           <button onClick={() => setIndex(0)} className="border px-2 py-1">
             Restart Drill
           </button>
@@ -205,6 +210,7 @@ export default function PronunciationCoachUI() {
             </div>
           )}
       </section>
+      <SituationsModal open={showSituations} onClose={() => setShowSituations(false)} />
     </div>
   );
 }
