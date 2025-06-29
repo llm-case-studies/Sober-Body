@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { usePronunciationCoach } from "../features/games/PronunciationCoach";
 import useTranslation from "../../../../packages/pronunciation-coach/src/useTranslation";
 import { LANGS } from "../../../../packages/pronunciation-coach/src/langs";
+import { getLookup } from "../../../../packages/pronunciation-coach/src/translateLookup";
 import { useSettings } from "../features/core/settings-context";
 
 type Scope = "Word" | "Line" | "Sentence" | "Paragraph" | "Full";
@@ -47,13 +48,6 @@ export default function PronunciationCoachUI() {
     setIndex(0);
   }, [raw, scope]);
 
-  function handleLookup(e: React.MouseEvent<HTMLElement>) {
-    const sel = window.getSelection()?.toString().trim();
-    const target = (e.target as HTMLElement).innerText;
-    const query = sel ? sel : target;
-    const cleaned = query.replace(/[^\p{L}\p{N}\s]+/gu, '');
-    setLookupWord(cleaned);
-  }
 
   const current = deck[index] ?? raw;
   const coach = usePronunciationCoach({ phrase: current, locale: settings.locale });
@@ -130,7 +124,7 @@ export default function PronunciationCoachUI() {
       </section>
       <section className="flex flex-col items-center">
         {deck.length > 0 && (
-          <ul className="list-disc pl-8 space-y-1 overflow-y-auto w-full max-w-md text-left">
+          <ul className="list-disc pl-8 pr-4 space-y-1 overflow-y-auto w-full max-w-md">
             {deck.map(
               (line, i) =>
                 line && (
@@ -151,20 +145,20 @@ export default function PronunciationCoachUI() {
         )}
         <div className="flex flex-col items-center">
           <h2
-            className="text-2xl text-center mb-4"
-            onDoubleClick={handleLookup}
+            className="text-2xl text-center mb-6"
+            onDoubleClick={e => setLookupWord(getLookup(e.nativeEvent))}
           >
             {current.split(/\s+/).map((w, i) => (
               <span
                 key={i}
-                onDoubleClick={handleLookup}
+                onDoubleClick={e => setLookupWord(getLookup(e.nativeEvent))}
                 className="cursor-help mx-0.5"
               >
                 {w + ' '}
               </span>
             ))}
           </h2>
-          <div className="flex gap-3 mb-4">
+          <div className="flex gap-4 mb-6">
             <button onClick={coach.play}>▶ Play</button>
             <button
               disabled={
@@ -180,13 +174,13 @@ export default function PronunciationCoachUI() {
             {coach.result !== null && <span>Score {coach.result}%</span>}
           </div>
           {translation && showTranslation && (
-            <div className="flex items-center gap-2 mb-4 rounded-md border px-3 py-1.5 bg-white/90 shadow">
-              <span className="text-sm">{translation}</span>
+            <div className="flex items-center gap-2 mb-6 rounded-md border px-4 py-2 bg-white/90 shadow max-w-xs text-sm">
+              <span>{translation}</span>
               <button onClick={speak}>🔊</button>
             </div>
           )}
           {deck.length > 0 && (
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <button
                 onClick={() => setIndex((i) => i - 1)}
                 disabled={index === 0}
