@@ -23,7 +23,7 @@ describe('PronunciationCoachUI translation', () => {
       </SettingsProvider>
     )
     fireEvent.change(screen.getByLabelText(/Translate to/i), { target: { value: 'fr' } })
-    fireEvent.doubleClick(screen.getByRole('heading'))
+    fireEvent.mouseUp(screen.getByRole('heading'))
     expect(await screen.findByText('bonjour')).toBeTruthy()
   })
 })
