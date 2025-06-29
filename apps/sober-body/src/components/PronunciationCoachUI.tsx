@@ -127,7 +127,7 @@ export default function PronunciationCoachUI() {
       </section>
       <section className="flex flex-col items-center">
         {deck.length > 0 && (
-          <ul className="list-disc pl-10 pr-6 space-y-1 overflow-y-auto w-full max-w-md">
+          <ul className="list-disc pl-10 pr-6 space-y-1 overflow-y-auto max-h-[70vh]">
             {deck.map(
               (line, i) =>
                 line && (
