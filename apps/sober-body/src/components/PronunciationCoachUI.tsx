@@ -57,8 +57,11 @@ export default function PronunciationCoachUI() {
     const voice = speechSynthesis
       .getVoices()
       .find(v => v.lang.startsWith(settings.nativeLang)) ?? null;
-    if (voice) utter.voice = voice;
+    utter.voice = voice || null;
     utter.lang = settings.nativeLang;
+    utter.rate = settings.slowSpeech ? 0.7 : 0.9;
+    utter.pitch = 1.0;
+    speechSynthesis.cancel();
     speechSynthesis.speak(utter);
   };
 
@@ -75,8 +78,9 @@ export default function PronunciationCoachUI() {
   }, []);
 
   return (
-    <div className="min-h-screen flex justify-center pt-8">
-      <div className="grid grid-cols-2 gap-20 w-full max-w-6xl p-8">
+    <div
+      className="mx-auto max-w-7xl grid grid-cols-2 gap-x-24 gap-y-12 px-8 pt-10"
+    >
       <section className="flex flex-col space-y-2">
         <textarea
           rows={14}
@@ -168,6 +172,14 @@ export default function PronunciationCoachUI() {
             </button>
             {coach.result !== null && <span>Score {coach.result}%</span>}
           </div>
+        <label className="text-xs mt-2 flex items-center gap-1">
+          <input
+            type="checkbox"
+            checked={settings.slowSpeech}
+            onChange={e => setSettings(s => ({ ...s, slowSpeech: e.target.checked }))}
+          />
+          Slow speak
+        </label>
         {translation && showTranslation && (
             <div className="flex items-center gap-2 mb-8 rounded-md border px-4 py-2 bg-white/90 shadow max-w-xs text-sm">
               <span>{translation}</span>
@@ -193,7 +205,6 @@ export default function PronunciationCoachUI() {
             </div>
           )}
       </section>
-      </div>
     </div>
   );
 }

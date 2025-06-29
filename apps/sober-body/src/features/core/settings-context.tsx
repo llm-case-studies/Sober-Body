@@ -11,7 +11,8 @@ const DEFAULTS: Required<Settings> = {
   sex: 'm',
   beta: DEFAULT_BETA,
   nativeLang: 'en',
-  locale: 'en'
+  locale: 'en',
+  slowSpeech: false
 }
 const SettingsContext = createContext<SettingsValue | undefined>(undefined)
 export function SettingsProvider({ children }: { children: React.ReactNode }) {

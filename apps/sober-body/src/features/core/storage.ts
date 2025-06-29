@@ -17,6 +17,7 @@ export interface Settings {
   beta?: number
   nativeLang?: string
   locale?: string
+  slowSpeech?: boolean
 }
 
 export async function loadSettings(): Promise<Settings | undefined> {

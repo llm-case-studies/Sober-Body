@@ -22,9 +22,31 @@ describe('PronunciationCoachUI translation', () => {
         <PronunciationCoachUI />
       </SettingsProvider>
     )
-    fireEvent.change(screen.getByLabelText(/Translate to/i), { target: { value: 'fr' } })
-    fireEvent.mouseUp(screen.getByRole('heading'))
+    const langSelect = screen.getAllByLabelText(/Translate to/i)[0]
+    fireEvent.change(langSelect, { target: { value: 'fr' } })
+    const heading = screen.getAllByRole('heading')[0]
+    fireEvent.mouseUp(heading)
     expect(await screen.findByText('bonjour')).toBeTruthy()
+  })
+
+  it('speaks slower when slow mode enabled', async () => {
+    const getSelection = vi.fn(() => ({ toString: () => 'She sells seashells' }))
+    Object.defineProperty(window, 'getSelection', { value: getSelection })
+    render(
+      <SettingsProvider>
+        <PronunciationCoachUI />
+      </SettingsProvider>
+    )
+    const langSelect = screen.getAllByLabelText(/Translate to/i)[0]
+    fireEvent.change(langSelect, { target: { value: 'fr' } })
+    fireEvent.mouseUp(screen.getAllByRole('heading')[0])
+    await screen.findAllByText('bonjour')
+    fireEvent.click(screen.getAllByLabelText(/Slow speak/i)[0])
+    await Promise.resolve()
+    fireEvent.click(screen.getAllByRole('button', { name: '🔊' })[0])
+    const speakMock = speechSynthesis.speak as unknown as vi.Mock
+    const utter = speakMock.mock.calls[speakMock.mock.calls.length - 1][0] as SpeechSynthesisUtterance
+    expect(utter.rate).toBe(0.7)
   })
 })
 
