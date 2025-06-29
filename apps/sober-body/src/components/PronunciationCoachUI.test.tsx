@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import 'fake-indexeddb/auto'
 import PronunciationCoachUI from './PronunciationCoachUI'
 import { SettingsProvider } from '../features/core/settings-context'
+import { DeckProvider } from '../features/games/deck-context'
 import { installSpeechMocks } from '../../test/utils/mockSpeech'
 
 vi.mock('../../../../packages/pronunciation-coach/src/useTranslation', () => ({
@@ -19,7 +20,9 @@ describe('PronunciationCoachUI translation', () => {
     Object.defineProperty(window, 'getSelection', { value: getSelection })
     render(
       <SettingsProvider>
-        <PronunciationCoachUI />
+        <DeckProvider>
+          <PronunciationCoachUI />
+        </DeckProvider>
       </SettingsProvider>
     )
     const langSelect = screen.getAllByLabelText(/Translate to/i)[0]
@@ -34,7 +37,9 @@ describe('PronunciationCoachUI translation', () => {
     Object.defineProperty(window, 'getSelection', { value: getSelection })
     render(
       <SettingsProvider>
-        <PronunciationCoachUI />
+        <DeckProvider>
+          <PronunciationCoachUI />
+        </DeckProvider>
       </SettingsProvider>
     )
     const langSelect = screen.getAllByLabelText(/Translate to/i)[0]
