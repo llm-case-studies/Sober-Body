@@ -81,7 +81,7 @@ export default function PronunciationCoachUI() {
 
   return (
     <div
-      className="mx-auto max-w-7xl grid grid-cols-2 gap-x-24 gap-y-12 px-8 pt-10"
+      className="grid grid-cols-2 gap-x-28 gap-y-12 max-w-7xl mx-auto px-10 pt-10"
     >
       <section className="flex flex-col space-y-2">
         <textarea
@@ -122,7 +122,10 @@ export default function PronunciationCoachUI() {
               ))}
             </select>
           </label>
-          <button onClick={() => setShowSituations(true)} className="border px-2 py-1">
+          <button
+            className="border px-2 py-1 ml-2"
+            onClick={() => setShowSituations(true)}
+          >
             🎒 Browse Situations
           </button>
           <button onClick={() => setIndex(0)} className="border px-2 py-1">
@@ -132,7 +135,7 @@ export default function PronunciationCoachUI() {
       </section>
       <section className="flex flex-col items-center">
         {deck.length > 0 && (
-          <ul className="list-disc pl-10 pr-6 space-y-1 overflow-y-auto max-h-[70vh]">
+          <ul className="list-disc pl-12 pr-8 space-y-1 overflow-y-auto max-h-[70vh]">
             {deck.map(
               (line, i) =>
                 line && (

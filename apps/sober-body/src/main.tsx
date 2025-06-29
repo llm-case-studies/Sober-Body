@@ -7,13 +7,16 @@ import { ModalProvider } from './components/ModalContext'
 import { DeckProvider } from './features/games/deck-context'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <ModalProvider>
-        <DeckProvider>
-          <App />
-        </DeckProvider>
-      </ModalProvider>
-    </BrowserRouter>
-  </StrictMode>,
+  <>
+    <StrictMode>
+      <BrowserRouter>
+        <ModalProvider>
+          <DeckProvider>
+            <App />
+          </DeckProvider>
+        </ModalProvider>
+      </BrowserRouter>
+    </StrictMode>
+    <div id="portal-root" />
+  </>,
 )
