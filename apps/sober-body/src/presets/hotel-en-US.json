@@ -1,1 +1,1 @@
-{"id":"preset-hotel-en-US","title":"Hotel Front Desk (EN-US)","lang":"en-US","preset":true,"lines":["I have a reservation under...","Is breakfast included?","What time is check-out?","Could I get the Wi-Fi password?","Do you have room service?"]}
+{"id":"preset-hotel-en-US","title":"Hotel Front Desk (EN-US)","lang":"en-US","lines":["I have a reservation under...","Is breakfast included?","What time is check-out?","Could I get the Wi-Fi password?","Do you have room service?"],"tags":["official","cat:hotel"]}

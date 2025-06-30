@@ -22,9 +22,6 @@ pnpm run dev
 # open http://localhost:5174
 ```
 
-You can practice quickly via 🎒 Situations.
-
-🚀 Try it: Manage Decks → Browse Situations → Groceries (PT-BR)
 
 Create a `.env.local` file at the repository root with your translation API
 credentials. All workspaces load environment variables from that shared file:
@@ -64,6 +61,8 @@ License information will be added in a future release. For questions, open an is
 
 The Coach now includes a simple Deck Manager for creating, editing and sharing custom phrase decks.
 ![Deck Manager screenshot](docs/images/deck-manager.png)
+
+Decks are organised by `cat:<topic>` tags. Filter chips appear automatically when at least one deck uses a category.
 
 ### Authoring decks
 

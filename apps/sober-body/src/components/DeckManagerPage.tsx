@@ -7,12 +7,14 @@ import {
   exportDeck,
   importDeck,
 } from '../features/games/deck-storage'
+import { getCategories } from '../features/games/get-categories'
 import type { Deck } from '../features/games/deck-types'
 import DeckModal from './DeckModal'
 import PasteDeckModal from './PasteDeckModal'
 
 export default function DeckManagerPage() {
   const [decks, setDecks] = useState<Deck[]>([])
+  const [selectedCat, setSelectedCat] = useState<string | null>(null)
   const [edit, setEdit] = useState<Deck | null>(null)
   const [paste, setPaste] = useState(false)
   const navigate = useNavigate()
@@ -30,6 +32,8 @@ export default function DeckManagerPage() {
     const a = Object.assign(document.createElement('a'), { href: url, download: `${slug}-${d.lang}.json` })
     a.click(); URL.revokeObjectURL(url)
   }
+  const cats = getCategories(decks)
+  const visible = selectedCat ? decks.filter(d => d.tags?.includes(selectedCat)) : decks
   return (
     <div className="p-4 max-w-lg mx-auto">
       <h2 className="text-xl mb-4 flex justify-between">
@@ -42,8 +46,25 @@ export default function DeckManagerPage() {
           <button className="border px-2" onClick={() => setPaste(true)}>Import ⌘V</button>
         </span>
       </h2>
+      <div className="flex gap-2 overflow-x-auto mb-4">
+        <button
+          className={`px-2 py-1 rounded-full text-xs ${selectedCat===null?'bg-sky-600 text-white':'bg-gray-200'}`}
+          onClick={() => setSelectedCat(null)}
+        >
+          All
+        </button>
+        {cats.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCat(c => c===cat?null:cat)}
+            className={`px-2 py-1 rounded-full text-xs ${selectedCat===cat?'bg-sky-600 text-white':'bg-gray-200'}`}
+          >
+            {cat.slice(4)}
+          </button>
+        ))}
+      </div>
       <ul className="space-y-2">
-        {decks.map(deck => (
+        {visible.map(deck => (
           <li
             key={deck.id}
             className="flex items-center gap-3 border rounded px-3 py-2 hover:bg-sky-50"
@@ -96,7 +117,7 @@ export default function DeckManagerPage() {
           </li>
         ))}
       </ul>
-      {edit && <DeckModal deck={edit} onSave={async d=>{await saveDeck(d);setEdit(null);refresh()}} onClose={()=>setEdit(null)} />}
+      {edit && <DeckModal deck={edit} allCats={cats} onSave={async d=>{await saveDeck(d);setEdit(null);refresh()}} onClose={()=>setEdit(null)} />}
       {paste && <PasteDeckModal onSave={async d=>{await saveDeck(d);setPaste(false);refresh()}} onClose={()=>setPaste(false)} />}
     </div>
   )

@@ -2,19 +2,25 @@ import { useState } from "react";
 import { LANGS } from "../../../../packages/pronunciation-coach/src/langs";
 import type { Deck } from "../features/games/deck-types";
 import TagsInput from "./TagsInput";
+import CategoryInput from "./CategoryInput";
 
 export default function DeckModal({
   deck,
   onSave,
   onClose,
+  allCats
 }: {
   deck: Deck;
   onSave: (d: Deck) => void;
   onClose: () => void;
+  allCats: string[];
 }) {
   const [d, setD] = useState(deck);
+  const [categories, setCategories] = useState(
+    (deck.tags ?? []).filter(t => t.startsWith('cat:'))
+  );
   const [tags, setTags] = useState(
-    (deck.tags ?? []).map((t) => (t.startsWith("topic:") ? t.slice(6) : t)),
+    (deck.tags ?? []).filter(t => !t.startsWith('cat:'))
   );
   const ro = !!deck.sig;
   const upd = (f: Partial<Deck>) => setD((o) => ({ ...o, ...f }));
@@ -43,7 +49,16 @@ export default function DeckModal({
           <input
             className="border w-full p-1"
             disabled
-            value={tags.join(" ")}
+            value={categories.join(' ')}
+          />
+        ) : (
+          <CategoryInput value={categories} setValue={setCategories} options={allCats} />
+        )}
+        {ro ? (
+          <input
+            className="border w-full p-1"
+            disabled
+            value={tags.join(' ')}
           />
         ) : (
           <TagsInput tags={tags} setTags={setTags} />
@@ -63,9 +78,7 @@ export default function DeckModal({
               onClick={() =>
                 onSave({
                   ...d,
-                  tags: tags.map((t) =>
-                    t.startsWith("topic:") ? t : `topic:${t}`,
-                  ),
+                  tags: [...categories, ...tags],
                 })
               }
             >
