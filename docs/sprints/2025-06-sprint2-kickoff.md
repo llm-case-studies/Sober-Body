@@ -113,3 +113,5 @@ While the **Tongue‑Twister modal** lives inside *Sober‑Body*, the teacher‑
 * Textarea uses `min-height: 80vh` to give more room for multi-line lessons.
 * `<LineNavigator>` renders the parsed line list and calls `setIndex` when a line is clicked.
 * Play/Record controls sit in the right-hand drill pane next to the active phrase.
+
+![Deck Manager screenshot](../images/deck-manager.png)

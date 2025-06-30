@@ -2,6 +2,7 @@ import { render, fireEvent, screen } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import 'fake-indexeddb/auto'
 import PronunciationCoachUI from './PronunciationCoachUI'
+import { MemoryRouter } from 'react-router-dom'
 import { SettingsProvider } from '../features/core/settings-context'
 import { DeckProvider } from '../features/games/deck-context'
 import { installSpeechMocks } from '../../test/utils/mockSpeech'
@@ -19,11 +20,13 @@ describe('PronunciationCoachUI translation', () => {
     const getSelection = vi.fn(() => ({ toString: () => 'She sells seashells' }))
     Object.defineProperty(window, 'getSelection', { value: getSelection })
     render(
-      <SettingsProvider>
-        <DeckProvider>
-          <PronunciationCoachUI />
-        </DeckProvider>
-      </SettingsProvider>
+      <MemoryRouter>
+        <SettingsProvider>
+          <DeckProvider>
+            <PronunciationCoachUI />
+          </DeckProvider>
+        </SettingsProvider>
+      </MemoryRouter>
     )
     const langSelect = screen.getAllByLabelText(/Translate to/i)[0]
     fireEvent.change(langSelect, { target: { value: 'fr' } })
@@ -36,11 +39,13 @@ describe('PronunciationCoachUI translation', () => {
     const getSelection = vi.fn(() => ({ toString: () => 'She sells seashells' }))
     Object.defineProperty(window, 'getSelection', { value: getSelection })
     render(
-      <SettingsProvider>
-        <DeckProvider>
-          <PronunciationCoachUI />
-        </DeckProvider>
-      </SettingsProvider>
+      <MemoryRouter>
+        <SettingsProvider>
+          <DeckProvider>
+            <PronunciationCoachUI />
+          </DeckProvider>
+        </SettingsProvider>
+      </MemoryRouter>
     )
     const langSelect = screen.getAllByLabelText(/Translate to/i)[0]
     fireEvent.change(langSelect, { target: { value: 'fr' } })

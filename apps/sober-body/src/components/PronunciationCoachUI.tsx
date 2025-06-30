@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { usePronunciationCoach } from "../features/games/PronunciationCoach";
 import useTranslation from "../../../../packages/pronunciation-coach/src/useTranslation";
 import { LANGS } from "../../../../packages/pronunciation-coach/src/langs";
@@ -43,6 +44,7 @@ export default function PronunciationCoachUI() {
   const [showTranslation, setShowTranslation] = useState(true);
   const [showSituations, setShowSituations] = useState(false);
   const { settings, setSettings } = useSettings();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setDeck(splitText(raw, scope));
@@ -127,6 +129,12 @@ export default function PronunciationCoachUI() {
             onClick={() => setShowSituations(true)}
           >
             🎒 Browse Situations
+          </button>
+          <button
+            onClick={() => navigate('/decks')}
+            className="border px-2 py-1"
+          >
+            📚 Manage Decks
           </button>
           <button onClick={() => setIndex(0)} className="border px-2 py-1">
             Restart Drill
