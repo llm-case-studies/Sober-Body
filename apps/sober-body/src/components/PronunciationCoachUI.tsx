@@ -67,7 +67,8 @@ export default function PronunciationCoachUI() {
 
   useEffect(() => {
     setIndex(0);
-  }, [currentDeck.id]);
+    setSettings(s => ({ ...s, locale: currentDeck.lang }))
+  }, [currentDeck.id, currentDeck.lang, setSettings]);
 
 
   const current = lines[index] ?? raw;
