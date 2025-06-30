@@ -53,7 +53,7 @@ describe('PronunciationCoachUI translation', () => {
     await screen.findAllByText('bonjour')
     fireEvent.click(screen.getAllByLabelText(/Slow speak/i)[0])
     await Promise.resolve()
-    fireEvent.click(screen.getAllByRole('button', { name: '🔊' })[0])
+    fireEvent.click(screen.getAllByRole('button', { name: /Hear translation/i })[0])
     const speakMock = speechSynthesis.speak as unknown as vi.Mock
     const utter = speakMock.mock.calls[speakMock.mock.calls.length - 1][0] as SpeechSynthesisUtterance
     expect(utter.rate).toBe(0.7)
