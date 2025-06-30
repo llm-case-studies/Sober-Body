@@ -53,6 +53,32 @@ export async function importDeck(json: string): Promise<Deck> {
   return deck
 }
 
+export async function importDeckFiles(
+  files: FileList | File[],
+  saver: (d: Deck) => Promise<void> = saveDeck
+): Promise<{ imported: number; fails: string[] }> {
+  const fails: string[] = []
+  let imported = 0
+  for (const file of Array.from(files)) {
+    if (!file.name.endsWith('.json')) continue
+    const text = await file.text()
+    try {
+      const deck = migrateDeck(JSON.parse(text))
+      if (!deck.id || !deck.lines) {
+        fails.push(`${file.name}: missing id or lines`)
+        continue
+      }
+      if (!deck.tags?.some((t: string) => t.startsWith('cat:')))
+        deck.tags = [...(deck.tags ?? []), 'cat:uncategorised']
+      await saver(deck)
+      imported++
+    } catch {
+      fails.push(`${file.name}: invalid JSON`)
+    }
+  }
+  return { imported, fails }
+}
+
 const modules = import.meta.glob<{ default: Deck }>('/src/presets/*.json', { eager: true })
 const presets: Deck[] = Object.values(modules).map(m => migrateDeck(m.default))
 

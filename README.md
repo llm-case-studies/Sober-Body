@@ -67,3 +67,4 @@ Decks are organised by `cat:<topic>` tags. Filter chips appear automatically whe
 ### Authoring decks
 
 Paste a text list via **Import ⌘V** and each line becomes a phrase.
+You can bulk-import a folder of JSON decks via **Import folder** (Chrome/Edge/Safari only).
