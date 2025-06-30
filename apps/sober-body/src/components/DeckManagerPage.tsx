@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useDecks } from '../features/games/deck-context'
 import {
   loadDecks,
   saveDeck,
@@ -17,7 +16,6 @@ export default function DeckManagerPage() {
   const [edit, setEdit] = useState<Deck | null>(null)
   const [paste, setPaste] = useState(false)
   const navigate = useNavigate()
-  const { setActiveDeck } = useDecks()
   const refresh = async () => {
     const arr = await loadDecks()
     arr.sort((a,b)=>(b.updated??0)-(a.updated??0))

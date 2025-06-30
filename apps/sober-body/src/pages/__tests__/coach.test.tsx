@@ -37,4 +37,23 @@ describe('CoachPage routing', () => {
       expect(screen.getByTestId('active').textContent).toBe('abc')
     })
   })
+
+  it('loads deck from URL once decks are ready', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    render(
+      <MemoryRouter initialEntries={['/coach?deck=abc']}>
+        <SettingsProvider>
+          <DeckProvider>
+            <Routes>
+              <Route path="/coach" element={<><CoachPage /><ActiveDisplay /></>} />
+            </Routes>
+          </DeckProvider>
+        </SettingsProvider>
+      </MemoryRouter>
+    )
+    const nodes = await screen.findAllByTestId('active')
+    expect(nodes[0].textContent).toBe('abc')
+    expect(warn).not.toHaveBeenCalled()
+    warn.mockRestore()
+  })
 })
