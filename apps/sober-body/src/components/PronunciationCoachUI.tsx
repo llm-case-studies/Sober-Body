@@ -4,7 +4,17 @@ import { usePronunciationCoach } from "../features/games/PronunciationCoach";
 import useTranslation from "../../../../packages/pronunciation-coach/src/useTranslation";
 import { LANGS } from "../../../../packages/pronunciation-coach/src/langs";
 import { useSettings } from "../features/core/settings-context";
+import { useDecks } from "../features/games/deck-context";
+import type { Deck } from "../features/games/deck-types";
 import SituationsModal from "./SituationsModal";
+
+const defaultDeck: Deck = {
+  id: 'example',
+  title: 'Example Lesson',
+  lang: 'en-US',
+  lines: ['She sells seashells'],
+  tags: [],
+};
 
 type Scope = "Word" | "Line" | "Sentence" | "Paragraph" | "Full";
 
@@ -36,9 +46,12 @@ function splitText(raw: string, scope: Scope): string[] {
 }
 
 export default function PronunciationCoachUI() {
-  const [raw, setRaw] = useState("She sells seashells");
-  const [scope, setScope] = useState<Scope>("Line");
-  const [deck, setDeck] = useState<string[]>([]);
+  const { decks, activeDeck } = useDecks();
+  const currentDeck = decks.find(d => d.id === activeDeck) ?? defaultDeck;
+
+  const [raw, setRaw] = useState(currentDeck.lines.join('\n'));
+  const [scope, setScope] = useState<Scope>('Line');
+  const [lines, setLines] = useState<string[]>([]);
   const [index, setIndex] = useState(0);
   const [lookupWord, setLookupWord] = useState<string | null>(null);
   const [showTranslation, setShowTranslation] = useState(true);
@@ -47,12 +60,19 @@ export default function PronunciationCoachUI() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setDeck(splitText(raw, scope));
-    setIndex(0);
+    setRaw(currentDeck.lines.join('\n'));
+  }, [currentDeck]);
+
+  useEffect(() => {
+    setLines(splitText(raw, scope));
   }, [raw, scope]);
 
+  useEffect(() => {
+    setIndex(0);
+  }, [currentDeck.id]);
 
-  const current = deck[index] ?? raw;
+
+  const current = lines[index] ?? raw;
   const coach = usePronunciationCoach({ phrase: current, locale: settings.locale });
   const translation = useTranslation(lookupWord ?? '', settings.nativeLang);
   const speak = () => {
@@ -142,9 +162,9 @@ export default function PronunciationCoachUI() {
         </div>
       </section>
       <section className="flex flex-col items-center">
-        {deck.length > 0 && (
+        {lines.length > 0 && (
           <ul className="list-disc pl-12 pr-8 space-y-1 overflow-y-auto max-h-[70vh]">
-            {deck.map(
+            {lines.map(
               (line, i) =>
                 line && (
                   <li
@@ -219,7 +239,7 @@ export default function PronunciationCoachUI() {
               </button>
             </div>
           )}
-        {deck.length > 0 && (
+        {lines.length > 0 && (
             <div className="flex gap-4">
               <button
                 onClick={() => setIndex((i) => i - 1)}
@@ -230,7 +250,7 @@ export default function PronunciationCoachUI() {
               </button>
               <button
                 onClick={() => setIndex((i) => i + 1)}
-                disabled={index >= deck.length - 1}
+                disabled={index >= lines.length - 1}
                 className="border px-2 py-1"
               >
                 Next
@@ -242,3 +262,4 @@ export default function PronunciationCoachUI() {
     </div>
   );
 }
+
