@@ -51,10 +51,7 @@ export default function DeckManagerPage() {
             className="flex items-center gap-3 border rounded px-3 py-2 hover:bg-sky-50"
           >
             <button
-              onClick={() => {
-                setActiveDeck(deck.id)
-                navigate('/coach')
-              }}
+              onClick={() => navigate(`/coach?deck=${deck.id}`)}
               className="text-sky-600 text-lg"
               title="Start drill"
               aria-label="Start drill"
