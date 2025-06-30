@@ -24,6 +24,8 @@ pnpm run dev
 
 You can practice quickly via 🎒 Situations.
 
+🚀 Try it: Manage Decks → Browse Situations → Groceries (PT-BR)
+
 Create a `.env.local` file at the repository root with your translation API
 credentials. All workspaces load environment variables from that shared file:
 
