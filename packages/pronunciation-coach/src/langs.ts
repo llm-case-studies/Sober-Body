@@ -1,8 +1,8 @@
 export const LANGS = [
-  { code: 'en', label: 'English' },
+  { code: 'en-US', label: 'English' },
   { code: 'pt-BR', label: 'Português' },
-  { code: 'es', label: 'Español' },
-  { code: 'fr', label: 'Français' },
-  { code: 'de', label: 'Deutsch' }
+  { code: 'es-ES', label: 'Español' },
+  { code: 'fr-FR', label: 'Français' },
+  { code: 'de-DE', label: 'Deutsch' }
 ] as const;
 export type LangCode = typeof LANGS[number]['code'];

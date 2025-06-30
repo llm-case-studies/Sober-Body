@@ -77,8 +77,8 @@ describe('PronunciationCoachUI translation', () => {
 describe('PronunciationCoachUI deck switching', () => {
   it('resets index when active deck changes', async () => {
     mockDecks.splice(0, mockDecks.length,
-      { id: 'a', title: 'A', lang: 'en', lines: ['a one', 'a two'], tags: [] },
-      { id: 'b', title: 'B', lang: 'en', lines: ['b one', 'b two'], tags: [] },
+      { id: 'a', title: 'A', lang: 'pt-BR', lines: ['a one', 'a two'], tags: [] },
+      { id: 'b', title: 'B', lang: 'fr-FR', lines: ['b one', 'b two'], tags: [] },
     )
 
     function Wrapper() {
@@ -108,6 +108,8 @@ describe('PronunciationCoachUI deck switching', () => {
     await screen.findAllByText('b one')
     const prev = screen.getByRole('button', { name: 'Prev' }) as HTMLButtonElement
     expect(prev.disabled).toBe(true)
+    const dropdown = screen.getAllByRole('combobox')[1] as HTMLSelectElement
+    expect(dropdown.value).toBe('fr-FR')
   })
 })
 

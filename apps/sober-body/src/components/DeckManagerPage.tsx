@@ -9,6 +9,7 @@ import {
   importDeckFiles,
 } from '../features/games/deck-storage'
 import { getCategories } from '../features/games/get-categories'
+import { getLanguages } from '../features/games/get-languages'
 import type { Deck } from '../features/games/deck-types'
 import DeckModal from './DeckModal'
 import PasteDeckModal from './PasteDeckModal'
@@ -16,6 +17,7 @@ import PasteDeckModal from './PasteDeckModal'
 export default function DeckManagerPage() {
   const [decks, setDecks] = useState<Deck[]>([])
   const [selectedCat, setSelectedCat] = useState<string | null>(null)
+  const [selectedLang, setSelectedLang] = useState<string | null>(null)
   const [edit, setEdit] = useState<Deck | null>(null)
   const [paste, setPaste] = useState(false)
   const navigate = useNavigate()
@@ -40,7 +42,11 @@ export default function DeckManagerPage() {
     a.click(); URL.revokeObjectURL(url)
   }
   const cats = getCategories(decks)
-  const visible = selectedCat ? decks.filter(d => d.tags?.includes(selectedCat)) : decks
+  const langs = getLanguages(decks)
+  const visible = decks.filter(d =>
+    (!selectedCat || d.tags?.includes(selectedCat)) &&
+    (!selectedLang || d.lang === selectedLang)
+  )
   return (
     <div className="p-4 max-w-lg mx-auto">
       <h2 className="text-xl mb-4 flex justify-between">
@@ -70,6 +76,23 @@ export default function DeckManagerPage() {
             className={`px-2 py-1 rounded-full text-xs ${selectedCat===cat?'bg-sky-600 text-white':'bg-gray-200'}`}
           >
             {cat.slice(4)}
+          </button>
+        ))}
+      </div>
+      <div className="flex gap-2 overflow-x-auto mb-4">
+        <button
+          className={`px-2 py-1 rounded-full text-xs ${selectedLang===null?'bg-sky-600 text-white':'bg-gray-200'}`}
+          onClick={() => setSelectedLang(null)}
+        >
+          All
+        </button>
+        {langs.map(l => (
+          <button
+            key={l}
+            onClick={() => setSelectedLang(c => c===l?null:l)}
+            className={`px-2 py-1 rounded-full text-xs ${selectedLang===l?'bg-sky-600 text-white':'bg-gray-200'}`}
+          >
+            {l}
           </button>
         ))}
       </div>
