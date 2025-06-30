@@ -37,6 +37,7 @@ Legend: **↑ = next up** · ✅ done · ⬜ open
 * ✅ **feat(games):** improve Pronunciation UI (record/next flow, verdicts)
 * ⬜ **feat(games):** Portuguese tongue-twister deck & lang switcher
 * ✅ **feat(games):** Deck Manager CRUD + import/export
+* ✅ **feat(import):** directory picker for bulk JSON deck import
 
 ## Docs & Governance
 

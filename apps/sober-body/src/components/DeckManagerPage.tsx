@@ -6,6 +6,7 @@ import {
   deleteDeck,
   exportDeck,
   importDeck,
+  importDeckFiles,
 } from '../features/games/deck-storage'
 import { getCategories } from '../features/games/get-categories'
 import type { Deck } from '../features/games/deck-types'
@@ -26,6 +27,12 @@ export default function DeckManagerPage() {
   useEffect(() => { refresh() }, [])
   const startNew = () => setEdit({ id: crypto.randomUUID(), title: '', lang: 'en-US', lines: [], tags: [] })
   const handleFile = async (f: File) => { await importDeck(await f.text()); refresh() }
+  const handleFolder = async (list: FileList) => {
+    const { imported, fails } = await importDeckFiles(list)
+    refresh()
+    alert(`Imported ${imported} decks${fails.length ? `, ${fails.length} skipped` : ''}`)
+    if (fails.length) alert(fails.join('\n'))
+  }
   const download = (d: Deck) => {
     const slug = d.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
     const url = URL.createObjectURL(new Blob([exportDeck(d)], { type: 'application/json' }))
@@ -42,6 +49,9 @@ export default function DeckManagerPage() {
           <button className="border px-2" onClick={startNew}>+ New Deck</button>
           <label className="border px-2 cursor-pointer">
             Import JSON<input type="file" accept="application/json" className="hidden" onChange={e=>e.target.files&&handleFile(e.target.files[0])}/>
+          </label>
+          <label className="border px-2 cursor-pointer">
+            Import folder<input type="file" accept=".json" webkitdirectory multiple className="hidden" onChange={e=>e.target.files&&handleFolder(e.target.files)}/>
           </label>
           <button className="border px-2" onClick={() => setPaste(true)}>Import ⌘V</button>
         </span>
