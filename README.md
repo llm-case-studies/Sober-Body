@@ -62,3 +62,7 @@ License information will be added in a future release. For questions, open an is
 
 The Coach now includes a simple Deck Manager for creating, editing and sharing custom phrase decks.
 ![Deck Manager screenshot](docs/images/deck-manager.png)
+
+### Authoring decks
+
+Paste a text list via **Import ⌘V** and each line becomes a phrase.
