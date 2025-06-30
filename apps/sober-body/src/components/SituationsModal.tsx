@@ -5,7 +5,7 @@ import { useDecks } from '../features/games/deck-context'
 export default function SituationsModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { decks, setActiveDeck } = useDecks()
   if (!open) return null
-  const presets = decks.filter(d => d.preset)
+  const presets = decks.filter(d => d.tags?.includes('official'))
   return createPortal(
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white w-[28rem] max-h-[80vh] overflow-y-auto rounded-xl p-6 shadow-xl">
