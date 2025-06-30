@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react'
 import { loadDecks, saveDeck, deleteDeck, exportDeck, importDeck } from '../features/games/deck-storage'
 import type { Deck } from '../features/games/deck-types'
 import DeckModal from './DeckModal'
+import PasteDeckModal from './PasteDeckModal'
 
 export default function DeckManagerPage() {
   const [decks, setDecks] = useState<Deck[]>([])
   const [edit, setEdit] = useState<Deck | null>(null)
+  const [paste, setPaste] = useState(false)
   const refresh = async () => {
     const arr = await loadDecks()
     arr.sort((a,b)=>(b.updated??0)-(a.updated??0))
@@ -29,6 +31,7 @@ export default function DeckManagerPage() {
           <label className="border px-2 cursor-pointer">
             Import JSON<input type="file" accept="application/json" className="hidden" onChange={e=>e.target.files&&handleFile(e.target.files[0])}/>
           </label>
+          <button className="border px-2" onClick={() => setPaste(true)}>Import ⌘V</button>
         </span>
       </h2>
       <ul className="space-y-2">
@@ -44,6 +47,7 @@ export default function DeckManagerPage() {
         ))}
       </ul>
       {edit && <DeckModal deck={edit} onSave={async d=>{await saveDeck(d);setEdit(null);refresh()}} onClose={()=>setEdit(null)} />}
+      {paste && <PasteDeckModal onSave={async d=>{await saveDeck(d);setPaste(false);refresh()}} onClose={()=>setPaste(false)} />}
     </div>
   )
 }
