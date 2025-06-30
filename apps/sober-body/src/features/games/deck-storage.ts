@@ -22,6 +22,32 @@ export async function saveDecks(arr: Deck[]): Promise<void> {
   await set(KEY, arr)
 }
 
+export async function saveDeck(deck: Deck): Promise<void> {
+  const arr = await loadDecks()
+  const idx = arr.findIndex(d => d.id === deck.id)
+  const entry = { ...deck, updated: Date.now() }
+  if (idx >= 0) arr[idx] = entry
+  else arr.push(entry)
+  await saveDecks(arr)
+}
+
+export async function deleteDeck(id: string): Promise<void> {
+  const arr = await loadDecks()
+  await saveDecks(arr.filter(d => d.id !== id))
+}
+
+export function exportDeck(deck: Deck): string {
+  return JSON.stringify(deck)
+}
+
+export async function importDeck(json: string): Promise<Deck> {
+  const deck = migrateDeck(JSON.parse(json))
+  const decks = await loadDecks()
+  if (decks.some(d => d.id === deck.id)) deck.id = crypto.randomUUID()
+  await saveDeck(deck)
+  return deck
+}
+
 const modules = import.meta.glob<{ default: Deck }>('/src/presets/*.json', { eager: true })
 const presets: Deck[] = Object.values(modules).map(m => migrateDeck(m.default))
 

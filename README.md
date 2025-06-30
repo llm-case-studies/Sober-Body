@@ -57,3 +57,8 @@ See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for commit rules, PR workflow a
 ## License & contact
 
 License information will be added in a future release. For questions, open an issue or refer to maintainer details in the white papers.
+
+## Deck Manager
+
+The Coach now includes a simple Deck Manager for creating, editing and sharing custom phrase decks.
+![Deck Manager screenshot](docs/images/deck-manager.png)
