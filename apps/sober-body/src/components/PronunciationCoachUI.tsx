@@ -174,7 +174,14 @@ export default function PronunciationCoachUI() {
           {current}
         </h2>
         <div className="flex gap-4 mb-8">
-            <button onClick={coach.play}>▶ Play</button>
+            <button
+              onClick={coach.play}
+              title="Play sample"
+              aria-label="Play sample"
+              className="px-3 py-1 text-lg"
+            >
+              ▶ Play
+            </button>
             <button
               disabled={
                 !(
@@ -183,6 +190,9 @@ export default function PronunciationCoachUI() {
                 )
               }
               onClick={coach.recording ? coach.stop : coach.start}
+              title={coach.recording ? "Stop recording" : "Record your voice"}
+              aria-label={coach.recording ? "Stop recording" : "Record your voice"}
+              className="px-3 py-1 text-lg"
             >
               {coach.recording ? "■ Stop" : "⏺ Record"}
             </button>
@@ -199,7 +209,14 @@ export default function PronunciationCoachUI() {
         {translation && showTranslation && (
             <div className="flex items-center gap-2 mb-8 rounded-md border px-4 py-2 bg-white/90 shadow max-w-xs text-sm">
               <span>{translation}</span>
-              <button onClick={speak}>🔊</button>
+              <button
+                onClick={speak}
+                title="Hear translation"
+                aria-label="Hear translation"
+                className="ml-2 text-lg"
+              >
+                🔊
+              </button>
             </div>
           )}
         {deck.length > 0 && (
