@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react'
-import { loadDecks, saveDeck, deleteDeck, exportDeck, importDeck } from '../features/games/deck-storage'
+import { useNavigate } from 'react-router-dom'
+import { useDecks } from '../features/games/deck-context'
+import {
+  loadDecks,
+  saveDeck,
+  deleteDeck,
+  exportDeck,
+  importDeck,
+} from '../features/games/deck-storage'
 import type { Deck } from '../features/games/deck-types'
 import DeckModal from './DeckModal'
 import PasteDeckModal from './PasteDeckModal'
@@ -8,6 +16,8 @@ export default function DeckManagerPage() {
   const [decks, setDecks] = useState<Deck[]>([])
   const [edit, setEdit] = useState<Deck | null>(null)
   const [paste, setPaste] = useState(false)
+  const navigate = useNavigate()
+  const { setActiveDeck } = useDecks()
   const refresh = async () => {
     const arr = await loadDecks()
     arr.sort((a,b)=>(b.updated??0)-(a.updated??0))
@@ -35,14 +45,55 @@ export default function DeckManagerPage() {
         </span>
       </h2>
       <ul className="space-y-2">
-        {decks.map(d=>(
-          <li key={d.id} className="border p-2 flex justify-between items-center">
-            <span>{d.title} <span className="text-xs">{d.lines.length} lines</span></span>
-            <span className="space-x-2">
-              {!d.sig && <button className="border px-2" onClick={()=>setEdit(d)}>✎</button>}
-              <button className="border px-2" onClick={()=>download(d)}>⇩</button>
-              {!d.sig && <button className="border px-2" onClick={async ()=>{await deleteDeck(d.id);refresh()}}>🗑</button>}
-            </span>
+        {decks.map(deck => (
+          <li
+            key={deck.id}
+            className="flex items-center gap-3 border rounded px-3 py-2 hover:bg-sky-50"
+          >
+            <button
+              onClick={() => {
+                setActiveDeck(deck.id)
+                navigate('/coach')
+              }}
+              className="text-sky-600 text-lg"
+              title="Start drill"
+            >
+              ▶
+            </button>
+            <div className="flex-1">
+              <div className="font-medium">{deck.title}</div>
+              <div className="text-xs text-gray-500">
+                {deck.lines.length} phrases • {deck.lang}
+              </div>
+            </div>
+            {!deck.sig && (
+              <button
+                title="Edit"
+                onClick={() => setEdit(deck)}
+                className="text-xs"
+              >
+                ✎
+              </button>
+            )}
+            <button
+              title="Download"
+              onClick={() => download(deck)}
+              className="text-xs"
+            >
+              ⇩
+            </button>
+            {!deck.sig && (
+              <button
+                title="Delete"
+                onClick={async () => {
+                  await deleteDeck(deck.id)
+                  refresh()
+                }}
+                className="text-xs"
+              >
+                🗑
+              </button>
+            )}
           </li>
         ))}
       </ul>
