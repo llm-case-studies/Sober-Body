@@ -9,4 +9,10 @@ describe('migrateDeck', () => {
     expect(migrated.tags).toContain('official')
     expect('preset' in migrated).toBe(false)
   })
+  it('renames topic tags to cat', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const old: any = { id: 'y', title: 'Y', lang: 'en', lines: [], tags: ['topic:taxi'] }
+    const migrated = migrateDeck(old)
+    expect(migrated.tags).toContain('cat:taxi')
+  })
 })

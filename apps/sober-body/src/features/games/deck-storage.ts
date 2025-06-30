@@ -7,6 +7,11 @@ export function migrateDeck(d: any): Deck {
     delete d.preset
     d.tags = [...(d.tags ?? []), 'official']
   }
+  if (Array.isArray(d.tags)) {
+    d.tags = d.tags.map((t: string) =>
+      t.startsWith('topic:') ? `cat:${t.slice(6)}` : t
+    )
+  }
   return d
 }
 

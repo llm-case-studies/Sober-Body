@@ -1,1 +1,1 @@
-{"id":"preset-hotel-es-ES","title":"Recepción de Hotel (ES-ES)","lang":"es-ES","preset":true,"lines":["Tengo una reserva a nombre de...","¿El desayuno está incluido?","¿A qué hora es el check-out?","¿Me puede dar la contraseña del Wi-Fi?","¿Tienen servicio de habitaciones?"]}
+{"id":"preset-hotel-es-ES","title":"Recepción de Hotel (ES-ES)","lang":"es-ES","lines":["Tengo una reserva a nombre de...","¿El desayuno está incluido?","¿A qué hora es el check-out?","¿Me puede dar la contraseña del Wi-Fi?","¿Tienen servicio de habitaciones?"],"tags":["official","cat:hotel"]}

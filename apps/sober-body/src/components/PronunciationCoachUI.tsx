@@ -6,7 +6,6 @@ import { LANGS } from "../../../../packages/pronunciation-coach/src/langs";
 import { useSettings } from "../features/core/settings-context";
 import { useDecks } from "../features/games/deck-context";
 import type { Deck } from "../features/games/deck-types";
-import SituationsModal from "./SituationsModal";
 
 const defaultDeck: Deck = {
   id: 'example',
@@ -55,7 +54,6 @@ export default function PronunciationCoachUI() {
   const [index, setIndex] = useState(0);
   const [lookupWord, setLookupWord] = useState<string | null>(null);
   const [showTranslation, setShowTranslation] = useState(true);
-  const [showSituations, setShowSituations] = useState(false);
   const { settings, setSettings } = useSettings();
   const navigate = useNavigate();
 
@@ -144,12 +142,6 @@ export default function PronunciationCoachUI() {
               ))}
             </select>
           </label>
-          <button
-            className="border px-2 py-1 ml-2"
-            onClick={() => setShowSituations(true)}
-          >
-            🎒 Browse Situations
-          </button>
           <button
             onClick={() => navigate('/decks')}
             className="border px-2 py-1"
@@ -258,7 +250,6 @@ export default function PronunciationCoachUI() {
             </div>
           )}
       </section>
-      <SituationsModal open={showSituations} onClose={() => setShowSituations(false)} />
     </div>
   );
 }
