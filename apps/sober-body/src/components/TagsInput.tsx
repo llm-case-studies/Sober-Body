@@ -19,7 +19,10 @@ export default function TagsInput({
       {tags.map((t) => (
         <span key={t} className="bg-sky-100 px-2 py-0.5 rounded-full text-xs">
           {t}{" "}
-          <button onClick={() => setTags(tags.filter((x) => x !== t))}>
+          <button
+            onClick={() => setTags(tags.filter((x) => x !== t))}
+            aria-label="Remove tag"
+          >
             ×
           </button>
         </span>
@@ -27,7 +30,14 @@ export default function TagsInput({
       <input
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && add()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            add();
+          } else if (e.key === "Backspace" && draft === "") {
+            setTags(tags.slice(0, -1));
+          }
+        }}
         placeholder="Type tag and press Enter (e.g. groceries, A1, travel)"
         className="flex-1 min-w-[6rem] text-xs focus:outline-none"
       />

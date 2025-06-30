@@ -57,6 +57,7 @@ export default function DeckManagerPage() {
               }}
               className="text-sky-600 text-lg"
               title="Start drill"
+              aria-label="Start drill"
             >
               ▶
             </button>
@@ -69,6 +70,7 @@ export default function DeckManagerPage() {
             {!deck.sig && (
               <button
                 title="Edit"
+                aria-label="Edit deck"
                 onClick={() => setEdit(deck)}
                 className="text-xs"
               >
@@ -77,6 +79,7 @@ export default function DeckManagerPage() {
             )}
             <button
               title="Download"
+              aria-label="Download deck"
               onClick={() => download(deck)}
               className="text-xs"
             >
@@ -85,6 +88,7 @@ export default function DeckManagerPage() {
             {!deck.sig && (
               <button
                 title="Delete"
+                aria-label="Delete deck"
                 onClick={async () => {
                   await deleteDeck(deck.id)
                   refresh()
