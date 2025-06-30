@@ -1,6 +1,7 @@
 import { get, set } from 'idb-keyval'
 import type { Deck } from './deck-types'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function migrateDeck(d: any): Deck {
   if (d.preset) {
     delete d.preset
