@@ -6,18 +6,14 @@ import { useDecks } from '../features/games/deck-context'
 export default function CoachPage() {
   const [params] = useSearchParams()
   const requestedId = params.get('deck')
-  const { decks, setActiveDeck, activeDeck } = useDecks()
+  const { decks, setActiveDeck } = useDecks()
 
   useEffect(() => {
     if (!requestedId || !decks.length) return
-    if (requestedId !== activeDeck && decks.some(d => d.id === requestedId)) {
-      setActiveDeck(requestedId)
-    }
-  }, [requestedId, decks, activeDeck, setActiveDeck])
-
-  if (requestedId && decks.length && !decks.some(d => d.id === requestedId)) {
-    console.warn('Deck ID from URL not found; using default.')
-  }
+    const found = decks.find(d => d.id === requestedId)
+    if (found) setActiveDeck(found.id)
+    else console.warn('Deck id not found:', requestedId)
+  }, [requestedId, decks, setActiveDeck])
 
   return <PronunciationCoachUI />
 }
