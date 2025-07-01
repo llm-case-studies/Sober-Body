@@ -21,6 +21,9 @@ export default function DeckManagerPage() {
   const [edit, setEdit] = useState<Deck | null>(null)
   const [paste, setPaste] = useState(false)
   const navigate = useNavigate()
+  const handlePlay = (id: string) => {
+    navigate(`/coach?deck=${encodeURIComponent(id)}`)
+  }
   const refresh = async () => {
     const arr = await loadDecks()
     arr.sort((a,b)=>(b.updated??0)-(a.updated??0))
@@ -103,7 +106,7 @@ export default function DeckManagerPage() {
             className="flex items-center gap-3 border rounded px-3 py-2 hover:bg-sky-50"
           >
             <button
-              onClick={() => navigate(`/coach?deck=${deck.id}`)}
+              onClick={() => handlePlay(deck.id)}
               className="text-sky-600 text-lg"
               title="Start drill"
               aria-label="Start drill"
