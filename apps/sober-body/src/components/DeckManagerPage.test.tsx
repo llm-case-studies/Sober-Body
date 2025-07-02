@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import 'fake-indexeddb/auto'
 import DeckManagerPage from './DeckManagerPage'
 
@@ -25,6 +25,9 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => navigate }
 })
 
+beforeEach(() => {
+  localStorage.clear()
+})
 afterEach(() => cleanup())
 
 describe('DeckManagerPage play button', () => {
@@ -36,6 +39,15 @@ describe('DeckManagerPage play button', () => {
     await user.selectOptions(await screen.findByLabelText(/language/i, { selector: 'select' }), 'en')
     const buttons = await screen.findAllByRole('button', { name: 'Start drill' })
     fireEvent.click(buttons[1])
+    expect(navigate).toHaveBeenCalledWith('/coach?deck=b')
+  })
+
+  it('navigates with deck id from third row', async () => {
+    render(<DeckManagerPage />)
+
+    const buttons = await screen.findAllByRole('button', { name: 'Start drill' })
+    expect(buttons).toHaveLength(3)
+    fireEvent.click(buttons[2])
     expect(navigate).toHaveBeenCalledWith('/coach?deck=b')
   })
 })
