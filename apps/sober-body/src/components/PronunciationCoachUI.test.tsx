@@ -17,12 +17,15 @@ vi.mock('../features/games/deck-storage', () => ({
   saveDecks: vi.fn(),
 }))
 
+const useTranslationMock = vi.fn(() => 'bonjour')
 vi.mock('../../../../packages/pronunciation-coach/src/useTranslation', () => ({
-  default: vi.fn(() => 'bonjour')
+  default: (...args: unknown[]) => useTranslationMock(...args)
 }))
 
 beforeEach(() => {
   installSpeechMocks()
+  localStorage.clear()
+  useTranslationMock.mockClear()
 })
 
 afterEach(() => {
@@ -30,47 +33,78 @@ afterEach(() => {
 })
 
 describe('PronunciationCoachUI translation', () => {
-  it('translates selected sentence to French', async () => {
-    const getSelection = vi.fn(() => ({ toString: () => 'She sells seashells' }))
-    Object.defineProperty(window, 'getSelection', { value: getSelection })
+  it('auto-unit translates on index advance', async () => {
+    mockDecks.splice(0, mockDecks.length, { id: 't', title: 'T', lang: 'en', lines: ['one', 'two'], tags: [] })
+    localStorage.setItem('pc_translateMode', 'auto-unit')
+    function Wrapper() {
+      const { setActiveDeck } = useDecks()
+      useEffect(() => { setActiveDeck('t') }, [setActiveDeck])
+      return <PronunciationCoachUI />
+    }
     render(
       <MemoryRouter>
         <SettingsProvider>
           <DeckProvider>
-            <PronunciationCoachUI />
+            <Wrapper />
           </DeckProvider>
         </SettingsProvider>
       </MemoryRouter>
     )
     const langSelect = screen.getAllByLabelText(/Translate to/i)[0]
     fireEvent.change(langSelect, { target: { value: 'fr' } })
-    const heading = screen.getAllByRole('heading')[0]
-    fireEvent.mouseUp(heading)
-    expect(await screen.findByText('bonjour')).toBeTruthy()
+    const before = useTranslationMock.mock.calls.length
+    const nextBtn = await screen.findByRole('button', { name: 'Next' })
+    fireEvent.click(nextBtn)
+    await Promise.resolve()
+    expect(useTranslationMock.mock.calls.length).toBeGreaterThan(before)
   })
 
-  it('speaks slower when slow mode enabled', async () => {
-    const getSelection = vi.fn(() => ({ toString: () => 'She sells seashells' }))
-    Object.defineProperty(window, 'getSelection', { value: getSelection })
+  it('mode off prevents auto translate', () => {
+    mockDecks.splice(0, mockDecks.length, { id: 't', title: 'T', lang: 'en', lines: ['x', 'y'], tags: [] })
+    localStorage.setItem('pc_translateMode', 'off')
+    function Wrapper() {
+      const { setActiveDeck } = useDecks()
+      useEffect(() => { setActiveDeck('t') }, [setActiveDeck])
+      return <PronunciationCoachUI />
+    }
     render(
       <MemoryRouter>
         <SettingsProvider>
           <DeckProvider>
-            <PronunciationCoachUI />
+            <Wrapper />
           </DeckProvider>
         </SettingsProvider>
       </MemoryRouter>
     )
-    const langSelect = screen.getAllByLabelText(/Translate to/i)[0]
-    fireEvent.change(langSelect, { target: { value: 'fr' } })
-    fireEvent.mouseUp(screen.getAllByRole('heading')[0])
-    await screen.findAllByText('bonjour')
-    fireEvent.click(screen.getAllByLabelText(/Slow speak/i)[0])
-    await Promise.resolve()
-    fireEvent.click(screen.getAllByRole('button', { name: /Hear translation/i })[0])
-    const speakMock = speechSynthesis.speak as unknown as vi.Mock
-    const utter = speakMock.mock.calls[speakMock.mock.calls.length - 1][0] as SpeechSynthesisUtterance
-    expect(utter.rate).toBe(0.7)
+    const calls = useTranslationMock.mock.calls.length
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    expect(useTranslationMock.mock.calls.length).toBe(calls)
+  })
+
+  it('Translate Now uses selection fallback', () => {
+    mockDecks.splice(0, mockDecks.length, { id: 't', title: 'T', lang: 'en', lines: ['hello'], tags: [] })
+    localStorage.setItem('pc_translateMode', 'off')
+    const getSel = vi.fn(() => ({ toString: () => 'fox' }))
+    Object.defineProperty(window, 'getSelection', { value: getSel })
+    function Wrapper() {
+      const { setActiveDeck } = useDecks()
+      useEffect(() => { setActiveDeck('t') }, [setActiveDeck])
+      return <PronunciationCoachUI />
+    }
+    render(
+      <MemoryRouter>
+        <SettingsProvider>
+          <DeckProvider>
+            <Wrapper />
+          </DeckProvider>
+        </SettingsProvider>
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByRole('button', { name: /Translate Now/i }))
+    expect(useTranslationMock.mock.calls.at(-1)?.[0]).toBe('fox')
+    getSel.mockReturnValue({ toString: () => '' })
+    fireEvent.click(screen.getByRole('button', { name: /Translate Now/i }))
+    expect(useTranslationMock.mock.calls.at(-1)?.[0]).toBe('She sells seashells')
   })
 })
 

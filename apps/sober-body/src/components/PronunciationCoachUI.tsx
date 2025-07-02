@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { usePronunciationCoach } from "../features/games/PronunciationCoach";
 import useTranslation from "../../../../packages/pronunciation-coach/src/useTranslation";
@@ -16,6 +16,8 @@ const defaultDeck: Deck = {
 };
 
 type Scope = "Word" | "Line" | "Sentence" | "Paragraph" | "Full";
+
+type TranslateMode = 'off' | 'auto-unit' | 'auto-select'
 
 function splitText(raw: string, scope: Scope): string[] {
   const trimmed = raw.trim();
@@ -54,8 +56,15 @@ export default function PronunciationCoachUI() {
   const [index, setIndex] = useState(0);
   const [lookupWord, setLookupWord] = useState<string | null>(null);
   const [showTranslation, setShowTranslation] = useState(true);
+  const [tMode, setTMode] = useState<TranslateMode>(
+    (localStorage.getItem('pc_translateMode') as TranslateMode) ?? 'off'
+  )
   const { settings, setSettings } = useSettings();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.setItem('pc_translateMode', tMode)
+  }, [tMode])
 
   useEffect(() => {
     setRaw(currentDeck.lines.join('\n'));
@@ -88,9 +97,29 @@ export default function PronunciationCoachUI() {
     speechSynthesis.speak(utter);
   };
 
+  const doTranslate = (text: string) => {
+    const cleaned = text.replace(/[^\p{L}\p{N}\s]+/gu, '')
+    setLookupWord(cleaned)
+  }
+
+  const handleMouseUp = () => {
+    if (tMode !== 'auto-select') return
+    const sel = window.getSelection()?.toString().trim() || ''
+    doTranslate(sel || current)
+  }
+
+  const handleTranslateNow = () => {
+    const sel = window.getSelection()?.toString().trim() || ''
+    doTranslate(sel || current)
+  }
+
   useEffect(() => {
     if (translation) speak();
   }, [translation]);
+
+  useEffect(() => {
+    if (tMode === 'auto-unit') doTranslate(current)
+  }, [current, tMode])
 
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
@@ -110,6 +139,7 @@ export default function PronunciationCoachUI() {
           className="w-full resize-y min-h-40 max-h-[70vh] overflow-y-auto border p-2 bg-[rgba(255,255,255,0.8)] backdrop-blur-sm"
           value={raw}
           onChange={(e) => setRaw(e.target.value)}
+          onMouseUp={handleMouseUp}
         />
         <div className="flex gap-2 items-center">
           <select
@@ -177,12 +207,6 @@ export default function PronunciationCoachUI() {
         )}
         <h2
           className="text-2xl text-center mb-8 select-text"
-          onMouseUp={() => {
-            const raw = window.getSelection()?.toString().trim();
-            if (!raw) return;
-            const cleaned = raw.replace(/[^\p{L}\p{N}\s]+/gu, '');
-            setLookupWord(cleaned);
-          }}
         >
           {current}
         </h2>
@@ -209,6 +233,23 @@ export default function PronunciationCoachUI() {
             >
               {coach.recording ? "■ Stop" : "⏺ Record"}
             </button>
+            <label className="ml-2 text-sm flex items-center gap-1">Translate:
+              <select
+                value={tMode}
+                onChange={e => setTMode(e.target.value as TranslateMode)}
+                className="border p-1 ml-1"
+              >
+                <option value="off">Off</option>
+                <option value="auto-unit">Auto</option>
+                <option value="auto-select">On Select</option>
+              </select>
+            </label>
+            <button
+              onClick={handleTranslateNow}
+              className="px-3 py-1 text-lg"
+            >
+              🔍 Translate Now
+            </button>
             {coach.result !== null && <span>Score {coach.result}%</span>}
           </div>
         <label className="text-xs mt-2 flex items-center gap-1">
@@ -220,7 +261,7 @@ export default function PronunciationCoachUI() {
           Slow speak
         </label>
         {translation && showTranslation && (
-            <div className="flex items-center gap-2 mb-8 rounded-md border px-4 py-2 bg-white/90 shadow max-w-xs text-sm">
+            <div className="flex items-center gap-2 flex-wrap mb-8 rounded-md border px-4 py-2 bg-white/90 shadow max-w-[60%] text-sm">
               <span>{translation}</span>
               <button
                 onClick={speak}
