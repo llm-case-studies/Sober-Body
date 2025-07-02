@@ -16,8 +16,17 @@ import PasteDeckModal from './PasteDeckModal'
 
 export default function DeckManagerPage() {
   const [decks, setDecks] = useState<Deck[]>([])
-  const [selectedCat, setSelectedCat] = useState<string | null>(null)
-  const [selectedLang, setSelectedLang] = useState<string | null>(null)
+  const [catFilter, setCatFilter] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem('pc_filterCats')
+      return raw ? JSON.parse(raw) : []
+    } catch {
+      return []
+    }
+  })
+  const [langFilter, setLangFilter] = useState<string>(
+    () => localStorage.getItem('pc_filterLang') || 'all'
+  )
   const [edit, setEdit] = useState<Deck | null>(null)
   const [paste, setPaste] = useState(false)
   const navigate = useNavigate()
@@ -44,11 +53,23 @@ export default function DeckManagerPage() {
     const a = Object.assign(document.createElement('a'), { href: url, download: `${slug}-${d.lang}.json` })
     a.click(); URL.revokeObjectURL(url)
   }
-  const cats = getCategories(decks)
+  useEffect(() => {
+    localStorage.setItem('pc_filterCats', JSON.stringify(catFilter))
+  }, [catFilter])
+  useEffect(() => {
+    localStorage.setItem('pc_filterLang', langFilter)
+  }, [langFilter])
+
+  const cats = getCategories(decks).map(c => c.slice(4))
   const langs = getLanguages(decks)
-  const visible = decks.filter(d =>
-    (!selectedCat || d.tags?.includes(selectedCat)) &&
-    (!selectedLang || d.lang === selectedLang)
+  const counts: Record<string, number> = {}
+  cats.forEach(c => {
+    counts[c] = decks.filter(d => d.tags?.includes('cat:' + c)).length
+  })
+  const visible = decks.filter(
+    d =>
+      (langFilter === 'all' || d.lang === langFilter) &&
+      (catFilter.length === 0 || catFilter.every(t => d.tags?.includes('cat:' + t)))
   )
   return (
     <div className="p-4 max-w-lg mx-auto">
@@ -65,39 +86,41 @@ export default function DeckManagerPage() {
           <button className="border px-2" onClick={() => setPaste(true)}>Import ⌘V</button>
         </span>
       </h2>
-      <div className="flex gap-2 overflow-x-auto mb-4">
-        <button
-          className={`px-2 py-1 rounded-full text-xs ${selectedCat===null?'bg-sky-600 text-white':'bg-gray-200'}`}
-          onClick={() => setSelectedCat(null)}
-        >
-          All
-        </button>
-        {cats.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCat(c => c===cat?null:cat)}
-            className={`px-2 py-1 rounded-full text-xs ${selectedCat===cat?'bg-sky-600 text-white':'bg-gray-200'}`}
+      <div className="mb-4 space-y-2">
+        <label className="block text-sm">
+          Category:
+          <select
+            multiple
+            aria-label="categories"
+            value={catFilter}
+            onChange={e =>
+              setCatFilter(Array.from(e.target.selectedOptions).map(o => o.value))
+            }
+            className="border p-1 w-full"
           >
-            {cat.slice(4)}
-          </button>
-        ))}
-      </div>
-      <div className="flex gap-2 overflow-x-auto mb-4">
-        <button
-          className={`px-2 py-1 rounded-full text-xs ${selectedLang===null?'bg-sky-600 text-white':'bg-gray-200'}`}
-          onClick={() => setSelectedLang(null)}
-        >
-          All
-        </button>
-        {langs.map(l => (
-          <button
-            key={l}
-            onClick={() => setSelectedLang(c => c===l?null:l)}
-            className={`px-2 py-1 rounded-full text-xs ${selectedLang===l?'bg-sky-600 text-white':'bg-gray-200'}`}
+            {cats.map(c => (
+              <option key={c} value={c}>
+                {c} {counts[c] ? `(${counts[c]})` : ''}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block text-sm">
+          Language:
+          <select
+            aria-label="language"
+            value={langFilter}
+            onChange={e => setLangFilter(e.target.value)}
+            className="border p-1 w-full"
           >
-            {l}
-          </button>
-        ))}
+            <option value="all">All</option>
+            {langs.map(l => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
       <ul className="space-y-2">
         {visible.map(deck => (
@@ -153,7 +176,7 @@ export default function DeckManagerPage() {
           </li>
         ))}
       </ul>
-      {edit && <DeckModal deck={edit} allCats={cats} onSave={async d=>{await saveDeck(d);setEdit(null);refresh()}} onClose={()=>setEdit(null)} />}
+      {edit && <DeckModal deck={edit} allCats={cats.map(c => 'cat:' + c)} onSave={async d=>{await saveDeck(d);setEdit(null);refresh()}} onClose={()=>setEdit(null)} />}
       {paste && <PasteDeckModal onSave={async d=>{await saveDeck(d);setPaste(false);refresh()}} onClose={()=>setPaste(false)} />}
     </div>
   )
