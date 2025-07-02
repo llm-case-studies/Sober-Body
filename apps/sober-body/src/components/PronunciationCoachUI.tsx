@@ -122,6 +122,11 @@ export default function PronunciationCoachUI() {
   }, [current, tMode])
 
   useEffect(() => {
+    const sel = window.getSelection()
+    if (sel?.type === 'Range') sel.removeAllRanges()
+  }, [index, currentDeck.id])
+
+  useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 't') setShowTranslation(s => !s);
     };
@@ -173,15 +178,6 @@ export default function PronunciationCoachUI() {
               ))}
             </select>
           </label>
-          <button
-            onClick={() => navigate('/decks')}
-            className="border px-2 py-1"
-          >
-            📚 Manage Decks
-          </button>
-          <button onClick={() => setIndex(0)} className="border px-2 py-1">
-            Restart Drill
-          </button>
         </div>
       </section>
       <section className="flex flex-col items-center">
@@ -210,12 +206,13 @@ export default function PronunciationCoachUI() {
         >
           {current}
         </h2>
-        <div className="flex gap-4 mb-8">
+        <section className="flex flex-col gap-3 items-center mb-8">
+          <div className="flex gap-2">
             <button
               onClick={coach.play}
               title="Play sample"
               aria-label="Play sample"
-              className="px-3 py-1 text-lg"
+              className="btn text-lg"
             >
               ▶ Play
             </button>
@@ -229,11 +226,13 @@ export default function PronunciationCoachUI() {
               onClick={coach.recording ? coach.stop : coach.start}
               title={coach.recording ? "Stop recording" : "Record your voice"}
               aria-label={coach.recording ? "Stop recording" : "Record your voice"}
-              className="px-3 py-1 text-lg"
+              className="btn text-lg"
             >
               {coach.recording ? "■ Stop" : "⏺ Record"}
             </button>
-            <label className="ml-2 text-sm flex items-center gap-1">Translate:
+          </div>
+          <div className="flex gap-2">
+            <label className="text-sm flex items-center gap-1">Translate:
               <select
                 value={tMode}
                 onChange={e => setTMode(e.target.value as TranslateMode)}
@@ -246,20 +245,48 @@ export default function PronunciationCoachUI() {
             </label>
             <button
               onClick={handleTranslateNow}
-              className="px-3 py-1 text-lg"
+              className="btn text-lg"
             >
               🔍 Translate Now
             </button>
             {coach.result !== null && <span>Score {coach.result}%</span>}
           </div>
-        <label className="text-xs mt-2 flex items-center gap-1">
-          <input
-            type="checkbox"
-            checked={settings.slowSpeech}
-            onChange={e => setSettings(s => ({ ...s, slowSpeech: e.target.checked }))}
-          />
-          Slow speak
-        </label>
+          <label className="text-xs flex items-center gap-1">
+            <input
+              type="checkbox"
+              checked={settings.slowSpeech}
+              onChange={e => setSettings(s => ({ ...s, slowSpeech: e.target.checked }))}
+            />
+            Slow speak
+          </label>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIndex((i) => i - 1)}
+              disabled={index === 0}
+              className="btn"
+            >
+              Prev
+            </button>
+            <button
+              onClick={() => setIndex((i) => i + 1)}
+              disabled={index >= lines.length - 1}
+              className="btn"
+            >
+              Next
+            </button>
+          </div>
+          <div className="flex gap-2 text-sm">
+            <button
+              onClick={() => navigate('/decks')}
+              className="btn"
+            >
+              🏠 Manage Decks
+            </button>
+            <button onClick={() => setIndex(0)} className="btn">
+              ↻ Restart
+            </button>
+          </div>
+        </section>
         {translation && showTranslation && (
             <div className="flex items-center gap-2 flex-wrap mb-8 rounded-md border px-4 py-2 bg-white/90 shadow max-w-[60%] text-sm">
               <span>{translation}</span>
@@ -270,24 +297,6 @@ export default function PronunciationCoachUI() {
                 className="ml-2 text-lg"
               >
                 🔊
-              </button>
-            </div>
-          )}
-        {lines.length > 0 && (
-            <div className="flex gap-4">
-              <button
-                onClick={() => setIndex((i) => i - 1)}
-                disabled={index === 0}
-                className="border px-2 py-1"
-              >
-                Prev
-              </button>
-              <button
-                onClick={() => setIndex((i) => i + 1)}
-                disabled={index >= lines.length - 1}
-                className="border px-2 py-1"
-              >
-                Next
               </button>
             </div>
           )}
