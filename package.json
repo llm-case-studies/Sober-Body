@@ -6,5 +6,8 @@
     "dev:coach": "pnpm --filter packages/pronunciation-coach dev",
     "dev:all": "pnpm -r dev",
     "test": "pnpm -r --parallel test"
+  },
+  "devDependencies": {
+    "@testing-library/user-event": "^14.6.1"
   }
 }
