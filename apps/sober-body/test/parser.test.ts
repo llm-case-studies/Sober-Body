@@ -7,7 +7,12 @@ describe('splitUnits', () => {
   })
 
   it('falls back to sentence when no commas', () => {
-    expect(splitUnits('Hello world.', 'phrase')).toEqual(['Hello world.'])
+    expect(splitUnits('Hello world.', 'phrase')).toEqual(['Hello world'])
+  })
+
+  it('splits across sentences first', () => {
+    const t = 'A. B. C, D, E. F.'
+    expect(splitUnits(t, 'phrase')).toEqual(['A', 'B', 'C', 'D', 'E', 'F'])
   })
 
   it('paragraph split by blank lines', () => {
