@@ -19,7 +19,3 @@ body::before {
   z-index: -1;
 }
 
-.btn {
-  @apply border px-3 py-1 text-center min-w-24;
-}
-
