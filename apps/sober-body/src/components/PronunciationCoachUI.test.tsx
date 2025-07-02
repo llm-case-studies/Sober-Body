@@ -17,15 +17,15 @@ vi.mock('../features/games/deck-storage', () => ({
   saveDecks: vi.fn(),
 }))
 
-const useTranslationMock = vi.fn(() => 'bonjour')
+const translationMock = vi.fn(() => 'bonjour')
 vi.mock('../../../../packages/pronunciation-coach/src/useTranslation', () => ({
-  default: (...args: unknown[]) => useTranslationMock(...args)
+  default: (...args: unknown[]) => translationMock(...args)
 }))
 
 beforeEach(() => {
   installSpeechMocks()
   localStorage.clear()
-  useTranslationMock.mockClear()
+  translationMock.mockClear()
 })
 
 afterEach(() => {
@@ -52,11 +52,11 @@ describe('PronunciationCoachUI translation', () => {
     )
     const langSelect = screen.getAllByLabelText(/Translate to/i)[0]
     fireEvent.change(langSelect, { target: { value: 'fr' } })
-    const before = useTranslationMock.mock.calls.length
+    const before = translationMock.mock.calls.length
     const nextBtn = await screen.findByRole('button', { name: 'Next' })
     fireEvent.click(nextBtn)
     await Promise.resolve()
-    expect(useTranslationMock.mock.calls.length).toBeGreaterThan(before)
+    expect(translationMock.mock.calls.length).toBeGreaterThan(before)
   })
 
   it('mode off prevents auto translate', () => {
@@ -76,9 +76,9 @@ describe('PronunciationCoachUI translation', () => {
         </SettingsProvider>
       </MemoryRouter>
     )
-    const calls = useTranslationMock.mock.calls.length
+    const calls = translationMock.mock.calls.length
     fireEvent.click(screen.getByRole('button', { name: 'Next' }))
-    expect(useTranslationMock.mock.calls.length).toBe(calls)
+    expect(translationMock.mock.calls.length).toBe(calls)
   })
 
   it('Translate Now uses selection fallback', () => {
@@ -101,10 +101,10 @@ describe('PronunciationCoachUI translation', () => {
       </MemoryRouter>
     )
     fireEvent.click(screen.getByRole('button', { name: /Translate Now/i }))
-    expect(useTranslationMock.mock.calls.at(-1)?.[0]).toBe('fox')
+    expect(translationMock.mock.calls.at(-1)?.[0]).toBe('fox')
     getSel.mockReturnValue({ toString: () => '' })
     fireEvent.click(screen.getByRole('button', { name: /Translate Now/i }))
-    expect(useTranslationMock.mock.calls.at(-1)?.[0]).toBe('She sells seashells')
+    expect(translationMock.mock.calls.at(-1)?.[0]).toBe('She sells seashells')
   })
 })
 
