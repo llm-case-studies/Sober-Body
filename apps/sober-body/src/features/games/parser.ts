@@ -11,11 +11,18 @@ export function splitUnits(text: string, mode: SplitMode): string[] {
         .map(l => l.trim())
         .filter(Boolean);
     case 'phrase': {
-      const parts = trimmed
-        .split(/[;,—–]/)
-        .map(t => t.trim())
+      const sentences = trimmed
+        .replace(/\r?\n/g, ' ')
+        .split(/[.!?](?:\s+|$)/)
+        .map(s => s.trim())
         .filter(Boolean);
-      return parts.length > 1 ? parts : splitUnits(trimmed, 'sentence');
+      const phrases = sentences.flatMap(sent =>
+        sent
+          .split(/[;,—–]/)
+          .map(p => p.trim())
+          .filter(Boolean)
+      );
+      return phrases.length > 1 ? phrases : sentences;
     }
     case 'sentence':
       return trimmed
