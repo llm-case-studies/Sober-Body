@@ -32,6 +32,7 @@ describe('DeckManagerPage play button', () => {
     const user = userEvent.setup()
     render(<DeckManagerPage />)
 
+    await screen.findByRole('option', { name: 'en' })
     await user.selectOptions(await screen.findByLabelText(/language/i, { selector: 'select' }), 'en')
     const buttons = await screen.findAllByRole('button', { name: 'Start drill' })
     fireEvent.click(buttons[1])
@@ -44,6 +45,7 @@ describe('DeckManagerPage filters', () => {
     const user = userEvent.setup()
     render(<DeckManagerPage />)
 
+    await screen.findByRole('option', { name: 'pt-BR' })
     await user.selectOptions(await screen.findByLabelText(/language/i, { selector: 'select' }), 'pt-BR')
     await user.selectOptions(screen.getByLabelText(/categories/i, { selector: 'select' }), 'hotel')
 
@@ -56,6 +58,7 @@ describe('DeckManagerPage filters', () => {
     const user = userEvent.setup()
     render(<DeckManagerPage />)
 
+    await screen.findByRole('option', { name: 'pt-BR' })
     await user.selectOptions(await screen.findByLabelText(/language/i, { selector: 'select' }), 'pt-BR')
     await user.selectOptions(screen.getByLabelText(/categories/i, { selector: 'select' }), 'hotel')
     await user.deselectOptions(screen.getByLabelText(/categories/i, { selector: 'select' }), 'hotel')
