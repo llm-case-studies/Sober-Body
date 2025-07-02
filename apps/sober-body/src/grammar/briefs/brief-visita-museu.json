@@ -1,0 +1,17 @@
+{
+  "id": "brief-visita-museu",
+  "story": "drill-visita-museu-pt-BR",
+  "grammar": {
+    "verb_tenses": [
+      "tense:preterito-perfeito",
+      "tense:ir-futuro"
+    ],
+    "prepositions": [
+      "prep:para"
+    ]
+  },
+  "notes": [
+    "Past actions are in **Pretérito Perfeito**.",
+    "Future is expressed with **ir + infinitive**."
+  ]
+}
