@@ -106,6 +106,35 @@ describe('PronunciationCoachUI translation', () => {
     fireEvent.click(screen.getByRole('button', { name: /Translate Now/i }))
     expect(useTranslationMock.mock.calls.at(-1)?.[0]).toBe('She sells seashells')
   })
+
+  it('clears selection on next', async () => {
+    mockDecks.splice(0, mockDecks.length, {
+      id: 't', title: 'T', lang: 'en', lines: ['hello', 'world'], tags: []
+    })
+    const sel = {
+      type: 'Range',
+      removeAllRanges: vi.fn(function () { this.type = 'None' }),
+      toString: () => 'hi'
+    }
+    Object.defineProperty(window, 'getSelection', { value: () => sel })
+    function Wrapper() {
+      const { setActiveDeck } = useDecks()
+      useEffect(() => { setActiveDeck('t') }, [setActiveDeck])
+      return <PronunciationCoachUI />
+    }
+    render(
+      <MemoryRouter>
+        <SettingsProvider>
+          <DeckProvider>
+            <Wrapper />
+          </DeckProvider>
+        </SettingsProvider>
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    await Promise.resolve()
+    expect(sel.type).toBe('None')
+  })
 })
 
 describe('PronunciationCoachUI deck switching', () => {
