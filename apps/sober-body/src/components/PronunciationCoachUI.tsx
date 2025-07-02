@@ -8,6 +8,9 @@ import { LANGS } from "../../../../packages/pronunciation-coach/src/langs";
 import { useSettings } from "../features/core/settings-context";
 import { useDecks } from "../features/games/deck-context";
 import type { Deck } from "../features/games/deck-types";
+import GrammarModal from "./GrammarModal";
+import { getBriefForDeck } from "../grammar-loader";
+import type { BriefWithRefs } from "../grammar-loader";
 
 const defaultDeck: Deck = {
   id: 'example',
@@ -34,6 +37,7 @@ export default function PronunciationCoachUI() {
   )
   const { settings, setSettings } = useSettings();
   const navigate = useNavigate();
+  const [brief, setBrief] = useState<BriefWithRefs | null>(null);
 
   useEffect(() => {
     localStorage.setItem('pc_translateMode', tMode)
@@ -87,6 +91,15 @@ export default function PronunciationCoachUI() {
     doTranslate(sel || current)
   }
 
+  const handleGrammar = () => {
+    const b = getBriefForDeck(currentDeck.id)
+    if (!b) {
+      alert('No grammar notes for this deck yet.')
+    } else {
+      setBrief(b)
+    }
+  }
+
   useEffect(() => {
     if (translation) speak();
   }, [translation]);
@@ -104,6 +117,7 @@ export default function PronunciationCoachUI() {
   }, []);
 
   return (
+    <>
     <div
       className="grid grid-cols-2 gap-x-28 gap-y-12 max-w-7xl mx-auto px-10 pt-10"
     >
@@ -209,6 +223,9 @@ export default function PronunciationCoachUI() {
             >
               {coach.recording ? "■ Stop" : "⏺ Record"}
             </button>
+            <button onClick={handleGrammar} className="px-3 py-1 text-lg">
+              📖 Grammar
+            </button>
             <label className="ml-2 text-sm flex items-center gap-1">Translate:
               <select
                 value={tMode}
@@ -269,6 +286,8 @@ export default function PronunciationCoachUI() {
           )}
       </section>
     </div>
+    <GrammarModal open={Boolean(brief)} brief={brief!} onClose={() => setBrief(null)} />
+    </>
   );
 }
 

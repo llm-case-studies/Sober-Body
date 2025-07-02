@@ -1,0 +1,9 @@
+{
+  "id": "tense:preterito-perfeito",
+  "title": "Pretérito Perfeito",
+  "description": "Used for completed past actions.",
+  "examples": [
+    "Ontem eu estudei muito.",
+    "Ela foi ao mercado."
+  ]
+}
