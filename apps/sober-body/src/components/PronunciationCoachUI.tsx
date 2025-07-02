@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { usePronunciationCoach } from "../features/games/PronunciationCoach";
+import type { SplitMode } from "../features/games/types";
+import { splitUnits } from "../features/games/parser";
 import useTranslation from "../../../../packages/pronunciation-coach/src/useTranslation";
 import { LANGS } from "../../../../packages/pronunciation-coach/src/langs";
 import { useSettings } from "../features/core/settings-context";
@@ -15,43 +17,14 @@ const defaultDeck: Deck = {
   tags: [],
 };
 
-type Scope = "Word" | "Line" | "Sentence" | "Paragraph" | "Full";
-
 type TranslateMode = 'off' | 'auto-unit' | 'auto-select'
-
-function splitText(raw: string, scope: Scope): string[] {
-  const trimmed = raw.trim();
-  switch (scope) {
-    case "Word":
-      return trimmed.split(/\s+/).filter(Boolean);
-    case "Line":
-      return trimmed
-        .split(/\r?\n/)
-        .map((l) => l.trim())
-        .filter(Boolean);
-    case "Sentence":
-      return trimmed
-        .replace(/\r?\n/g, " ")
-        .split(/(?<=[.!?])\s+/)
-        .map((s) => s.trim())
-        .filter(Boolean);
-    case "Paragraph":
-      return trimmed
-        .split(/\r?\n\s*\r?\n/)
-        .map((p) => p.trim())
-        .filter(Boolean);
-    case "Full":
-    default:
-      return trimmed ? [trimmed] : [];
-  }
-}
 
 export default function PronunciationCoachUI() {
   const { decks, activeDeck } = useDecks();
   const currentDeck = decks.find(d => d.id === activeDeck) ?? defaultDeck;
 
   const [raw, setRaw] = useState(currentDeck.lines.join('\n'));
-  const [scope, setScope] = useState<Scope>('Line');
+  const [mode, setMode] = useState<SplitMode>('line');
   const [lines, setLines] = useState<string[]>([]);
   const [index, setIndex] = useState(0);
   const [lookupWord, setLookupWord] = useState<string | null>(null);
@@ -71,8 +44,9 @@ export default function PronunciationCoachUI() {
   }, [currentDeck]);
 
   useEffect(() => {
-    setLines(splitText(raw, scope));
-  }, [raw, scope]);
+    setLines(splitUnits(raw, mode));
+    setIndex(0);
+  }, [raw, mode]);
 
   useEffect(() => {
     setIndex(0);
@@ -141,17 +115,19 @@ export default function PronunciationCoachUI() {
           onChange={(e) => setRaw(e.target.value)}
           onMouseUp={handleMouseUp}
         />
+        <div className="text-xs">Mode: {mode.charAt(0).toUpperCase() + mode.slice(1)} ({lines.length} chunks)</div>
         <div className="flex gap-2 items-center">
           <select
             className="border p-1"
-            value={scope}
-            onChange={(e) => setScope(e.target.value as Scope)}
+            value={mode}
+            onChange={(e) => setMode(e.target.value as SplitMode)}
           >
-            <option>Word</option>
-            <option>Line</option>
-            <option>Sentence</option>
-            <option>Paragraph</option>
-            <option>Full</option>
+            <option value="word">Word</option>
+            <option value="line">Line</option>
+            <option value="phrase">Phrase</option>
+            <option value="sentence">Sentence</option>
+            <option value="paragraph">Paragraph</option>
+            <option value="full">Full</option>
           </select>
           <select
             className="border p-1"
