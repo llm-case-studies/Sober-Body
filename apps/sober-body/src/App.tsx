@@ -7,6 +7,7 @@ import LandingPage from './components/LandingPage'
 import CoachPage from './pages/coach'
 import CoachLegacy from './pages/coach-legacy'
 import DecksPage from './pages/decks'
+import ChallengePage from './pages/challenge'
 import { DrinkLogProvider } from './features/core/drink-context'
 import { SettingsProvider } from './features/core/settings-context'
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/coach/deck/:id" element={<CoachPage />} />
           <Route path="/coach" element={<CoachLegacy />} />
           <Route path="/decks" element={<DecksPage />} />
+          <Route path="/challenge/:payload" element={<ChallengePage />} />
         </Routes>
       </DrinkLogProvider>
     </SettingsProvider>

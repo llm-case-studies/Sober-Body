@@ -14,6 +14,8 @@ import DeckModal from './DeckModal'
 import PasteDeckModal from './PasteDeckModal'
 import BriefDrawer from './BriefDrawer'
 import DrillLink from './DrillLink'
+import DeckToolbar from './DeckToolbar'
+import ChallengeLink from './ChallengeLink'
 
 export default function DeckManagerPage() {
   const [decks, setDecks] = useState<Deck[]>([])
@@ -73,16 +75,14 @@ export default function DeckManagerPage() {
     <div className="p-4 max-w-lg mx-auto">
       <h2 className="text-xl mb-4 flex justify-between">
         <span>My Decks</span>
-        <span className="space-x-2">
-          <button className="border px-2" onClick={startNew}>+ New Deck</button>
-          <label className="border px-2 cursor-pointer">
-            Import JSON<input type="file" accept="application/json" className="hidden" onChange={e=>e.target.files&&handleFile(e.target.files[0])}/>
-          </label>
-          <label className="border px-2 cursor-pointer">
-            Import folder<input type="file" accept=".json" webkitdirectory multiple className="hidden" onChange={e=>e.target.files&&handleFolder(e.target.files)}/>
-          </label>
-          <button className="border px-2" onClick={() => setPaste(true)}>Import ⌘V</button>
-        </span>
+        <DeckToolbar
+          decks={decks}
+          refresh={refresh}
+          onNew={startNew}
+          onPaste={() => setPaste(true)}
+          onFile={handleFile}
+          onFolder={handleFolder}
+        />
       </h2>
       <div className="mb-4 space-y-2">
         <label className="block text-sm">
@@ -159,6 +159,7 @@ export default function DeckManagerPage() {
             >
               ⇩
             </button>
+            <ChallengeLink deck={deck} />
             {!deck.sig && (
               <button
                 title="Delete"
