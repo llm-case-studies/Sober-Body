@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react'
+import { render, screen, cleanup } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import 'fake-indexeddb/auto'
@@ -19,11 +20,6 @@ vi.mock('../features/games/deck-storage', () => ({
   importDeckFiles: vi.fn(),
 }))
 
-const navigate = vi.fn()
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom')
-  return { ...actual, useNavigate: () => navigate }
-})
 
 beforeEach(() => {
   localStorage.clear()
@@ -33,29 +29,39 @@ afterEach(() => cleanup())
 describe('DeckManagerPage play button', () => {
   it('navigates with deck id from visible row', async () => {
     const user = userEvent.setup()
-    render(<DeckManagerPage />)
+    render(
+      <MemoryRouter>
+        <DeckManagerPage />
+      </MemoryRouter>
+    )
 
     await screen.findByRole('option', { name: 'en' })
     await user.selectOptions(await screen.findByLabelText(/language/i, { selector: 'select' }), 'en')
-    const buttons = await screen.findAllByRole('button', { name: 'Start drill' })
-    fireEvent.click(buttons[1])
-    expect(navigate).toHaveBeenCalledWith('/coach?deck=b')
+    const links = await screen.findAllByRole('link', { name: 'Start drill' })
+    expect(links[1].getAttribute('href')).toBe('/coach/deck/b')
   })
 
   it('navigates with deck id from third row', async () => {
-    render(<DeckManagerPage />)
+    render(
+      <MemoryRouter>
+        <DeckManagerPage />
+      </MemoryRouter>
+    )
 
-    const buttons = await screen.findAllByRole('button', { name: 'Start drill' })
-    expect(buttons).toHaveLength(3)
-    fireEvent.click(buttons[2])
-    expect(navigate).toHaveBeenCalledWith('/coach?deck=b')
+    const links = await screen.findAllByRole('link', { name: 'Start drill' })
+    expect(links).toHaveLength(3)
+    expect(links[2].getAttribute('href')).toBe('/coach/deck/b')
   })
 })
 
 describe('DeckManagerPage filters', () => {
   it('category + language filter reduces visible decks', async () => {
     const user = userEvent.setup()
-    render(<DeckManagerPage />)
+    render(
+      <MemoryRouter>
+        <DeckManagerPage />
+      </MemoryRouter>
+    )
 
     await screen.findByRole('option', { name: 'pt-BR' })
     await user.selectOptions(await screen.findByLabelText(/language/i, { selector: 'select' }), 'pt-BR')
@@ -68,7 +74,11 @@ describe('DeckManagerPage filters', () => {
 
   it('clearing filters shows all decks', async () => {
     const user = userEvent.setup()
-    render(<DeckManagerPage />)
+    render(
+      <MemoryRouter>
+        <DeckManagerPage />
+      </MemoryRouter>
+    )
 
     await screen.findByRole('option', { name: 'pt-BR' })
     await user.selectOptions(await screen.findByLabelText(/language/i, { selector: 'select' }), 'pt-BR')

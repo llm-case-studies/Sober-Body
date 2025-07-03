@@ -5,6 +5,7 @@ import { seedPresetDecks } from './features/games/deck-storage'
 import BacDashboard from './components/BacDashboard'
 import LandingPage from './components/LandingPage'
 import CoachPage from './pages/coach'
+import CoachLegacy from './pages/coach-legacy'
 import DecksPage from './pages/decks'
 import { DrinkLogProvider } from './features/core/drink-context'
 import { SettingsProvider } from './features/core/settings-context'
@@ -19,7 +20,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/app" element={<BacDashboard />} />
-          <Route path="/coach" element={<CoachPage />} />
+          <Route path="/coach/deck/:id" element={<CoachPage />} />
+          <Route path="/coach" element={<CoachLegacy />} />
           <Route path="/decks" element={<DecksPage />} />
         </Routes>
       </DrinkLogProvider>
