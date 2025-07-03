@@ -147,3 +147,25 @@ describe('PronunciationCoachUI deck switching', () => {
   })
 })
 
+describe('PronunciationCoachUI grammar button', () => {
+  it('hidden when no brief', async () => {
+    mockDecks.splice(0, mockDecks.length, { id: 'g', title: 'G', lang: 'en', lines: ['one'], tags: [] })
+    function Wrapper() {
+      const { setActiveDeck } = useDecks()
+      useEffect(() => { setActiveDeck('g') }, [setActiveDeck])
+      return <PronunciationCoachUI />
+    }
+    render(
+      <MemoryRouter>
+        <SettingsProvider>
+          <DeckProvider>
+            <Wrapper />
+          </DeckProvider>
+        </SettingsProvider>
+      </MemoryRouter>
+    )
+    await screen.findByText('one')
+    expect(screen.queryByRole('button', { name: /Grammar/i })).toBeNull()
+  })
+})
+

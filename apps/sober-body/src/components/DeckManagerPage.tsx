@@ -13,6 +13,7 @@ import { getLanguages } from '../features/games/get-languages'
 import type { Deck } from '../features/games/deck-types'
 import DeckModal from './DeckModal'
 import PasteDeckModal from './PasteDeckModal'
+import BriefDrawer from './BriefDrawer'
 
 export default function DeckManagerPage() {
   const [decks, setDecks] = useState<Deck[]>([])
@@ -29,6 +30,7 @@ export default function DeckManagerPage() {
   )
   const [edit, setEdit] = useState<Deck | null>(null)
   const [paste, setPaste] = useState(false)
+  const [briefDeck, setBriefDeck] = useState<Deck | null>(null)
   const navigate = useNavigate()
   const handlePlay = (id: string) => {
     navigate(`/coach?deck=${encodeURIComponent(id)}`)
@@ -126,7 +128,7 @@ export default function DeckManagerPage() {
         {visible.map(deck => (
           <li
             key={deck.id}
-            className="flex items-center gap-3 border rounded px-3 py-2 hover:bg-sky-50"
+            className="flex items-center gap-3 border rounded px-3 py-2 hover:bg-sky-50 group"
           >
             <button
               onClick={() => handlePlay(deck.id)}
@@ -153,6 +155,14 @@ export default function DeckManagerPage() {
               </button>
             )}
             <button
+              title="Edit brief"
+              aria-label="Edit brief"
+              onClick={() => setBriefDeck(deck)}
+              className="text-xs opacity-0 group-hover:opacity-100"
+            >
+              📖
+            </button>
+            <button
               title="Download"
               aria-label="Download deck"
               onClick={() => download(deck)}
@@ -178,6 +188,7 @@ export default function DeckManagerPage() {
       </ul>
       {edit && <DeckModal deck={edit} allCats={cats.map(c => 'cat:' + c)} onSave={async d=>{await saveDeck(d);setEdit(null);refresh()}} onClose={()=>setEdit(null)} />}
       {paste && <PasteDeckModal onSave={async d=>{await saveDeck(d);setPaste(false);refresh()}} onClose={()=>setPaste(false)} />}
+      {briefDeck && <BriefDrawer deck={briefDeck} onClose={()=>{setBriefDeck(null);refresh()}} />}
     </div>
   )
 }

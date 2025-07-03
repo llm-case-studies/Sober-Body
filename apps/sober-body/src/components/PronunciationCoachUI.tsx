@@ -9,8 +9,10 @@ import { useSettings } from "../features/core/settings-context";
 import { useDecks } from "../features/games/deck-context";
 import type { Deck } from "../features/games/deck-types";
 import GrammarModal from "./GrammarModal";
-import { getBriefForDeck } from "../grammar-loader";
+import { getBriefForDeck, refs } from "../grammar-loader";
 import type { BriefWithRefs } from "../grammar-loader";
+import { loadBrief } from "../brief-storage";
+import useBriefExists from "../useBriefExists";
 
 const defaultDeck: Deck = {
   id: 'example',
@@ -25,6 +27,7 @@ type TranslateMode = 'off' | 'auto-unit' | 'auto-select'
 export default function PronunciationCoachUI() {
   const { decks, activeDeck } = useDecks();
   const currentDeck = decks.find(d => d.id === activeDeck) ?? defaultDeck;
+  const briefExists = useBriefExists(currentDeck.id);
 
   const [raw, setRaw] = useState(currentDeck.lines.join('\n'));
   const [mode, setMode] = useState<SplitMode>('line');
@@ -91,7 +94,22 @@ export default function PronunciationCoachUI() {
     doTranslate(sel || current)
   }
 
-  const handleGrammar = () => {
+  const handleGrammar = async () => {
+    const stored = await loadBrief(currentDeck.id)
+    if (stored) {
+      const linkedRefs = [
+        ...stored.grammar.verb_tenses,
+        ...stored.grammar.prepositions,
+      ].map(id => refs[id]).filter(Boolean)
+      setBrief({
+        id: stored.deckId,
+        story: stored.deckId,
+        grammar: stored.grammar,
+        notes: stored.notes ? [stored.notes] : undefined,
+        linkedRefs,
+      })
+      return
+    }
     const b = getBriefForDeck(currentDeck.id)
     if (!b) {
       alert('No grammar notes for this deck yet.')
@@ -223,9 +241,11 @@ export default function PronunciationCoachUI() {
             >
               {coach.recording ? "■ Stop" : "⏺ Record"}
             </button>
-            <button onClick={handleGrammar} className="px-3 py-1 text-lg">
-              📖 Grammar
-            </button>
+            {briefExists && (
+              <button onClick={handleGrammar} className="px-3 py-1 text-lg">
+                📖 Grammar
+              </button>
+            )}
             <label className="ml-2 text-sm flex items-center gap-1">Translate:
               <select
                 value={tMode}
