@@ -21,13 +21,13 @@ function ActiveDisplay() {
 }
 
 describe('CoachPage routing', () => {
-  it('sets active deck from query param', async () => {
+  it('loads deck from param path', async () => {
     render(
-      <MemoryRouter initialEntries={['/coach?deck=abc']}>
+      <MemoryRouter initialEntries={['/coach/deck/abc']}>
         <SettingsProvider>
           <DeckProvider>
             <Routes>
-              <Route path="/coach" element={<><CoachPage /><ActiveDisplay /></>} />
+              <Route path="/coach/deck/:id" element={<><CoachPage /><ActiveDisplay /></>} />
             </Routes>
           </DeckProvider>
         </SettingsProvider>
@@ -38,14 +38,14 @@ describe('CoachPage routing', () => {
     })
   })
 
-  it('loads deck from URL once decks are ready', async () => {
+  it('skips warning once decks are ready', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     render(
-      <MemoryRouter initialEntries={['/coach?deck=abc']}>
+      <MemoryRouter initialEntries={['/coach/deck/abc']}>
         <SettingsProvider>
           <DeckProvider>
             <Routes>
-              <Route path="/coach" element={<><CoachPage /><ActiveDisplay /></>} />
+              <Route path="/coach/deck/:id" element={<><CoachPage /><ActiveDisplay /></>} />
             </Routes>
           </DeckProvider>
         </SettingsProvider>

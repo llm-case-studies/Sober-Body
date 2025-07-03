@@ -52,14 +52,14 @@ export default function BriefDrawer({ deck, onClose }: { deck: Deck; onClose: ()
           isMulti
           options={tenseOpts}
           value={tenseOpts.filter(o => verbTenses.includes(o.value))}
-          onChange={vals => setVerbTenses(vals.map(v => (v as any).value))}
+          onChange={vals => setVerbTenses(vals.map(v => (v as { value: string }).value))}
         />
         <div className="mb-2 mt-4 text-sm">Prepositions</div>
         <Select
           isMulti
           options={prepOpts}
           value={prepOpts.filter(o => preps.includes(o.value))}
-          onChange={vals => setPreps(vals.map(v => (v as any).value))}
+          onChange={vals => setPreps(vals.map(v => (v as { value: string }).value))}
         />
         <div className="mt-4">
           <textarea

@@ -35,3 +35,8 @@ export function useDecks() {
   if (!ctx) throw new Error('useDecks must be used within DeckProvider')
   return ctx
 }
+
+export function useDeck(id: string) {
+  const { decks } = useDecks()
+  return decks.find(d => d.id === id)
+}

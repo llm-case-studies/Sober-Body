@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
   loadDecks,
   saveDeck,
@@ -14,6 +13,7 @@ import type { Deck } from '../features/games/deck-types'
 import DeckModal from './DeckModal'
 import PasteDeckModal from './PasteDeckModal'
 import BriefDrawer from './BriefDrawer'
+import DrillLink from './DrillLink'
 
 export default function DeckManagerPage() {
   const [decks, setDecks] = useState<Deck[]>([])
@@ -31,10 +31,6 @@ export default function DeckManagerPage() {
   const [edit, setEdit] = useState<Deck | null>(null)
   const [paste, setPaste] = useState(false)
   const [briefDeck, setBriefDeck] = useState<Deck | null>(null)
-  const navigate = useNavigate()
-  const handlePlay = (id: string) => {
-    navigate(`/coach?deck=${encodeURIComponent(id)}`)
-  }
   const refresh = async () => {
     const arr = await loadDecks()
     arr.sort((a,b)=>(b.updated??0)-(a.updated??0))
@@ -130,14 +126,7 @@ export default function DeckManagerPage() {
             key={deck.id}
             className="flex items-center gap-3 border rounded px-3 py-2 hover:bg-sky-50 group"
           >
-            <button
-              onClick={() => handlePlay(deck.id)}
-              className="text-sky-600 text-lg"
-              title="Start drill"
-              aria-label="Start drill"
-            >
-              ▶
-            </button>
+            <DrillLink deck={deck} />
             <div className="flex-1">
               <div className="font-medium">{deck.title}</div>
               <div className="text-xs text-gray-500">
