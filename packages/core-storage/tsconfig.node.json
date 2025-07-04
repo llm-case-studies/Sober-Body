@@ -1,0 +1,7 @@
+{
+  "extends": "../../apps/sober-body/tsconfig.node.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "include": ["vite.config.ts"]
+}
