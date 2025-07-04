@@ -13,9 +13,6 @@ pnpm --filter sober-body dev
 # open http://localhost:5173/app
 ```
 
-**Note:** Always run workspace scripts using `pnpm`. Using `npm run dev` will not
-link local packages like `core-storage`, leading to import errors.
-
 The Pronunciation Coach playground is in [`packages/pronunciation-coach/`](packages/pronunciation-coach/):
 
 ```bash
