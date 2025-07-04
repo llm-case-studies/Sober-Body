@@ -1,7 +1,8 @@
 # Sober‑Body – Developer Architecture Overview
 
 **v0.2 · 23 Jun 2025**
-For engineers & AI contributors – see white‑papers for business context.
+For engineers & AI contributors – see the [Sober‑Body framework paper](./sober-body/sober_body_framework_top_level_whitepaper.md)
+and [PronunCo white‑papers](./pronunco/00_index.md) for business context.
 
 ---
 

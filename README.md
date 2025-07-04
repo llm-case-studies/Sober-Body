@@ -50,6 +50,10 @@ pnpm --filter sober-body test
 - `docs/pronunco/` &mdash; PronunCo white-papers
 - `docs/HTMX_SETUP.md` &mdash; repo root instructions for htmx
 
+## Whitepapers
+- [Sober-Body Framework](docs/sober-body/sober_body_framework_top_level_whitepaper.md)
+- [PronunCo White-Papers](docs/pronunco/00_index.md)
+
 ## Contributing
 
 See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for commit rules, PR workflow and testing requirements.
