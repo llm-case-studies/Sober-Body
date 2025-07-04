@@ -7,7 +7,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "dexie": "^4.0.0"
+    "dexie": "^4.0.0",
+    "idb-keyval": "^6.2.2",
+    "jszip": "^3.10.1"
   },
   "devDependencies": {
     "fake-indexeddb": "latest",

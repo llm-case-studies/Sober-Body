@@ -90,4 +90,17 @@ Start both dev servers with `pnpm run dev:all`.
 
 ---
 
+## Deck-v2 (Dexie)
+
+Deck data is migrating from a single `idb-keyval` blob to Dexie tables. When
+`VITE_DECK_V2` is enabled the app writes to:
+
+- `decks`: `id`, `title`, `lang`, `category`, `updatedAt`
+- `cards`: `id`, `deckId`
+
+Import helpers use Dexie transactions and keep the legacy blob in sync while the
+flag is off.
+
+---
+
 *End of file*
