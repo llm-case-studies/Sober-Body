@@ -29,7 +29,8 @@ docs/
   ├─ CONTRIBUTING.md       # ← you are here
   ├─ BACKLOG.md            # evolving task list
   ├─ ARCHITECTURE.md       # dev‑facing design
-  └─ whitepapers/          # WP‑0 … WP‑n
+  ├─ sober-body/           # WP-0 … WP-n
+  └─ pronunco/             # PronunCo docs
 apps/sober-body/           # Vite React‑TS PWA
 packages/pronunciation-coach/  # Coach playground
 ```
