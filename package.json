@@ -12,6 +12,7 @@
     "ci": "pnpm -r build && pnpm test:unit:sb && pnpm test:unit:pc && pnpm test:e2e:sb && pnpm test:e2e:pc"
   },
   "devDependencies": {
+    "fake-indexeddb": "^4.0.3",
     "vitest": "^1.6.1",
     "@testing-library/user-event": "^14.6.1"
   }
