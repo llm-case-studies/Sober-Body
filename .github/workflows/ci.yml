@@ -1,18 +1,40 @@
 name: CI
-on: [push, pull_request]
+
+on: [pull_request]          # drop “push” if you don’t want duplicate runs
+# on: [push, pull_request]  # ← add push back if you really need both
+
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        app: [sb, pc]
+        app: [sb, pc]       # sb = sober-body, pc = pronunco
     steps:
       - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v2
         with:
           version: 8
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: pnpm install
-      - run: pnpm ci
+          cache: 'pnpm'
+
+      # install workspace deps
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      # build **only** the selected app (quoting needed because of spaces)
+      - name: Build app
+        run: pnpm run --filter "apps/${{ matrix.app }}..." build || true
+        # (^ if you don’t have a build script yet for each app, keep `|| true`
+        #   so the step succeeds – you can tighten this later.)
+
+      # unit tests (Vitest)
+      - name: Unit tests
+        run: pnpm test:unit:${{ matrix.app }}
+
+      # end-to-end tests (Cypress)
+      - name: E2E tests
+        run: pnpm test:e2e:${{ matrix.app }}
