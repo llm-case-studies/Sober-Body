@@ -54,4 +54,12 @@ Legend: **↑ = next up** · ✅ done · ⬜ open
 
 ---
 
+## Sprint-3 Tasks
+
+* ⬜ **feat(storage):** Dexie schema + helpers (deckDB, CRUD) [sprint-3]
+* ⬜ **feat(core):** React hook `useDecks()` with liveQuery [sprint-3]
+* ⬜ **feat(ui):** DeckManager page + route [sprint-3]
+* ⬜ **test(core):** Vitest unit tests for CRUD [sprint-3]
+* ⬜ **test(e2e):** Cypress flow: import → delete → clear [sprint-3]
+
 *End of file*
