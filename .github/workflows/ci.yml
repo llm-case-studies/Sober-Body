@@ -36,5 +36,5 @@ jobs:
         run: pnpm test:unit:${{ matrix.app }}
 
       # end-to-end tests (Cypress)
-      - name: E2E tests
+      #- name: E2E tests
       #  run: pnpm test:e2e:${{ matrix.app }}
