@@ -23,7 +23,7 @@ jobs:
 
       # install workspace deps
       - name: Install deps
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       # build **only** the selected app (quoting needed because of spaces)
       - name: Build app
