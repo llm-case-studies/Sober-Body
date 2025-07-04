@@ -13,7 +13,6 @@
   },
   "devDependencies": {
     "vitest": "^1.6.1",
-    "@vitest/coverage-c8": "^1.6.1",
     "@testing-library/user-event": "^14.6.1"
   }
 }
