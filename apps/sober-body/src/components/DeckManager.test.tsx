@@ -12,9 +12,7 @@ const mockUseDecks = {
   clearAllDecks: vi.fn()
 }
 
-vi.spyOn(hooks, 'useDecks').mockReturnValue(
-  mockUseDecks as ReturnType<typeof hooks.useDecks>
-)
+vi.spyOn(hooks, 'useDecks').mockReturnValue(mockUseDecks as any)
 
 describe('DeckManager', () => {
   it('renders deck list', () => {
