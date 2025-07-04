@@ -88,5 +88,5 @@ export async function seedPresetDecks() {
   const fresh = presets
     .filter(p => !byId.has(p.id))
     .map(p => ({ ...p, updated: Date.now() }))
-  if (fresh.length) saveDecks([...existing, ...fresh])
+  if (fresh.length) await saveDecks([...existing, ...fresh])
 }
