@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "core-storage": "workspace:*",
     "canvas-confetti": "^1.9.3",
     "framer-motion": "^12.19.1",
     "idb-keyval": "^6.2.2",
