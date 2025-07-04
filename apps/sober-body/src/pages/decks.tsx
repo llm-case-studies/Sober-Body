@@ -1,4 +1,4 @@
-import DeckManager from '../components/DeckManager'
+import DeckManagerPage from '../components/DeckManagerPage'
 export default function DecksPage() {
-  return <DeckManager />
+  return <DeckManagerPage />
 }
