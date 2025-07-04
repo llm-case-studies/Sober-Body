@@ -46,7 +46,8 @@ pnpm --filter sober-body test
 - `packages/pronunciation-coach/` &mdash; standalone playground
 - `docs/ARCHITECTURE.md` &mdash; developer architecture overview
 - `docs/BACKLOG.md` &mdash; upcoming features and milestones
-- `docs/whitepapers/` &mdash; white-paper drafts and context
+- `docs/sober-body/` &mdash; white-paper drafts and context
+- `docs/pronunco/` &mdash; PronunCo white-papers
 - `docs/HTMX_SETUP.md` &mdash; repo root instructions for htmx
 
 ## Contributing
