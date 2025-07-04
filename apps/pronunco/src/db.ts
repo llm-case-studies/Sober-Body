@@ -1,3 +1,6 @@
-import { createAppDB } from 'core-storage/src/db'
+import { createAppDB } from '../../../packages/core-storage/src/db'
 
-export const db = createAppDB(import.meta.env.MODE === 'sb' ? 'sober' : 'pronun')
+export let db = createAppDB(import.meta.env.MODE === 'sb' ? 'sober' : 'pronun')
+export const resetDB = () => {
+  db = createAppDB('pronun')
+}
