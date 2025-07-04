@@ -1,0 +1,4 @@
+{
+  "extends": "../../apps/sober-body/tsconfig.json",
+  "include": ["src", "tests"]
+}
