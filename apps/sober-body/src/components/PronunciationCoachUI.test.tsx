@@ -1,4 +1,4 @@
-import { render, fireEvent, screen, cleanup } from '@testing-library/react'
+import { render, fireEvent, screen, cleanup, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { useEffect } from 'react'
 import 'fake-indexeddb/auto'
@@ -55,11 +55,12 @@ describe('PronunciationCoachUI translation', () => {
     const before = translationMock.mock.calls.length
     const nextBtn = await screen.findByRole('button', { name: 'Next' })
     fireEvent.click(nextBtn)
-    await Promise.resolve()
-    expect(translationMock.mock.calls.length).toBeGreaterThan(before)
+    await waitFor(() =>
+      expect(translationMock.mock.calls.length).toBeGreaterThan(before)
+    )
   })
 
-  it('mode off prevents auto translate', () => {
+  it('mode off prevents auto translate', async () => {
     mockDecks.splice(0, mockDecks.length, { id: 't', title: 'T', lang: 'en', lines: ['x', 'y'], tags: [] })
     localStorage.setItem('pc_translateMode', 'off')
     function Wrapper() {
@@ -78,6 +79,7 @@ describe('PronunciationCoachUI translation', () => {
     )
     const calls = translationMock.mock.calls.length
     fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    await Promise.resolve()
     expect(translationMock.mock.calls.length).toBe(calls)
   })
 
