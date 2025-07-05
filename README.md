@@ -1,30 +1,27 @@
 # Sober-Body
 
+[![Unit tests](https://github.com/llm-case-studies/Sober-Body/actions/workflows/ci.yml/badge.svg)](https://github.com/llm-case-studies/Sober-Body/actions/workflows/ci.yml)
+
 Sober-Body™ is a real-time alcohol harm-reduction companion that helps users "party smart and wake up winning." It combines one-tap drink logging with BAC estimates and playful guidance.
 
-## Quick start
+## Getting Started
 
-The project now uses a **pnpm workspace** with two packages under `apps/` and `packages/`.
-The main PWA lives in [`apps/sober-body/`](apps/sober-body/):
+The workspace uses **pnpm**. From the repository root run:
 
 ```bash
 pnpm install
-pnpm --filter sober-body dev
-# open http://localhost:5173/app
 ```
 
-The Pronunciation Coach playground is in [`packages/pronunciation-coach/`](packages/pronunciation-coach/):
+Start both dev servers in a tmux split with:
 
 ```bash
-cd packages/pronunciation-coach
-pnpm install
-pnpm run dev
-# open http://localhost:5174
+./scripts/dev.sh
 ```
 
+If tmux isn't available, open two terminals and run `pnpm dev:sb` and `pnpm dev:pc` manually.
+Sober-Body opens at <http://localhost:5173> and PronunCo at <http://localhost:5174>. Microsoft Edge is recommended because other browsers have partial Web Speech API support.
 
-Create a `.env.local` file at the repository root with your translation API
-credentials. All workspaces load environment variables from that shared file:
+Environment variables come from `.env.local` in the repo root:
 
 ```dotenv
 VITE_TRANSLATOR_KEY=your-azure-key
@@ -32,12 +29,22 @@ VITE_TRANSLATOR_REGION=your-region
 VITE_TRANSLATOR_ENDPOINT=https://<your-translator>.cognitiveservices.azure.com
 ```
 
+Default flags: `VITE_DECK_V2=true` for PronunCo, `false` for Sober-Body.
+
+### Common commands
+
+- `pnpm dev:sb` – start Sober-Body
+- `pnpm dev:pc` – start PronunCo
+- `pnpm test:unit` – unit tests for both apps
+- `pnpm lint` – lint the code
+- `pnpm build --filter apps/sober-body` – example production build
+
 ## Testing
 
-Run the unit tests for the PWA workspace:
+Run all unit tests:
 
 ```bash
-pnpm --filter sober-body test
+pnpm test:unit
 ```
 
 ## Repository layout
