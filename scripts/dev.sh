@@ -34,12 +34,23 @@ ensure_port_free() {
   free_port "$port"
   for _ in {1..5}; do
     if is_port_free "$port"; then
+      echo "Port $port is free"
       return 0
     fi
     sleep 1
   done
   echo "Error: port $port is still in use" >&2
   exit 1
+}
+
+report_ports() {
+  for port in "${DEV_PORTS[@]}"; do
+    if is_port_free "$port"; then
+      echo "Port $port is free"
+    else
+      echo "Port $port is taken"
+    fi
+  done
 }
 
 verify_ports() {
@@ -121,6 +132,7 @@ if command -v tmux >/dev/null 2>&1; then
   tmux split-window -h 'pnpm dev:pc'
   sleep 2
   verify_ports
+  report_ports
   tmux attach -t sober
 else
   echo "tmux not found, starting servers in a single terminal."
@@ -128,5 +140,6 @@ else
   DEV_PID=$!
   sleep 2
   verify_ports
+  report_ports
   wait $DEV_PID
 fi
