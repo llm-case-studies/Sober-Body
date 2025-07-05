@@ -4,13 +4,9 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 
 createRoot(document.getElementById('root')!).render(
-  import.meta.env.VITE_DECK_V2 === 'true' ? (
-    <StrictMode>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </StrictMode>
-  ) : (
-    <div>Hello PronunCo</div>
-  )
+  <StrictMode>
+    <BrowserRouter basename="/pc">
+      <App />
+    </BrowserRouter>
+  </StrictMode>
 )

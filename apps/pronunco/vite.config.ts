@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
     console.log(`  ${key}=${value}`)
   }
   return {
+    base: '/pc/',
     envDir,
     plugins: [react()],
     server: { port: 5174 },

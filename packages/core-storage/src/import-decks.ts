@@ -27,7 +27,6 @@ function toRows(decks: any[]): { decks: Deck[]; cards: Card[] } {
 }
 
 async function dualWriteLegacy(decks: any[]) {
-  if (import.meta.env.VITE_DECK_V2 === 'true') return
   const arr = (await get(LEGACY_KEY)) ?? []
   arr.push(...decks)
   await set(LEGACY_KEY, arr)

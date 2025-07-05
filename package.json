@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "dev:sb": "pnpm --filter ./apps/sober-body dev",
-    "dev:pc": "pnpm --filter ./apps/pronunco dev",
+    "dev:pc": "cd apps/pronunco && vite --base /pc/ --open /pc/decks",
     "dev:all": "concurrently -k \"pnpm dev:sb\" \"pnpm dev:pc\"",
     "test:unit:sb": "vitest run -c apps/sober-body/vitest.config.ts",
     "test:unit:pc": "vitest run -c apps/pronunco/vitest.config.ts",
