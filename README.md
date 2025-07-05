@@ -12,14 +12,17 @@ The workspace uses **pnpm**. From the repository root run:
 pnpm install
 ```
 
-Start both dev servers in a tmux split with:
+Start the dev servers with:
 
 ```bash
-./scripts/dev.sh
+./scripts/dev.sh [--pull] [--test]
 ```
 
-If tmux isn't available, open two terminals and run `pnpm dev:sb` and `pnpm dev:pc` manually.
-Sober-Body opens at <http://localhost:5173> and PronunCo at <http://localhost:5174>. Microsoft Edge is recommended because other browsers have partial Web Speech API support.
+The script checks for `tmux` and falls back to a single-terminal mode when it's
+not installed. Use `--pull` to `git pull` before starting and `--test` to run unit
+tests. Sober-Body opens at <http://localhost:5173> and PronunCo at
+<http://localhost:5174>. Microsoft Edge is recommended because other browsers
+have partial Web Speech API support.
 
 Environment variables come from `.env.local` in the repo root:
 
