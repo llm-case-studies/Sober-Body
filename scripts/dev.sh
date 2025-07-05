@@ -11,6 +11,7 @@ set -e
 RUN_PULL=false
 RUN_TESTS=false
 RUN_INSTALL=false
+STASHED=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -36,10 +37,15 @@ done
 if $RUN_PULL; then
   echo "Pulling latest changes..."
   if ! git diff-index --quiet HEAD --; then
-    echo "Error: local changes detected. Please commit, stash, or discard them before pulling."
-    exit 1
+    echo "Stashing local changes..."
+    git stash push --include-untracked --message "dev.sh auto-stash" >/dev/null
+    STASHED=true
   fi
-  git pull
+  git pull --rebase
+  if $STASHED; then
+    echo "Restoring stashed changes..."
+    git stash pop --index >/dev/null || true
+  fi
 fi
 
 if $RUN_INSTALL; then
