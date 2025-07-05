@@ -19,8 +19,9 @@ Start the dev servers with:
 ```
 
 The script checks for `tmux` and falls back to a single-terminal mode when it's
-not installed. Use `--pull` to `git pull`, `--install` to run `pnpm install`
-before starting and `--test` to run unit tests. The URLs open automatically in
+not installed. Use `--pull` to pull the latest changes (local modifications are
+stashed and restored automatically), `--install` to run `pnpm install` before
+starting and `--test` to run unit tests. The URLs open automatically in
 Microsoft Edge at <http://localhost:5173> (Sober-Body) and
 <http://localhost:5174> (PronunCo). Other browsers have partial Web Speech API
 support, so Edge is launched explicitly.
@@ -62,6 +63,7 @@ pnpm test:unit
 - `docs/HTMX_SETUP.md` &mdash; repo root instructions for htmx
 
 ## Whitepapers
+
 - [Sober-Body Framework](docs/sober-body/sober_body_framework_top_level_whitepaper.md)
 - [PronunCo White-Papers](docs/pronunco/00_index.md)
 
