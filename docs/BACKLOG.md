@@ -13,6 +13,7 @@ Legend: **↑ = next up** · ✅ done · ⬜ open
 * ✅ **feat(core):** Widmark `bac.ts` stub 〣 PR #1
 * ✅ **test(core):** baseline BAC unit tests (`e367648`)
 * ✅ **feat(core):** parameterise elimination β from settings (`b4f609a`)
+* ✅ **chore:** remove `VITE_DECK_V2` flag; PronunCo served from `/pc`
 
 ## UI & UX
 

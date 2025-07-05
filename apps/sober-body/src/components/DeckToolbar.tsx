@@ -1,8 +1,7 @@
 import { useRef } from 'react'
 import type { Deck } from '../features/games/deck-types'
-import { exportZip, importZip } from '../features/games/zip-utils'
-import { saveDeck } from '../features/games/deck-storage'
-import { saveBrief, loadBrief, type BriefDoc } from '../brief-storage'
+import { exportZip } from '../features/games/zip-utils'
+import { loadBrief, type BriefDoc } from '../brief-storage'
 import { importDeckZip, importDeckFolder } from '../../../../packages/core-storage/src/import-decks'
 import { db } from '../db'
 
@@ -12,26 +11,17 @@ export default function DeckToolbar({
   onNew,
   onPaste,
   onFile,
-  onFolder,
 }: {
   decks: Deck[]
   refresh: () => void
   onNew: () => void
   onPaste: () => void
   onFile: (file: File) => void
-  onFolder: (files: FileList) => void
 }) {
   const zipRef = useRef<HTMLInputElement>(null)
   const handleZipImport = async (file: File) => {
-    if (import.meta.env.VITE_DECK_V2 === 'true') {
-      await importDeckZip(file, db)
-      refresh()
-    } else {
-      const { decks: ds, briefs } = await importZip(file)
-      for (const d of ds) await saveDeck(d)
-      for (const b of briefs) await saveBrief(b)
-      refresh()
-    }
+    await importDeckZip(file, db)
+    refresh()
   }
   const handleZipExport = async () => {
     const briefs: BriefDoc[] = []
@@ -72,11 +62,7 @@ export default function DeckToolbar({
           className="hidden"
           onChange={e => {
             if (!e.target.files) return
-            if (import.meta.env.VITE_DECK_V2 === 'true') {
-              importDeckFolder(e.target.files, db).then(refresh)
-            } else {
-              onFolder(e.target.files)
-            }
+            importDeckFolder(e.target.files, db).then(refresh)
           }}
         />
       </label>

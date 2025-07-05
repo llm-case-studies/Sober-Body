@@ -60,9 +60,9 @@ fi
 
 echo "➡  Opening Microsoft Edge at:"
 echo "   • http://localhost:5173  (Sober-Body)"
-echo "   • http://localhost:5174  (PronunCo beta)"
+echo "   • http://localhost:5174/pc/decks  (PronunCo)"
 if command -v microsoft-edge >/dev/null 2>&1; then
-  microsoft-edge http://localhost:5173 http://localhost:5174 &
+  microsoft-edge http://localhost:5173 http://localhost:5174/pc/decks &
 else
   echo "Microsoft Edge not found in PATH; please open the URLs manually."
 fi
