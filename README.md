@@ -22,8 +22,8 @@ The script checks for `tmux` and falls back to a single-terminal mode when it's
 not installed. Use `--pull` to pull the latest changes (local modifications are
 stashed and restored automatically), `--install` to run `pnpm install` before
 starting and `--test` to run unit tests. Before launching the dev servers it
-automatically frees ports 5173 and 5174, killing any leftover processes using
-them and printing which ports were freed. Once the servers are running it lists
+automatically frees ports 5173 and 5174, killing any leftover processes (using
+`sudo` if necessary) and printing which ports were freed. Once the servers are running it lists
 which ports are still in use. The URLs open automatically in Microsoft Edge at
 <http://localhost:5173> (Sober-Body) and <http://localhost:5174/pc/decks>
 (PronunCo). Other browsers have partial Web Speech API support, so Edge is
