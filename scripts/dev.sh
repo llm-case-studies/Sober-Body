@@ -23,6 +23,15 @@ free_port() {
   # Fallback to lsof if kill-port is unavailable or fails
   if lsof -ti :"$port" >/dev/null 2>&1; then
     lsof -ti :"$port" | xargs -r kill >/dev/null 2>&1 || true
+    if lsof -ti :"$port" >/dev/null 2>&1; then
+      echo "Port $port still taken; trying sudo..." >&2
+      if command -v pnpx >/dev/null 2>&1; then
+        sudo pnpx --yes kill-port "$port" >/dev/null 2>&1 || true
+      elif command -v npx >/dev/null 2>&1; then
+        sudo npx -y kill-port "$port" >/dev/null 2>&1 || true
+      fi
+      lsof -ti :"$port" | xargs -r sudo kill >/dev/null 2>&1 || true
+    fi
   fi
 }
 
