@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --open /decks",
+    "dev": "vite --base /pc/",
     "build": "tsc -b && vite build",
     "test": "vitest run"
   },
