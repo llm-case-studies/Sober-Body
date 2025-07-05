@@ -1,119 +1,100 @@
 #!/usr/bin/env bash
-# Start the Sober-Body and PronunCo dev servers.
+# Idempotent dev helper for Sober-Body & PronunCo.
 #
-# Optional flags:
-#   -p | --pull     Pull the latest git changes before starting.
-#   -t | --test     Run unit tests before starting.
-#   -i | --install  Run 'pnpm install' before starting.
+# Flags:
+#   -p | --pull      git pull --rebase --autostash
+#   -i | --install   pnpm install
+#   -t | --test      pnpm test
+#   -s | --start     (default) start dev servers
 
 set -euo pipefail
 
-RUN_PULL=false
-RUN_TESTS=false
-RUN_INSTALL=false
-
+# ───────── configuration ─────────
 SESSION=sober
 PORT_SB=5173
 PORT_PC=5174
-DEV_PORTS=(5173 5174 5175 5176)
+DEV_PORTS=("$PORT_SB" "$PORT_PC")
+URL_SB="http://localhost:${PORT_SB}/decks"
+URL_PC="http://localhost:${PORT_PC}/pc/decks"
+# ──────────────────────────────────
 
-edge() {
+run_pull=false run_install=false run_tests=false run_start=false
+[[ $# -eq 0 ]] && run_start=true        # default action
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -p|--pull)     run_pull=true;;
+    -i|--install)  run_install=true;;
+    -t|--test)     run_tests=true ;;
+    -s|--start)    run_start=true ;;
+    *) echo "Usage: $0 [-p] [-i] [-t] [-s]" && exit 1;;
+  esac
+  shift
+done
+
+#─── helpers ──────────────────────────────────────────────────────────────
+edge () {
   if command -v microsoft-edge >/dev/null 2>&1; then
-    microsoft-edge "$1" &
+    microsoft-edge "$@" >/dev/null 2>&1 &
   else
-    xdg-open "$1" &
+    xdg-open       "$@" >/dev/null 2>&1 &
   fi
 }
 
-cleanup_tmux() {
-  tmux has-session -t "$SESSION" 2>/dev/null && tmux kill-session -t "$SESSION"
-}
-
-cleanup_ports() {
+cleanup_ports () {
   for port in "$PORT_SB" "$PORT_PC"; do
-    pid=$(lsof -ti tcp:"$port") || true
-    if [[ -n "$pid" ]]; then
-      echo "   • Killing process $pid on port $port"
-      kill "$pid" || true
-    fi
+    lsof -ti tcp:"$port" 2>/dev/null || true | while read -r pid; do
+      [[ -z $pid ]] && continue
+      echo "  • SIGTERM $pid (port $port)"; kill -15 "$pid" 2>/dev/null || true
+      sleep 1
+      if lsof -p "$pid" &>/dev/null; then
+        echo "  • SIGKILL $pid"; kill -9 "$pid" 2>/dev/null || true
+      fi
+    done
   done
 }
 
-is_port_free() { ! lsof -i :"$1" >/dev/null 2>&1; }
-
-report_ports() {
-  for port in "${DEV_PORTS[@]}"; do
-    if is_port_free "$port"; then
-      echo "Port $port is free"
-    else
-      echo "Port $port is taken"
-    fi
-  done
+cleanup_tmux () {
+  if command -v tmux &>/dev/null && tmux has-session -t "$SESSION" 2>/dev/null; then
+    echo "  • Killing old tmux session '$SESSION'"
+    tmux kill-session -t "$SESSION"
+  fi
 }
 
-while [[ $# -gt 0 ]]; do
-  case $1 in
-    -p|--pull)
-      RUN_PULL=true
-      shift
-      ;;
-    -t|--test)
-      RUN_TESTS=true
-      shift
-      ;;
-    -i|--install)
-      RUN_INSTALL=true
-      shift
-      ;;
-    *)
-      echo "Usage: $0 [-p|--pull] [-t|--test] [-i|--install]"
-      exit 1
-      ;;
-  esac
-done
+report_ports () {
+  for p in "${DEV_PORTS[@]}"; do
+    lsof -ti tcp:"$p" -sTCP:LISTEN &>/dev/null \
+      && echo "Port $p  🔒  taken" \
+      || echo "Port $p  ✅  free"
+  done
+}
+#──────────────────────────────────────────────────────────────────────────
 
-if $RUN_PULL; then
-  echo "Pulling latest changes..."
-  git pull --rebase --autostash
-fi
+$run_pull    && { echo "↻ git pull …";      git pull --rebase --autostash; }
+$run_install && { echo "📦 pnpm install …";  pnpm install; }
+$run_tests   && { echo "🧪 running tests …"; pnpm test; }
 
-if $RUN_INSTALL; then
-  echo "Installing dependencies..."
-  pnpm install
-fi
+$run_start || exit 0
 
-if $RUN_TESTS; then
-  echo "Running unit tests..."
-  pnpm test:unit
-fi
-
-echo "▶ Cleaning up previous dev environment …"
-cleanup_tmux
+echo "▶ Cleaning previous dev env …"
 cleanup_ports
+cleanup_tmux
+echo "✅ Ports status:"; report_ports
 
-echo "✅ Ports cleared. Spinning up dev servers …"
+echo "🌐 Opening Edge tabs …"
+edge "$URL_SB"
+edge "$URL_PC"
 
-echo "➡  Opening Microsoft Edge at:"
-echo "   • http://localhost:$PORT_SB/decks     (Sober-Body)"
-echo "   • http://localhost:$PORT_PC/pc/decks (PronunCo)"
-edge "http://localhost:${PORT_SB}/decks"
-edge "http://localhost:${PORT_PC}/pc/decks"
-
-if command -v tmux >/dev/null 2>&1; then
-  tmux new-session -d -s "$SESSION" \
-    "pnpm dev:sb -- --port $PORT_SB"
-  tmux split-window -h \
-    "pnpm dev:pc -- --port $PORT_PC"
-  sleep 2
-  report_ports
-  tmux attach-session -t "$SESSION"
+if command -v tmux &>/dev/null; then
+  tmux new-session  -d -s "$SESSION" "pnpm dev:sb -- --port $PORT_SB"
+  tmux split-window -h               "pnpm dev:pc -- --port $PORT_PC"
+  sleep 2 && report_ports
+  tmux attach -t "$SESSION"
 else
-  echo "tmux not found, starting servers in a single terminal."
-  pnpm dev:sb -- --port "$PORT_SB" &
-  PID_SB=$!
-  pnpm dev:pc -- --port "$PORT_PC" &
-  PID_PC=$!
-  sleep 2
-  report_ports
-  wait $PID_SB $PID_PC
+  echo "tmux not found → starting servers in current terminal."
+  pnpm dev:sb -- --port "$PORT_SB" & pid_sb=$!
+  pnpm dev:pc -- --port "$PORT_PC" & pid_pc=$!
+  sleep 2 && report_ports
+  trap "kill $pid_sb $pid_pc" SIGINT SIGTERM
+  wait
 fi
