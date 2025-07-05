@@ -15,14 +15,15 @@ pnpm install
 Start the dev servers with:
 
 ```bash
-./scripts/dev.sh [--pull] [--test]
+./scripts/dev.sh [--pull] [--test] [--install]
 ```
 
 The script checks for `tmux` and falls back to a single-terminal mode when it's
-not installed. Use `--pull` to `git pull` before starting and `--test` to run unit
-tests. Sober-Body opens at <http://localhost:5173> and PronunCo at
-<http://localhost:5174>. Microsoft Edge is recommended because other browsers
-have partial Web Speech API support.
+not installed. Use `--pull` to `git pull`, `--install` to run `pnpm install`
+before starting and `--test` to run unit tests. The URLs open automatically in
+Microsoft Edge at <http://localhost:5173> (Sober-Body) and
+<http://localhost:5174> (PronunCo). Other browsers have partial Web Speech API
+support, so Edge is launched explicitly.
 
 Environment variables come from `.env.local` in the repo root:
 
