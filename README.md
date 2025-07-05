@@ -21,10 +21,12 @@ Start the dev servers with:
 The script checks for `tmux` and falls back to a single-terminal mode when it's
 not installed. Use `--pull` to pull the latest changes (local modifications are
 stashed and restored automatically), `--install` to run `pnpm install` before
-starting and `--test` to run unit tests. The URLs open automatically in
-Microsoft Edge at <http://localhost:5173> (Sober-Body) and
-<http://localhost:5174/pc/decks> (PronunCo). Other browsers have partial Web Speech API
-support, so Edge is launched explicitly.
+starting and `--test` to run unit tests. Before launching the dev servers it
+automatically frees ports 5173 and 5174, killing any leftover processes using
+them. The URLs open automatically in Microsoft Edge at
+<http://localhost:5173> (Sober-Body) and <http://localhost:5174/pc/decks>
+(PronunCo). Other browsers have partial Web Speech API support, so Edge is
+launched explicitly.
 
 Environment variables come from `.env.local` in the repo root:
 
