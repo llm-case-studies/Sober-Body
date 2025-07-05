@@ -2,13 +2,15 @@
 # Start the Sober-Body and PronunCo dev servers.
 #
 # Optional flags:
-#   -p | --pull   Pull the latest git changes before starting.
-#   -t | --test   Run unit tests before starting.
+#   -p | --pull     Pull the latest git changes before starting.
+#   -t | --test     Run unit tests before starting.
+#   -i | --install  Run 'pnpm install' before starting.
 
 set -e
 
 RUN_PULL=false
 RUN_TESTS=false
+RUN_INSTALL=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -20,8 +22,12 @@ while [[ $# -gt 0 ]]; do
       RUN_TESTS=true
       shift
       ;;
+    -i|--install)
+      RUN_INSTALL=true
+      shift
+      ;;
     *)
-      echo "Usage: $0 [-p|--pull] [-t|--test]"
+      echo "Usage: $0 [-p|--pull] [-t|--test] [-i|--install]"
       exit 1
       ;;
   esac
@@ -36,14 +42,24 @@ if $RUN_PULL; then
   git pull
 fi
 
+if $RUN_INSTALL; then
+  echo "Installing dependencies..."
+  pnpm install
+fi
+
 if $RUN_TESTS; then
   echo "Running unit tests..."
   pnpm test:unit
 fi
 
-echo "➡  Open Microsoft Edge and browse:"
+echo "➡  Opening Microsoft Edge at:"
 echo "   • http://localhost:5173  (Sober-Body)"
 echo "   • http://localhost:5174  (PronunCo beta)"
+if command -v microsoft-edge >/dev/null 2>&1; then
+  microsoft-edge http://localhost:5173 http://localhost:5174 &
+else
+  echo "Microsoft Edge not found in PATH; please open the URLs manually."
+fi
 
 if command -v tmux >/dev/null 2>&1; then
   # Use tmux when available for split-pane dev servers.
