@@ -11,7 +11,6 @@ set -e
 RUN_PULL=false
 RUN_TESTS=false
 RUN_INSTALL=false
-STASHED=false
 DEV_PORTS=(5173 5174 5175 5176)
 
 free_port() {
@@ -20,8 +19,10 @@ free_port() {
     pnpx --yes kill-port "$port" >/dev/null 2>&1 || true
   elif command -v npx >/dev/null 2>&1; then
     npx -y kill-port "$port" >/dev/null 2>&1 || true
-  else
-    echo "Warning: could not free port $port (pnpx/npx not found)" >&2
+  fi
+  # Fallback to lsof if kill-port is unavailable or fails
+  if lsof -ti :"$port" >/dev/null 2>&1; then
+    lsof -ti :"$port" | xargs -r kill >/dev/null 2>&1 || true
   fi
 }
 
@@ -91,16 +92,7 @@ done
 
 if $RUN_PULL; then
   echo "Pulling latest changes..."
-  if ! git diff-index --quiet HEAD --; then
-    echo "Stashing local changes..."
-    git stash push --include-untracked --message "dev.sh auto-stash" >/dev/null
-    STASHED=true
-  fi
-  git pull --rebase
-  if $STASHED; then
-    echo "Restoring stashed changes..."
-    git stash pop --index >/dev/null || true
-  fi
+  git pull --rebase --autostash
 fi
 
 if $RUN_INSTALL; then
