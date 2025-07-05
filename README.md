@@ -23,7 +23,7 @@ not installed. Use `--pull` to pull the latest changes (local modifications are
 stashed and restored automatically), `--install` to run `pnpm install` before
 starting and `--test` to run unit tests. The URLs open automatically in
 Microsoft Edge at <http://localhost:5173> (Sober-Body) and
-<http://localhost:5174> (PronunCo). Other browsers have partial Web Speech API
+<http://localhost:5174/pc/decks> (PronunCo). Other browsers have partial Web Speech API
 support, so Edge is launched explicitly.
 
 Environment variables come from `.env.local` in the repo root:
@@ -34,12 +34,11 @@ VITE_TRANSLATOR_REGION=your-region
 VITE_TRANSLATOR_ENDPOINT=https://<your-translator>.cognitiveservices.azure.com
 ```
 
-Default flags: `VITE_DECK_V2=true` for PronunCo, `false` for Sober-Body.
 
 ### Common commands
 
 - `pnpm dev:sb` – start Sober-Body
-- `pnpm dev:pc` – start PronunCo
+- `pnpm dev:pc` – start PronunCo at `/pc`
 - `pnpm test:unit` – unit tests for both apps
 - `pnpm lint` – lint the code
 - `pnpm build --filter apps/sober-body` – example production build
