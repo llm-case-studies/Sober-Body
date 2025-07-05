@@ -12,6 +12,17 @@ RUN_PULL=false
 RUN_TESTS=false
 RUN_INSTALL=false
 STASHED=false
+DEV_PORTS=(5173 5174)
+
+free_port() {
+  local port=$1
+  local pids
+  pids=$(lsof -ti tcp:"$port" 2>/dev/null)
+  if [[ -n "$pids" ]]; then
+    echo "Freeing port $port (killing $pids)"
+    kill -9 $pids || true
+  fi
+}
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -57,6 +68,11 @@ if $RUN_TESTS; then
   echo "Running unit tests..."
   pnpm test:unit
 fi
+
+# Ensure dev ports are free before starting servers
+for port in "${DEV_PORTS[@]}"; do
+  free_port "$port"
+done
 
 echo "➡  Opening Microsoft Edge at:"
 echo "   • http://localhost:5173  (Sober-Body)"
