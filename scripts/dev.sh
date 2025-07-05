@@ -6,52 +6,32 @@
 #   -t | --test     Run unit tests before starting.
 #   -i | --install  Run 'pnpm install' before starting.
 
-set -e
+set -euo pipefail
 
 RUN_PULL=false
 RUN_TESTS=false
 RUN_INSTALL=false
+
+SESSION=sober
+PORT_SB=5173
+PORT_PC=5174
 DEV_PORTS=(5173 5174 5175 5176)
 
-free_port() {
-  local port=$1
-  if command -v pnpx >/dev/null 2>&1; then
-    pnpx --yes kill-port "$port" >/dev/null 2>&1 || true
-  elif command -v npx >/dev/null 2>&1; then
-    npx -y kill-port "$port" >/dev/null 2>&1 || true
-  fi
-  # Fallback to lsof if kill-port is unavailable or fails
-  if lsof -ti :"$port" >/dev/null 2>&1; then
-    lsof -ti :"$port" | xargs -r kill >/dev/null 2>&1 || true
-    if lsof -ti :"$port" >/dev/null 2>&1; then
-      echo "Port $port still taken; trying sudo..." >&2
-      if command -v pnpx >/dev/null 2>&1; then
-        sudo pnpx --yes kill-port "$port" >/dev/null 2>&1 || true
-      elif command -v npx >/dev/null 2>&1; then
-        sudo npx -y kill-port "$port" >/dev/null 2>&1 || true
-      fi
-      lsof -ti :"$port" | xargs -r sudo kill >/dev/null 2>&1 || true
-    fi
-  fi
+cleanup_tmux() {
+  tmux has-session -t "$SESSION" 2>/dev/null && tmux kill-session -t "$SESSION"
 }
 
-is_port_free() {
-  ! lsof -i :"$1" >/dev/null 2>&1
-}
-
-ensure_port_free() {
-  local port=$1
-  free_port "$port"
-  for _ in {1..5}; do
-    if is_port_free "$port"; then
-      echo "Port $port is free"
-      return 0
+cleanup_ports() {
+  for port in "$PORT_SB" "$PORT_PC"; do
+    pid=$(lsof -ti tcp:"$port") || true
+    if [[ -n "$pid" ]]; then
+      echo "   • Killing process $pid on port $port"
+      kill "$pid" || true
     fi
-    sleep 1
   done
-  echo "Error: port $port is still in use" >&2
-  exit 1
 }
+
+is_port_free() { ! lsof -i :"$1" >/dev/null 2>&1; }
 
 report_ports() {
   for port in "${DEV_PORTS[@]}"; do
@@ -59,21 +39,6 @@ report_ports() {
       echo "Port $port is free"
     else
       echo "Port $port is taken"
-    fi
-  done
-}
-
-verify_ports() {
-  for port in 5173 5174; do
-    if is_port_free "$port"; then
-      echo "Error: expected port $port in use" >&2
-      exit 1
-    fi
-  done
-  for port in 5175 5176; do
-    if ! is_port_free "$port"; then
-      echo "Error: unexpected process on port $port" >&2
-      exit 1
     fi
   done
 }
@@ -114,33 +79,31 @@ if $RUN_TESTS; then
   pnpm test:unit
 fi
 
-# Ensure dev ports are free before starting servers
-for port in "${DEV_PORTS[@]}"; do
-  ensure_port_free "$port"
-done
+echo "▶ Cleaning up previous dev environment …"
+cleanup_tmux
+cleanup_ports
+
+echo "✅ Ports cleared. Spinning up dev servers …"
 
 echo "➡  Opening Microsoft Edge at:"
-echo "   • http://localhost:5173  (Sober-Body)"
+echo "   • http://localhost:$PORT_SB  (Sober-Body)"
 if command -v microsoft-edge >/dev/null 2>&1; then
-  microsoft-edge http://localhost:5173 &
+  microsoft-edge http://localhost:$PORT_SB &
 else
   echo "Microsoft Edge not found in PATH; please open the URL manually."
 fi
 
 if command -v tmux >/dev/null 2>&1; then
-  # Use tmux when available for split-pane dev servers.
-  tmux new -d -s sober 'pnpm dev:sb'
-  tmux split-window -h 'pnpm dev:pc'
+  tmux new-session -d -s "$SESSION" "pnpm dev:sb"
+  tmux split-window -h "pnpm dev:pc"
   sleep 2
-  verify_ports
   report_ports
-  tmux attach -t sober
+  tmux attach-session -t "$SESSION"
 else
   echo "tmux not found, starting servers in a single terminal."
   pnpm dev:all &
   DEV_PID=$!
   sleep 2
-  verify_ports
   report_ports
   wait $DEV_PID
 fi
