@@ -16,11 +16,12 @@ DEV_PORTS=(5173 5174)
 
 free_port() {
   local port=$1
-  local pids
-  pids=$(lsof -ti tcp:"$port" 2>/dev/null)
-  if [[ -n "$pids" ]]; then
-    echo "Freeing port $port (killing $pids)"
-    kill -9 $pids || true
+  if command -v pnpx >/dev/null 2>&1; then
+    pnpx --yes kill-port "$port" >/dev/null 2>&1 || true
+  elif command -v npx >/dev/null 2>&1; then
+    npx -y kill-port "$port" >/dev/null 2>&1 || true
+  else
+    echo "Warning: could not free port $port (pnpx/npx not found)" >&2
   fi
 }
 
@@ -76,11 +77,10 @@ done
 
 echo "➡  Opening Microsoft Edge at:"
 echo "   • http://localhost:5173  (Sober-Body)"
-echo "   • http://localhost:5174/pc/decks  (PronunCo)"
 if command -v microsoft-edge >/dev/null 2>&1; then
-  microsoft-edge http://localhost:5173 http://localhost:5174/pc/decks &
+  microsoft-edge http://localhost:5173 &
 else
-  echo "Microsoft Edge not found in PATH; please open the URLs manually."
+  echo "Microsoft Edge not found in PATH; please open the URL manually."
 fi
 
 if command -v tmux >/dev/null 2>&1; then
