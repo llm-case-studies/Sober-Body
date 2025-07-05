@@ -12,7 +12,7 @@ RUN_PULL=false
 RUN_TESTS=false
 RUN_INSTALL=false
 STASHED=false
-DEV_PORTS=(5173 5174)
+DEV_PORTS=(5173 5174 5175 5176)
 
 free_port() {
   local port=$1
@@ -23,6 +23,38 @@ free_port() {
   else
     echo "Warning: could not free port $port (pnpx/npx not found)" >&2
   fi
+}
+
+is_port_free() {
+  ! lsof -i :"$1" >/dev/null 2>&1
+}
+
+ensure_port_free() {
+  local port=$1
+  free_port "$port"
+  for _ in {1..5}; do
+    if is_port_free "$port"; then
+      return 0
+    fi
+    sleep 1
+  done
+  echo "Error: port $port is still in use" >&2
+  exit 1
+}
+
+verify_ports() {
+  for port in 5173 5174; do
+    if is_port_free "$port"; then
+      echo "Error: expected port $port in use" >&2
+      exit 1
+    fi
+  done
+  for port in 5175 5176; do
+    if ! is_port_free "$port"; then
+      echo "Error: unexpected process on port $port" >&2
+      exit 1
+    fi
+  done
 }
 
 while [[ $# -gt 0 ]]; do
@@ -72,7 +104,7 @@ fi
 
 # Ensure dev ports are free before starting servers
 for port in "${DEV_PORTS[@]}"; do
-  free_port "$port"
+  ensure_port_free "$port"
 done
 
 echo "➡  Opening Microsoft Edge at:"
@@ -87,8 +119,14 @@ if command -v tmux >/dev/null 2>&1; then
   # Use tmux when available for split-pane dev servers.
   tmux new -d -s sober 'pnpm dev:sb'
   tmux split-window -h 'pnpm dev:pc'
+  sleep 2
+  verify_ports
   tmux attach -t sober
 else
   echo "tmux not found, starting servers in a single terminal."
-  pnpm dev:all
+  pnpm dev:all &
+  DEV_PID=$!
+  sleep 2
+  verify_ports
+  wait $DEV_PID
 fi
