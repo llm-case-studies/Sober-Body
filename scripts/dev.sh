@@ -29,6 +29,10 @@ done
 
 if $RUN_PULL; then
   echo "Pulling latest changes..."
+  if ! git diff-index --quiet HEAD --; then
+    echo "Error: local changes detected. Please commit, stash, or discard them before pulling."
+    exit 1
+  fi
   git pull
 fi
 
