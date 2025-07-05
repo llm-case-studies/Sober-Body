@@ -1,15 +1,20 @@
 {
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev:sb": "vite --config apps/sober-body/vite.config.ts --port 5173",
-    "dev:pc": "vite --config apps/pronunco/vite.config.ts --port 5174",
+    "dev:sb": "pnpm --filter ./apps/sober-body dev",
+    "dev:pc": "pnpm --filter ./apps/pronunco dev",
     "dev:all": "concurrently -k \"pnpm dev:sb\" \"pnpm dev:pc\"",
     "test:unit:sb": "vitest run -c apps/sober-body/vitest.config.ts",
     "test:unit:pc": "vitest run -c apps/pronunco/vitest.config.ts",
     "test:e2e:sb": "cypress run --config-file apps/sober-body/cypress.config.ts",
     "test:e2e:pc": "cypress run --config-file apps/pronunco/cypress.config.ts",
-    "ci": "pnpm -r build && pnpm test:unit:sb && pnpm test:unit:pc && pnpm test:e2e:sb && pnpm test:e2e:pc"
+    "ci": "pnpm -r build && pnpm test:unit:sb && pnpm test:unit:pc && pnpm test:e2e:sb && pnpm test:e2e:pc",
+    "test:unit": "pnpm -r --parallel test:unit:*",
+    "lint": "pnpm -r lint"
   },
   "devDependencies": {
     "fake-indexeddb": "latest",
