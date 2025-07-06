@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, resetDB } from '../db'
 import { importDeckZip, importDeckFolder } from '../../../../packages/core-storage/src/import-decks'
@@ -7,7 +7,6 @@ import { exportDeckZip } from '../exportDeckZip'
 
 export default function DeckManager() {
   const zipRef = useRef<HTMLInputElement>(null)
-  const folderRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
   const decks = useLiveQuery(() => db.decks.toArray(), [], []) || []
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -28,23 +27,6 @@ export default function DeckManager() {
     await importDeckFolder(files, db)
   }
 
-  const handleFolder = async () => {
-    if ('showDirectoryPicker' in window) {
-      try {
-        // @ts-ignore
-        const dir = await window.showDirectoryPicker()
-        const files: File[] = []
-        for await (const entry of dir.values()) {
-          if (entry.kind === 'file' && entry.name.endsWith('.json')) {
-            files.push(await entry.getFile())
-          }
-        }
-        if (files.length) await handleFolderFiles(files)
-      } catch {}
-    } else {
-      folderRef.current?.click()
-    }
-  }
 
   const clearDecks = async () => {
     await db.delete()
@@ -67,19 +49,17 @@ export default function DeckManager() {
 
   const onDrill = () => {
     const id = [...selectedIds][0]
-    if (id) navigate(`/coach/${id}`)
+    if (id) navigate(`/pc/coach/${id}`)
   }
 
   const onExport = async () => {
     await exportDeckZip([...selectedIds], db)
   }
 
-  const onDelete = async () => {
-    const ids = [...selectedIds]
-    await db.transaction('rw', db.decks, async () => {
-      await db.decks.bulkDelete(ids)
-    })
-    alert(`Deleted ${ids.length} decks`)
+  async function handleDelete() {
+    await db.transaction('rw', db.decks, () =>
+      db.decks.bulkDelete([...selectedIds])
+    )
     setSelectedIds(new Set())
   }
 
@@ -96,18 +76,16 @@ export default function DeckManager() {
           onChange={e => e.target.files && handleZip(e.target.files[0])}
         />
       </label>
-      <input
-        ref={folderRef}
-        type="file"
-        accept=".json"
-        multiple
-        webkitdirectory=""
-        className="hidden"
-        onChange={e => e.target.files && handleFolderFiles(e.target.files)}
-      />
-      <button className="border px-2" onClick={handleFolder}>
-        Import folder (beta)
-      </button>
+      <label className="btn btn-outline-primary m-1">
+        Import folder
+        <input
+          type="file"
+          hidden
+          webkitdirectory=""
+          multiple
+          onChange={e => e.target.files && handleFolderFiles(e.target.files)}
+        />
+      </label>
       <button className="border px-2" title="Clear decks" onClick={clearDecks}>
         Clear decks (beta)
       </button>
@@ -141,9 +119,9 @@ export default function DeckManager() {
               <td>{d.title}</td>
               <td>{d.lang}</td>
               <td className="text-center">
-                <button aria-label="Drill deck" onClick={() => navigate(`/coach/${d.id}`)}>
+                <Link to={`/pc/coach/${d.id}`} aria-label="Drill deck">
                   ▶
-                </button>
+                </Link>
               </td>
             </tr>
           ))}
@@ -154,7 +132,7 @@ export default function DeckManager() {
           <button onClick={onDrill}>▶ Drill</button>
           <button onClick={() => alert('TODO')}>📝 Edit Grammar</button>
           <button onClick={onExport}>📤 Export ZIP</button>
-          <button onClick={onDelete}>🗑 Delete</button>
+          <button onClick={handleDelete}>🗑 Delete</button>
         </div>
       )}
     </div>
