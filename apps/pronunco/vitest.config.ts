@@ -7,8 +7,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['fake-indexeddb/auto'],
-    maxWorkers: 1,
-    threads: false,
+    poolOptions: { threads: { minThreads: 1, maxThreads: 1 } },
     coverage: process.env.CI ? undefined : { reporter: ['text', 'html'] }
   }
 })
