@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest'
 import 'fake-indexeddb/auto'
 import DeckManager from '../src/components/DeckManager'
 import { db, resetDB } from '../src/db'
@@ -17,6 +17,11 @@ beforeEach(async () => {
     { id: 'b', title: 'B', lang: 'en', updatedAt: 0 },
     { id: 'c', title: 'C', lang: 'en', updatedAt: 0 }
   ])
+})
+
+afterAll(async () => {
+  await db.close()
+  await db.delete()
 })
 
 describe('DeckManager bulk actions', () => {

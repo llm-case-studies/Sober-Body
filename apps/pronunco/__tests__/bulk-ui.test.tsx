@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen, fireEvent, within } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, afterAll, vi } from 'vitest'
 import DeckManager from '../src/components/DeckManager'
 import { MemoryRouter } from 'react-router-dom'
 
@@ -24,6 +24,10 @@ vi.mock('../src/exportDeckZip', () => ({
   exportDeckZip: vi.fn(async () => new Blob())
 }))
 import { exportDeckZip } from '../src/exportDeckZip'
+
+afterAll(() => {
+  vi.restoreAllMocks()
+})
 
 function setup() {
   render(
