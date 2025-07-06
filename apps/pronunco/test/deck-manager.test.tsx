@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterAll } from 'vitest'
 import 'fake-indexeddb/auto'
 import JSZip from 'jszip'
 import DeckManager from '../src/components/DeckManager'
@@ -11,6 +11,11 @@ beforeEach(async () => {
   await db.delete()
   resetDB()
   await db.open()
+})
+
+afterAll(async () => {
+  await db.close()
+  await db.delete()
 })
 
 describe('DeckManager import', () => {
