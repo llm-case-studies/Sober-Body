@@ -32,8 +32,13 @@ jobs:
         #   so the step succeeds – you can tighten this later.)
 
       # unit tests (Vitest)
-      - name: Unit tests
-        run: NODE_OPTIONS="--max-old-space-size=3072" pnpm test:unit:${{ matrix.app }}
+      - name: Unit tests (Sober Body)
+        if: matrix.app == 'sb'
+        run: NODE_OPTIONS="--max-old-space-size=3072" pnpm test:unit:sb
+
+      - name: Unit tests (PronunCo)
+        if: matrix.app == 'pc'
+        run: pnpm --filter apps/pronunco vitest run --reporter=verbose
 
       # end-to-end tests (Cypress)
       #- name: E2E tests
