@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, type ChangeEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { db, resetDB } from '../db'
+import { db, clearDecks as clearAllDecks } from '../db'
 import { importDeckZip, importDeckFolder } from '../../../../packages/core-storage/src/import-decks'
 import { saveLastDir, getLastDir } from '../../../../packages/core-storage/src/ui-store'
 import { exportDeckZip } from '../exportDeckZip'
@@ -57,8 +57,8 @@ export default function DeckManager() {
           startIn: last
         })
         const file = await h.getFile()
-        await handleZip(file)
         await saveLastDir(db, h as any)
+        await handleZip(file)
         return
       } catch (e) {
         /* fall back */
@@ -79,8 +79,8 @@ export default function DeckManager() {
           ]
         })
         const files = await Promise.all(handles.map((h: any) => h.getFile()))
-        if (files.length) await handleFolderFiles(files)
         if (handles[0]) await saveLastDir(db, handles[0] as any)
+        if (files.length) await handleFolderFiles(files)
         return
       } catch (e) {
         /* fall back */
@@ -91,8 +91,7 @@ export default function DeckManager() {
 
 
   const clearDecks = async () => {
-    await db.delete()
-    resetDB()
+    await clearAllDecks()
   }
 
   const toggleId = (id: string) => {
