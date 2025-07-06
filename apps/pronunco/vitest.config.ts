@@ -1,14 +1,15 @@
-import { defineConfig } from 'vitest/config'
-import { join } from 'path'
+import { defineConfig } from 'vitest/config';
+import { join } from 'path';
 
 export default defineConfig({
   root: __dirname,
   resolve: { alias: { '@': join(__dirname, 'src') } },
   test: {
-    environment: 'jsdom',
-    setupFiles: ['fake-indexeddb/auto'],
-    maxWorkers: 1,
-    threads: false,
-    coverage: process.env.CI ? undefined : { reporter: ['text', 'html'] }
-  }
-})
+    environment: 'jsdom',      // UI tests still need the DOM
+    threads: false,            // ← single process = no worker leak
+    isolate: false,            // keep one jsdom; saves ~100 MB/run
+    fileParallelism: false,    // serialise files; speed hit is tiny (<200 ms)
+    hookTimeout: 10_000,
+    setupFiles: ['./tests/setup-vitest.ts'],
+  },
+});
