@@ -1,0 +1,24 @@
+{
+  "id": "drill-visita-museu-pt-BR",
+  "version": 1,
+  "title": "Um Fim de Semana com Arte",
+  "lang": "pt-BR",
+  "tags": [
+    "cat:story",
+    "type:conversation",
+    "tense:past-present-future"
+  ],
+  "lines": [
+    "Ontem eu fui com minha família ao museu de arte Clark.",
+    "Nós vimos muitas pinturas lindas.",
+    "Também tiramos fotos e caminhamos pelo jardim.",
+    "Foi um passeio muito interessante.",
+    "Hoje de manhã, eu procurei mais informações na internet sobre o museu.",
+    "Eu aprendi mais sobre os artistas e as obras que vimos.",
+    "Agora eu quero visitar mais lugares parecidos.",
+    "Amanhã, nós vamos visitar uma pequena galeria de arte aqui nos Berkshires.",
+    "Ela é menor que o Clark, mas parece bem charmosa.",
+    "Estou animado para ver o que encontraremos lá.",
+    "Acho que vai ser uma experiência legal!"
+  ]
+}

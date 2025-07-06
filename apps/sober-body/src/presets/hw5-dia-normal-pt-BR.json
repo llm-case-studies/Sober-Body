@@ -1,0 +1,20 @@
+{
+  "id": "hw1-dia-normal-pt-BR",
+  "version": 1,
+  "title": "Um Dia Normal",
+  "lang": "pt-BR",
+  "tags": ["cat:lesson", "author:Leise"],
+  "lines": [
+    "Meu nome é Felipe. Eu moro em São Paulo.",
+    "Todos os dias, eu acordo às 7 horas da manhã.",
+    "Depois, eu tomo café e vou para o trabalho.",
+    "Eu trabalho em um escritório.",
+    "Eu gosto do meu trabalho, mas às vezes é cansativo.",
+    "No almoço, eu como arroz, feijão e salada.",
+    "Eu bebo suco ou água.",
+    "À noite, eu volto para casa e descanso.",
+    "Às vezes, eu assisto à TV ou leio um livro.",
+    "Eu durmo às 11 horas.",
+    "Esse é o meu dia normal."
+  ]
+}

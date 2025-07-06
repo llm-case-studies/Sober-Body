@@ -55,11 +55,19 @@ describe('import pickers', () => {
     ;(window as any).showOpenFilePicker = vi.fn().mockResolvedValue([
       { getFile: vi.fn().mockResolvedValue(new File(['x'], 'd.zip')) }
     ])
+    const order: string[] = []
+    saveLastDir.mockImplementation(async () => {
+      order.push('save')
+    })
+    importZip.mockImplementation(async () => {
+      order.push('import')
+    })
     setup()
     const user = userEvent.setup()
     await user.click(screen.getByText(/import zip/i))
     expect(window.showOpenFilePicker).toHaveBeenCalled()
     expect(importZip).toHaveBeenCalled()
     expect(saveLastDir).toHaveBeenCalled()
+    expect(order).toEqual(['save', 'import'])
   })
 })
