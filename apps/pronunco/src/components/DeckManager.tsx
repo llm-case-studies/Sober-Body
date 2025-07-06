@@ -1,12 +1,14 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, type ChangeEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, resetDB } from '../db'
 import { importDeckZip, importDeckFolder } from '../../../../packages/core-storage/src/import-decks'
+import { saveLastDir, getLastDir } from '../../../../packages/core-storage/src/ui-store'
 import { exportDeckZip } from '../exportDeckZip'
 
 export default function DeckManager() {
   const zipRef = useRef<HTMLInputElement>(null)
+  const jsonRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
   const decks = useLiveQuery(() => db.decks.toArray(), [], []) || []
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -25,6 +27,66 @@ export default function DeckManager() {
 
   const handleFolderFiles = async (files: FileList | File[]) => {
     await importDeckFolder(files, db)
+  }
+
+  const onZipInput = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      await handleZip(e.target.files[0])
+    }
+    e.target.value = ''
+  }
+
+  const onJsonInput = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length) {
+      await handleFolderFiles(e.target.files)
+    }
+    e.target.value = ''
+  }
+
+  const supportsFSA = 'showOpenFilePicker' in window
+
+  const pickZip = async () => {
+    if (supportsFSA) {
+      try {
+        const last = await getLastDir(db)
+        const [h] = await (window as any).showOpenFilePicker({
+          multiple: false,
+          types: [
+            { description: 'Zip', accept: { 'application/zip': ['.zip'] } }
+          ],
+          startIn: last
+        })
+        const file = await h.getFile()
+        await handleZip(file)
+        await saveLastDir(db, h as any)
+        return
+      } catch (e) {
+        /* fall back */
+      }
+    }
+    zipRef.current?.click()
+  }
+
+  const pickJson = async () => {
+    if (supportsFSA) {
+      try {
+        const last = await getLastDir(db)
+        const handles = await (window as any).showOpenFilePicker({
+          multiple: true,
+          startIn: last,
+          types: [
+            { description: 'JSON', accept: { 'application/json': ['.json'] } }
+          ]
+        })
+        const files = await Promise.all(handles.map((h: any) => h.getFile()))
+        if (files.length) await handleFolderFiles(files)
+        if (handles[0]) await saveLastDir(db, handles[0] as any)
+        return
+      } catch (e) {
+        /* fall back */
+      }
+    }
+    jsonRef.current?.click()
   }
 
 
@@ -66,26 +128,29 @@ export default function DeckManager() {
   return (
     <div className="p-4 space-y-2">
       <h2 className="text-lg">Deck Manager (beta)</h2>
-      <label className="block cursor-pointer border px-2">
-        Import ZIP
-        <input
-          ref={zipRef}
-          type="file"
-          accept="application/zip"
-          className="hidden"
-          onChange={e => e.target.files && handleZip(e.target.files[0])}
-        />
-      </label>
-      <label className="btn btn-outline-primary m-1">
+      <button className="border px-2" onClick={pickZip}>Import ZIP</button>
+      <input
+        data-testid="zipInput"
+        id="zipInput"
+        ref={zipRef}
+        type="file"
+        accept="application/zip"
+        hidden
+        onChange={onZipInput}
+      />
+      <button className="btn btn-outline-primary m-1" onClick={pickJson}>
         Import folder
-        <input
-          type="file"
-          hidden
-          webkitdirectory=""
-          multiple
-          onChange={e => e.target.files && handleFolderFiles(e.target.files)}
-        />
-      </label>
+      </button>
+      <input
+        data-testid="jsonInput"
+        id="jsonInput"
+        ref={jsonRef}
+        type="file"
+        hidden
+        webkitdirectory=""
+        multiple
+        onChange={onJsonInput}
+      />
       <button className="border px-2" title="Clear decks" onClick={clearDecks}>
         Clear decks (beta)
       </button>
