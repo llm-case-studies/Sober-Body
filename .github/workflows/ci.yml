@@ -33,7 +33,7 @@ jobs:
 
       # unit tests (Vitest)
       - name: Unit tests
-        run: pnpm test:unit:${{ matrix.app }}
+        run: NODE_OPTIONS="--max-old-space-size=3072" pnpm test:unit:${{ matrix.app }}
 
       # end-to-end tests (Cypress)
       #- name: E2E tests
