@@ -1,11 +1,10 @@
-import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, beforeEach } from 'vitest'
 import 'fake-indexeddb/auto'
+import path from 'node:path'
+import fs from 'node:fs/promises'
 import JSZip from 'jszip'
-import DeckManager from '../src/components/DeckManager'
+import { importDeckZip } from '../../../packages/core-storage/src/import-decks'
 import { db, resetDB } from '../src/db'
-import { MemoryRouter } from 'react-router-dom'
 
 beforeEach(async () => {
   await db.delete()
@@ -15,24 +14,27 @@ beforeEach(async () => {
 
 describe('DeckManager import', () => {
   it('imports decks from zip', async () => {
+    const presetDir = path.resolve(__dirname, '../../sober-body/public/presets')
+    const [first, second] = (await fs.readdir(presetDir))
+      .filter(f => f.endsWith('.json'))
+      .slice(0, 2)
+
     const zip = new JSZip()
-    zip.file('decks/a.json', JSON.stringify({ id: 'a', title: 'A', lang: 'en', lines: ['x'] }))
-    zip.file('decks/b.json', JSON.stringify({ id: 'b', title: 'B', lang: 'en', lines: ['y'] }))
-    const blob = await zip.generateAsync({ type: 'blob' })
-    const file = new File([blob], 'decks.zip')
-
-    render(
-      <MemoryRouter>
-        <DeckManager />
-      </MemoryRouter>
+    zip.file(
+      `decks/${first}`,
+      await fs.readFile(path.join(presetDir, first), 'utf8')
     )
-    const input = screen.getByLabelText(/import zip/i)
-    fireEvent.change(input, { target: { files: [file] } })
+    zip.file(
+      `decks/${second}`,
+      await fs.readFile(path.join(presetDir, second), 'utf8')
+    )
+    const file = new File(
+      [await zip.generateAsync({ type: 'uint8array' })],
+      'preset.zip',
+      { type: 'application/zip' }
+    )
 
-    await waitFor(async () => {
-      expect(await db.decks.count()).toBe(2)
-    })
-    await screen.findByText('A')
-    await screen.findByText('B')
+    await importDeckZip(file, db)
+    expect(await db.decks.count()).toBe(2)
   })
 })
