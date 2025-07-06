@@ -100,6 +100,9 @@ blob in sync for older builds. Dexie tables:
 
 Import helpers use Dexie transactions and keep the legacy blob in sync.
 
+Import picker now remembers the last directory using the File System Access API
+when available, storing the handle in `pronun-v2.ui.lastImportDir`.
+
 ---
 
 *End of file*
