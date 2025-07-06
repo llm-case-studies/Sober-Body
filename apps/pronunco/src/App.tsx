@@ -10,7 +10,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/decks" replace />} />
       <Route path="/decks" element={<DeckManager />} />
-      <Route path="/coach" element={<DrillPage />} />
+      <Route path="/coach/:id" element={<DrillPage />} />
     </Routes>
   )
 }

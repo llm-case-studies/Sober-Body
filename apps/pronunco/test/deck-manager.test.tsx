@@ -32,7 +32,7 @@ describe('DeckManager import', () => {
     await waitFor(async () => {
       expect(await db.decks.count()).toBe(2)
     })
-    const rows = await screen.findAllByRole('listitem')
-    expect(rows).toHaveLength(2)
+    await screen.findByText('A')
+    await screen.findByText('B')
   })
 })
