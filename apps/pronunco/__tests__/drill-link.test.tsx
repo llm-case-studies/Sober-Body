@@ -16,6 +16,6 @@ describe('Drill link', () => {
       </MemoryRouter>
     )
     const link = screen.getByRole('link', { name: /drill deck/i })
-    expect(link.getAttribute('href')).toBe('/pc/coach/abc123')
+    expect(link.getAttribute('href')).toBe('coach/abc123')
   })
 })
