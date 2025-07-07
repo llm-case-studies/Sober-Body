@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { usePronunciationCoach } from "../features/games/PronunciationCoach";
-import type { SplitMode } from "../features/games/types";
-import { splitUnits } from "../features/games/parser";
-import useTranslation from "../../../../packages/pronunciation-coach/src/useTranslation";
-import { LANGS } from "../../../../packages/pronunciation-coach/src/langs";
-import { useSettings } from "../features/core/settings-context";
-import { useDecks } from "../features/games/deck-context";
-import type { Deck } from "../features/games/deck-types";
+import { usePronunciationCoach } from "../../../apps/sober-body/src/features/games/PronunciationCoach";
+import type { SplitMode } from "../../../apps/sober-body/src/features/games/types";
+import { splitUnits } from "../../../apps/sober-body/src/features/games/parser";
+import useTranslation from "../../pronunciation-coach/src/useTranslation";
+import { LANGS } from "../../pronunciation-coach/src/langs";
+import { useSettings } from "../../../apps/sober-body/src/features/core/settings-context";
+import { useDecks } from "../../../apps/sober-body/src/features/games/deck-context";
+import type { Deck } from "../../../apps/sober-body/src/features/games/deck-types";
 import GrammarModal from "./GrammarModal";
-import { getBriefForDeck, refs } from "../grammar-loader";
-import type { BriefWithRefs } from "../grammar-loader";
-import { loadBrief } from "../brief-storage";
-import useBriefExists from "../useBriefExists";
+import { getBriefForDeck, refs } from "../../../apps/sober-body/src/grammar-loader";
+import type { BriefWithRefs } from "../../../apps/sober-body/src/grammar-loader";
+import { loadBrief } from "../../../apps/sober-body/src/brief-storage";
+import useBriefExists from "../../../apps/sober-body/src/useBriefExists";
 
 const defaultDeck: Deck = {
   id: 'example',

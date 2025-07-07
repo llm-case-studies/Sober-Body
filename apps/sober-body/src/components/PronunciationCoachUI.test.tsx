@@ -2,7 +2,7 @@ import { render, fireEvent, screen, cleanup, waitFor } from '@testing-library/re
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { useEffect } from 'react'
 import 'fake-indexeddb/auto'
-import PronunciationCoachUI from './PronunciationCoachUI'
+import { PronunciationCoachUI } from 'coach-ui'
 import { MemoryRouter } from 'react-router-dom'
 import { SettingsProvider } from '../features/core/settings-context'
 import { DeckProvider, useDecks } from '../features/games/deck-context'

@@ -1,7 +1,7 @@
 import { render, screen, cleanup } from '@testing-library/react'
 import { describe, it, expect, afterEach } from 'vitest'
 import GrammarModal from './GrammarModal'
-import type { BriefWithRefs } from '../grammar-loader'
+import type { BriefWithRefs } from '../../../apps/sober-body/src/grammar-loader'
 
 const brief: BriefWithRefs = {
   id: 'b',
