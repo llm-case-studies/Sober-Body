@@ -27,8 +27,10 @@ beforeEach(() => {
 afterEach(() => cleanup())
 
 describe('DeckManagerPage play button', () => {
-  it('navigates with deck id from visible row', async () => {
+  it('opens PronunCo deck from visible row', async () => {
     const user = userEvent.setup()
+    const open = vi.fn()
+    vi.stubGlobal('window', { ...window, open })
     render(
       <MemoryRouter>
         <DeckManagerPage />
@@ -37,20 +39,25 @@ describe('DeckManagerPage play button', () => {
 
     await screen.findByRole('option', { name: 'en' })
     await user.selectOptions(await screen.findByLabelText(/language/i, { selector: 'select' }), 'en')
-    const links = await screen.findAllByRole('link', { name: 'Start drill' })
-    expect(links[1].getAttribute('href')).toBe('/coach/deck/b')
+    const buttons = await screen.findAllByRole('button', { name: 'Start drill' })
+    await user.click(buttons[1])
+    expect(open).toHaveBeenCalledWith('/pc/coach/b', '_blank')
   })
 
-  it('navigates with deck id from third row', async () => {
+  it('opens PronunCo deck from third row', async () => {
+    const user = userEvent.setup()
+    const open = vi.fn()
+    vi.stubGlobal('window', { ...window, open })
     render(
       <MemoryRouter>
         <DeckManagerPage />
       </MemoryRouter>
     )
 
-    const links = await screen.findAllByRole('link', { name: 'Start drill' })
-    expect(links).toHaveLength(3)
-    expect(links[2].getAttribute('href')).toBe('/coach/deck/b')
+    const buttons = await screen.findAllByRole('button', { name: 'Start drill' })
+    expect(buttons).toHaveLength(3)
+    await user.click(buttons[2])
+    expect(open).toHaveBeenCalledWith('/pc/coach/b', '_blank')
   })
 })
 

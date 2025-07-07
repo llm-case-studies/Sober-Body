@@ -25,6 +25,6 @@ describe('DeckManager drill button', () => {
     )
     await user.click(screen.getByLabelText('Select A'))
     await user.click(screen.getByRole('button', { name: /drill/i }))
-    expect(navigateMock).toHaveBeenCalledWith('/pc/coach/123')
+    expect(navigateMock).toHaveBeenCalledWith('coach/123')
   })
 })
