@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
-import PronunciationCoachUI from '../../sober-body/src/components/PronunciationCoachUI'
+import { PronunciationCoachUI } from 'coach-ui'
 import { useDeck, useDecks } from '../features/deck-context'
 
 export default function CoachPage() {

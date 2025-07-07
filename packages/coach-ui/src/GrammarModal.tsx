@@ -1,5 +1,5 @@
 import React from 'react'
-import type { BriefWithRefs } from '../grammar-loader'
+import type { BriefWithRefs } from '../../../apps/sober-body/src/grammar-loader'
 
 export default function GrammarModal({
   open,
