@@ -12,7 +12,7 @@ export default defineConfig({
     isolate: false,            // keep one jsdom; saves ~100 MB/run
     fileParallelism: false,    // serialise files; speed hit is tiny (<200 ms)
     hookTimeout: 10_000,
-    setupFiles: ['./tests/setup-vitest.ts', './tests/debug-open-handles.ts'],
+    setupFiles: ['./tests/setup-vitest.ts'],
     deps: { inline: ['coach-ui'] },
   },
 
