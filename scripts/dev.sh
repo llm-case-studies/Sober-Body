@@ -72,7 +72,25 @@ report_ports () {
 
 $run_pull    && { echo "↻ git pull …";      git pull --rebase --autostash; }
 $run_install && { echo "📦 pnpm install …";  pnpm install; }
-$run_tests   && { echo "🧪 running tests …"; pnpm test; }
+if $run_tests; then
+  echo -e "\n🏃‍♂️  Running unit tests with per-file timing …\n"
+
+  # Sober-Body app
+  echo "— apps/sober-body —"
+  time pnpm test:unit:sb -- --reporter=verbose
+
+  # PronunCo app
+  echo -e "\n— apps/pronunco —"
+  time pnpm test:unit:pc -- --reporter=verbose
+
+  # Shared packages  (optional – keep if/when you add tests there)
+  if pnpm m ls -r --depth=-1 | grep -qE '^packages/'; then
+    echo -e "\n— packages —"
+    time pnpm -r --filter "packages/**" exec vitest run --reporter=verbose
+  fi
+
+  echo -e "\n✅  All test suites finished."
+fi
 
 $run_start || exit 0
 
