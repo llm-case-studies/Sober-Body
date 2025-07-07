@@ -1,34 +1,34 @@
-import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import DeckManager from '../src/components/DeckManager'
-import { MemoryRouter } from 'react-router-dom'
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import DeckManager from "../src/components/DeckManager";
+import { MemoryRouter } from "react-router-dom";
 
-const importZip = vi.fn(async () => {})
-const importFolder = vi.fn(async () => {})
-const saveLastDir = vi.fn(async () => {})
-const getLastDir = vi.fn(async () => undefined)
+const importZip = vi.fn(async () => {});
+const importFolder = vi.fn(async () => {});
+const saveLastDir = vi.fn(async () => {});
+const getLastDir = vi.fn(async () => undefined);
 
-vi.mock('dexie-react-hooks', () => ({ useLiveQuery: () => [] }))
-vi.mock('../../packages/core-storage/src/import-decks', () => ({
+vi.mock("dexie-react-hooks", () => ({ useLiveQuery: () => [] }));
+vi.mock("../../packages/core-storage/src/import-decks", () => ({
   importDeckZip: (...args: any[]) => importZip(...args),
-  importDeckFolder: (...args: any[]) => importFolder(...args)
-}))
-vi.mock('../src/db', () => ({
-  db: { decks: { toArray: vi.fn() } }
-}))
-vi.mock('../../packages/core-storage/src/ui-store', () => ({
+  importDeckFolder: (...args: any[]) => importFolder(...args),
+}));
+vi.mock("../src/db", () => ({
+  db: { decks: { toArray: vi.fn() } },
+}));
+vi.mock("../../packages/core-storage/src/ui-store", () => ({
   saveLastDir: (...args: any[]) => saveLastDir(...args),
-  getLastDir: (...args: any[]) => getLastDir(...args)
-}))
+  getLastDir: (...args: any[]) => getLastDir(...args),
+}));
 
 function setup() {
   render(
     <MemoryRouter>
       <DeckManager />
-    </MemoryRouter>
-  )
+    </MemoryRouter>,
+  );
 }
 
 beforeEach(() => {
@@ -36,38 +36,76 @@ beforeEach(() => {
   importFolder.mockClear();
   saveLastDir.mockClear();
   getLastDir.mockClear();
-  delete (window as any).showOpenFilePicker
-})
+  delete (window as any).showOpenFilePicker;
+  delete (window as any).showDirectoryPicker;
+});
 
-describe('import pickers', () => {
-  it('falls back to hidden input', async () => {
-    setup()
-    const user = userEvent.setup()
-    const file = new File(['x'], 'd.zip', { type: 'application/zip' })
-    await user.click(screen.getByText(/import zip/i))
-    const input = screen.getByTestId('zipInput') as HTMLInputElement
-    fireEvent.change(input, { target: { files: [file] } })
-    expect(importZip).toHaveBeenCalledWith(file, expect.anything())
-    expect(input.value).toBe('')
-  })
+describe("import pickers", () => {
+  it("falls back to hidden input", async () => {
+    setup();
+    const user = userEvent.setup();
+    const file = new File(["x"], "d.zip", { type: "application/zip" });
+    await user.click(screen.getByText(/import zip/i));
+    const input = screen.getByTestId("zipInput") as HTMLInputElement;
+    fireEvent.change(input, { target: { files: [file] } });
+    expect(importZip).toHaveBeenCalledWith(file, expect.anything());
+    expect(input.value).toBe("");
+  });
 
-  it('uses showOpenFilePicker when available', async () => {
-    ;(window as any).showOpenFilePicker = vi.fn().mockResolvedValue([
-      { getFile: vi.fn().mockResolvedValue(new File(['x'], 'd.zip')) }
-    ])
-    const order: string[] = []
+  it("uses showOpenFilePicker when available", async () => {
+    (window as any).showOpenFilePicker = vi
+      .fn()
+      .mockResolvedValue([
+        { getFile: vi.fn().mockResolvedValue(new File(["x"], "d.zip")) },
+      ]);
+    const order: string[] = [];
     saveLastDir.mockImplementation(async () => {
-      order.push('save')
-    })
+      order.push("save");
+    });
     importZip.mockImplementation(async () => {
-      order.push('import')
-    })
-    setup()
-    const user = userEvent.setup()
-    await user.click(screen.getByText(/import zip/i))
-    expect(window.showOpenFilePicker).toHaveBeenCalled()
-    expect(importZip).toHaveBeenCalled()
-    expect(saveLastDir).toHaveBeenCalled()
-    expect(order).toEqual(['save', 'import'])
-  })
-})
+      order.push("import");
+    });
+    setup();
+    const user = userEvent.setup();
+    await user.click(screen.getByText(/import zip/i));
+    expect(window.showOpenFilePicker).toHaveBeenCalled();
+    expect(importZip).toHaveBeenCalled();
+    expect(saveLastDir).toHaveBeenCalled();
+    expect(order).toEqual(["save", "import"]);
+  });
+
+  it("uses showDirectoryPicker for folders", async () => {
+    const fileHandle = {
+      kind: "file",
+      name: "d.json",
+      getFile: vi
+        .fn()
+        .mockResolvedValue(
+          new File(["{}"], "d.json", { type: "application/json" }),
+        ),
+    };
+    const dirHandle = {
+      values: vi.fn().mockReturnValue(
+        (async function* () {
+          yield fileHandle;
+        })(),
+      ),
+    };
+    (window as any).showDirectoryPicker = vi.fn().mockResolvedValue(dirHandle);
+    const start = { kind: "directory" };
+    getLastDir.mockResolvedValue(start as any);
+
+    setup();
+    const user = userEvent.setup();
+    await user.click(screen.getByText(/import folder/i));
+
+    expect(window.showDirectoryPicker).toHaveBeenCalledWith(
+      expect.objectContaining({ startIn: start }),
+    );
+    expect(importFolder).toHaveBeenCalled();
+    expect(saveLastDir).toHaveBeenCalledWith(
+      expect.anything(),
+      dirHandle as any,
+    );
+  });
+});
