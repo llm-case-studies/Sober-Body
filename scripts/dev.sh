@@ -84,7 +84,7 @@ if $run_tests; then
   # PronunCo app
   echo -e "\n— apps/pronunco —"
   (
-    DEBUG_HANDLES=$debug_handles
+    DEBUG_HANDLES="${debug_handles:-false}"
     time timeout 600 \
       pnpm --filter ./apps/pronunco exec vitest run --reporter=verbose
   )
