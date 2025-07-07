@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { db } from '../db'
 import type { Deck } from '../../sober-body/src/features/games/deck-types'
+import { DeckContext } from '../../sober-body/src/features/games/deck-context'
 
 export interface DeckValue {
   decks: Deck[]
@@ -8,7 +9,6 @@ export interface DeckValue {
   setActiveDeck: (id: string) => void
 }
 
-const DeckContext = createContext<DeckValue | undefined>(undefined)
 
 export function DeckProvider({ children }: { children: React.ReactNode }) {
   const [decks, setDecks] = useState<Deck[]>([])
