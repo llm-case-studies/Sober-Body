@@ -74,38 +74,29 @@ describe("import pickers", () => {
     expect(order).toEqual(["save", "import"]);
   });
 
-  it("uses showDirectoryPicker for folders", async () => {
-    const fileHandle = {
-      kind: "file",
-      name: "d.json",
-      getFile: vi
-        .fn()
-        .mockResolvedValue(
-          new File(["{}"], "d.json", { type: "application/json" }),
-        ),
-    };
-    const dirHandle = {
-      values: vi.fn().mockReturnValue(
-        (async function* () {
-          yield fileHandle;
-        })(),
-      ),
-    };
-    (window as any).showDirectoryPicker = vi.fn().mockResolvedValue(dirHandle);
-    const start = { kind: "directory" };
+  it("uses showOpenFilePicker for folders", async () => {
+    const handles = [
+      {
+        getFile: vi
+          .fn()
+          .mockResolvedValue(new File(["{}"], "d.json", { type: "application/json" })),
+      },
+    ];
+    (window as any).showOpenFilePicker = vi.fn().mockResolvedValue(handles);
+    const start = { kind: "file" };
     getLastDir.mockResolvedValue(start as any);
 
     setup();
     const user = userEvent.setup();
     await user.click(screen.getByText(/import folder/i));
 
-    expect(window.showDirectoryPicker).toHaveBeenCalledWith(
-      expect.objectContaining({ startIn: start }),
+    expect(window.showOpenFilePicker).toHaveBeenCalledWith(
+      expect.objectContaining({ startIn: start, multiple: true }),
     );
-    expect(importFolder).toHaveBeenCalled();
-    expect(saveLastDir).toHaveBeenCalledWith(
+    expect(importFolder).toHaveBeenCalledWith(
       expect.anything(),
-      dirHandle as any,
+      expect.anything(),
     );
+    expect(saveLastDir).toHaveBeenCalledWith(handles[0], expect.anything());
   });
 });

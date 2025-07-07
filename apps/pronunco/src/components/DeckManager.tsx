@@ -68,7 +68,8 @@ export default function DeckManager() {
         await saveLastDir(db, h as any);
         await handleZip(file);
         return;
-      } catch (e) {
+      } catch (e: any) {
+        if (e?.name === "AbortError") return;
         /* fall back */
       }
     }
@@ -76,7 +77,27 @@ export default function DeckManager() {
   };
 
   const pickJson = async () => {
-    if (supportsDir) {
+    if (supportsFSA) {
+      try {
+        const last = await getLastDir(db);
+        const handles = await (window as any).showOpenFilePicker({
+          multiple: true,
+          types: [
+            { description: "JSON", accept: { "application/json": [".json"] } },
+          ],
+          startIn: last,
+        });
+        const files = await Promise.all(handles.map((h: any) => h.getFile()));
+        if (files.length) {
+          await saveLastDir(db, handles[0] as any);
+          await handleFolderFiles(files);
+        }
+        return;
+      } catch (e: any) {
+        if (e?.name === "AbortError") return;
+        /* fall back */
+      }
+    } else if (supportsDir) {
       if (pickerOpen.current) return;
       pickerOpen.current = true;
       try {
@@ -95,7 +116,8 @@ export default function DeckManager() {
           await handleFolderFiles(files);
         }
         return;
-      } catch (e) {
+      } catch (e: any) {
+        if (e?.name === "AbortError") return;
         /* fall back */
       } finally {
         pickerOpen.current = false;
