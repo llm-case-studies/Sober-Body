@@ -1,7 +1,10 @@
+import { traceOpenHandles } from '../tests/helpers/trace-open-handles';
+traceOpenHandles();
+
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, afterAll } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import Dexie from "dexie";
 
 const nextTick = () => new Promise((r) => setTimeout(r, 0));
@@ -52,7 +55,7 @@ describe("import pickers", () => {
     await nextTick();
     expect(importZip).toHaveBeenCalledWith(file, expect.anything());
     expect(input.value).toBe("");
-    console.log("END-TEST", "falls back to hidden input");
+    console.log('✅ finished: falls back to hidden input');
   });
 
   it("uses showOpenFilePicker when available", async () => {
@@ -79,7 +82,7 @@ describe("import pickers", () => {
     expect(importZip).toHaveBeenCalled();
     expect(saveLastDir).toHaveBeenCalled();
     expect(order).toEqual(["save", "import"]);
-    console.log("END-TEST", "showOpenFilePicker available");
+    console.log('✅ finished: uses showOpenFilePicker when available');
   });
 
   it("uses showOpenFilePicker for folders", async () => {
@@ -110,15 +113,7 @@ describe("import pickers", () => {
       expect.anything(),
     );
     expect(saveLastDir).toHaveBeenCalledWith(handles[0], expect.anything());
-    console.log("END-TEST", "showOpenFilePicker folder");
+    console.log('✅ finished: uses showOpenFilePicker for folders');
   });
 });
 
-afterAll(() => {
-  // @ts-ignore – private API, safe for local debug
-  const handles = (process as any)._getActiveHandles?.() ?? [];
-  console.log(
-    '\n\ud83d\udd0d open handles inside import-picker.test.tsx:',
-    handles.map((h: any) => h.constructor?.name ?? 'Unknown'),
-  );
-});
