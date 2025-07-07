@@ -8,7 +8,7 @@ export interface DeckValue {
   setActiveDeck: (id: string) => void
 }
 
-const DeckContext = createContext<DeckValue | undefined>(undefined)
+export const DeckContext = createContext<DeckValue | undefined>(undefined)
 
 export function DeckProvider({ children }: { children: React.ReactNode }) {
   const [decks, setDecks] = useState<Deck[]>([])
