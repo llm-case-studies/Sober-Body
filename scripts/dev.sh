@@ -19,15 +19,17 @@ URL_PC="http://localhost:${PORT_PC}/pc/decks"
 # ──────────────────────────────────
 
 run_pull=false run_install=false run_tests=false run_start=false
+debug_handles=false
 [[ $# -eq 0 ]] && run_start=true        # default action
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --debug-handles) debug_handles=true ;;
     -p|--pull)     run_pull=true;;
     -i|--install)  run_install=true;;
     -t|--test)     run_tests=true ;;
     -s|--start)    run_start=true ;;
-    *) echo "Usage: $0 [-p] [-i] [-t] [-s]" && exit 1;;
+    *) echo "Usage: $0 [--debug-handles] [-p] [-i] [-t] [-s]" && exit 1;;
   esac
   shift
 done
@@ -81,7 +83,11 @@ if $run_tests; then
 
   # PronunCo app
   echo -e "\n— apps/pronunco —"
-  time pnpm test:unit:pc -- --reporter=verbose
+  (
+    DEBUG_HANDLES=$debug_handles
+    time timeout 600 \
+      pnpm --filter ./apps/pronunco exec vitest run --reporter=verbose
+  )
 
   # Shared packages  (optional – keep if/when you add tests there)
   if pnpm m ls -r --depth=-1 | grep -qE '^packages/'; then
