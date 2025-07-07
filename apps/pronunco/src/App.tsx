@@ -1,15 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import DeckManager from './components/DeckManager'
-
-export function CoachStub() {
-  const { deckId } = useParams()
-  return (
-    <div>
-      <h3>{deckId}</h3>
-      <p>Coming soon</p>
-    </div>
-  )
-}
+import CoachPage from './pages/CoachPage'
 
 export default function App() {
   return (
@@ -17,7 +8,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/decks" replace />} />
         <Route path="/decks" element={<DeckManager />} />
-        <Route path="/coach/:deckId" element={<CoachStub />} />
+        <Route path="/coach/:deckId" element={<CoachPage />} />
       </Routes>
     </BrowserRouter>
   )
