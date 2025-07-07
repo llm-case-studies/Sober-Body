@@ -13,8 +13,26 @@ export function useFakeFilePicker() {
     vi.useFakeTimers();
 
     // 2) Stub both picker APIs with resolved promises
-    vi.stubGlobal('showOpenFilePicker', vi.fn(() => Promise.resolve([dummyHandle])));
-    vi.stubGlobal('showDirectoryPicker', vi.fn(() => Promise.resolve(dummyHandle as unknown as FileSystemDirectoryHandle)));
+    vi.stubGlobal(
+      'showOpenFilePicker',
+      vi.fn(() => Promise.resolve([dummyHandle])),
+    );
+    vi.stubGlobal(
+      'showDirectoryPicker',
+      vi.fn(() =>
+        Promise.resolve(
+          { kind: 'directory', name: 'dummy' } as unknown as FileSystemDirectoryHandle,
+        ),
+      ),
+    );
+
+    // 3) Trigger change event when hidden <input type="file"> is clicked
+    vi
+      .spyOn(HTMLInputElement.prototype, 'click')
+      .mockImplementation(function () {
+        const evt = new Event('change');
+        queueMicrotask(() => this.dispatchEvent(evt));
+      });
   });
 
   afterEach(async () => {

@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterAll } from "vitest";
 import Dexie from "dexie";
 
 const nextTick = () => new Promise((r) => setTimeout(r, 0));
@@ -45,13 +45,14 @@ describe("import pickers", () => {
     const user = userEvent.setup();
     const file = new File(["x"], "d.zip", { type: "application/zip" });
     await user.click(screen.getByText(/import zip/i));
+    await vi.runOnlyPendingTimersAsync();
     await nextTick();
     const input = screen.getByTestId("zipInput") as HTMLInputElement;
     fireEvent.change(input, { target: { files: [file] } });
     await nextTick();
     expect(importZip).toHaveBeenCalledWith(file, expect.anything());
     expect(input.value).toBe("");
-    console.log("TEST-END");
+    console.log("END-TEST", "falls back to hidden input");
   });
 
   it("uses showOpenFilePicker when available", async () => {
@@ -72,12 +73,13 @@ describe("import pickers", () => {
     setup();
     const user = userEvent.setup();
     await user.click(screen.getByText(/import zip/i));
+    await vi.runOnlyPendingTimersAsync();
     await nextTick();
     expect(window.showOpenFilePicker).toHaveBeenCalled();
     expect(importZip).toHaveBeenCalled();
     expect(saveLastDir).toHaveBeenCalled();
     expect(order).toEqual(["save", "import"]);
-    console.log("TEST-END");
+    console.log("END-TEST", "showOpenFilePicker available");
   });
 
   it("uses showOpenFilePicker for folders", async () => {
@@ -97,6 +99,7 @@ describe("import pickers", () => {
     setup();
     const user = userEvent.setup();
     await user.click(screen.getByText(/import folder/i));
+    await vi.runOnlyPendingTimersAsync();
     await nextTick();
 
     expect(window.showOpenFilePicker).toHaveBeenCalledWith(
@@ -107,6 +110,15 @@ describe("import pickers", () => {
       expect.anything(),
     );
     expect(saveLastDir).toHaveBeenCalledWith(handles[0], expect.anything());
-    console.log("TEST-END");
+    console.log("END-TEST", "showOpenFilePicker folder");
   });
+});
+
+afterAll(() => {
+  // @ts-ignore – private API, safe for local debug
+  const handles = (process as any)._getActiveHandles?.() ?? [];
+  console.log(
+    '\n\ud83d\udd0d open handles inside import-picker.test.tsx:',
+    handles.map((h: any) => h.constructor?.name ?? 'Unknown'),
+  );
 });
