@@ -37,22 +37,28 @@ function setup() {
 
 describe('DeckManager bulk actions', () => {
   it('selection toggles bar', () => {
+    console.log('▶ START: selection toggles bar');
     setup()
     const bars = screen.getAllByTestId('action-bar')
     expect(bars.length).toBeGreaterThan(0)
+    console.log('✔ END:   selection toggles bar');
   })
 
   it('export util called with ids', async () => {
+    console.log('▶ START: export util called with ids');
     setup()
     fireEvent.click(screen.getAllByText(/export zip/i)[0])
     expect(exportDeckZip).toHaveBeenCalledWith(['a', 'b'], expect.anything())
+    console.log('✔ END:   export util called with ids');
   })
 
   it('delete clears rows & bar hides', () => {
+    console.log('▶ START: delete clears rows & bar hides');
     vi.stubGlobal('alert', () => {})
     setup()
     const bar = screen.getAllByTestId('action-bar').pop()!
     fireEvent.click(within(bar).getByRole('button', { name: /delete/i }))
     expect(bulkDeleteMock).toHaveBeenCalledWith(['a', 'b'])
+    console.log('✔ END:   delete clears rows & bar hides');
   })
 })

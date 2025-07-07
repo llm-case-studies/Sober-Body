@@ -17,6 +17,7 @@ vi.mock('react-router-dom', async () => {
 
 describe('DeckManager drill button', () => {
   it('navigates to coach route', async () => {
+    console.log('▶ START: navigates to coach route');
     const user = userEvent.setup()
     render(
       <MemoryRouter>
@@ -26,5 +27,6 @@ describe('DeckManager drill button', () => {
     await user.click(screen.getByLabelText('Select A'))
     await user.click(screen.getByRole('button', { name: /drill/i }))
     expect(navigateMock).toHaveBeenCalledWith('/coach/123')
+    console.log('✔ END:   navigates to coach route');
   })
 })

@@ -21,6 +21,7 @@ beforeEach(async () => {
 
 describe('DeckManager bulk actions', () => {
   it('export and delete selected decks', async () => {
+    console.log('▶ START: export and delete selected decks');
     vi.spyOn(exportMod, 'exportDeckZip').mockResolvedValue(new Blob())
 
     const user = userEvent.setup()
@@ -40,5 +41,6 @@ describe('DeckManager bulk actions', () => {
     await user.click(screen.getByText(/delete/i))
     await screen.findByText('C')
     expect(await db.decks.count()).toBe(1)
+    console.log('✔ END:   export and delete selected decks');
   })
 })

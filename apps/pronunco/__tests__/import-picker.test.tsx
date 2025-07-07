@@ -44,7 +44,7 @@ useFakeFilePicker();
 
 describe("import pickers", () => {
   it("falls back to hidden input", async () => {
-    console.log('▶ START test: fallback to hidden input');
+    console.log('▶ START: falls back to hidden input');
     setup();
     const user = userEvent.setup();
     const file = new File(["x"], "d.zip", { type: "application/zip" });
@@ -56,11 +56,11 @@ describe("import pickers", () => {
     await nextTick();
     expect(importZip).toHaveBeenCalledWith(file, expect.anything());
     expect(input.value).toBe("");
-    console.log('✔ END   test: fallback to hidden input');
+    console.log('✔ END:   falls back to hidden input');
   });
 
   it("uses showOpenFilePicker when available", async () => {
-    console.log('▶ START test: uses showOpenFilePicker when available');
+    console.log('▶ START: uses showOpenFilePicker when available');
     (window as any).showOpenFilePicker = vi.fn().mockResolvedValue([
       {
         kind: "file",
@@ -84,11 +84,11 @@ describe("import pickers", () => {
     expect(importZip).toHaveBeenCalled();
     expect(saveLastDir).toHaveBeenCalled();
     expect(order).toEqual(["save", "import"]);
-    console.log('✔ END   test: uses showOpenFilePicker when available');
+    console.log('✔ END:   uses showOpenFilePicker when available');
   });
 
   it("uses showOpenFilePicker for folders", async () => {
-    console.log('▶ START test: uses showOpenFilePicker for folders');
+    console.log('▶ START: uses showOpenFilePicker for folders');
     const handles = [
       {
         kind: "file",
@@ -116,7 +116,7 @@ describe("import pickers", () => {
       expect.anything(),
     );
     expect(saveLastDir).toHaveBeenCalledWith(handles[0], expect.anything());
-    console.log('✔ END   test: uses showOpenFilePicker for folders');
+    console.log('✔ END:   uses showOpenFilePicker for folders');
   });
 });
 

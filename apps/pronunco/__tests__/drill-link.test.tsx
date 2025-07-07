@@ -10,6 +10,7 @@ vi.mock('../src/db', () => ({ db: {} }))
 
 describe('Drill link', () => {
   it('points to coach page', () => {
+    console.log('▶ START: points to coach page');
     render(
       <MemoryRouter>
         <DeckManager />
@@ -17,5 +18,6 @@ describe('Drill link', () => {
     )
     const link = screen.getByRole('link', { name: /drill deck/i })
     expect(link.getAttribute('href')).toBe('/coach/abc123')
+    console.log('✔ END:   points to coach page');
   })
 })

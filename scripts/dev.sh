@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# Banner for PR 163
+echo "────────────────────────────────────────────────────────────"
+echo "🔧  Sober-Body Dev Script – changes for PR #163"
+echo "────────────────────────────────────────────────────────────"
 # Idempotent dev helper for Sober-Body & PronunCo.
 #
 # Flags:
@@ -36,6 +40,8 @@ done
 
 # Export exact string "true" when handle tracing is requested
 DEBUG_HANDLES=${debug_handles:+true}
+echo "DEBUG_HANDLES flag (bash bool) = $debug_handles"
+echo "DEBUG_HANDLES exported string  = ${DEBUG_HANDLES:-''}"
 
 #─── helpers ──────────────────────────────────────────────────────────────
 edge () {
@@ -83,9 +89,11 @@ if $run_tests; then
   # Sober-Body app
   echo "— apps/sober-body —"
   time pnpm test:unit:sb -- --reporter=verbose
+  echo "✅ Vitest finished apps/sober-body with exit code $?"
 
   # PronunCo app
   echo -e "\n— apps/pronunco —"
+  echo "⏳ Launching PronunCo tests … Vitest should be idle now"
   (
     DEBUG_HANDLES=$DEBUG_HANDLES \
     time timeout 600 \

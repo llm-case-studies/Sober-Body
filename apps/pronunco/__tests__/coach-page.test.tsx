@@ -21,6 +21,7 @@ beforeEach(async () => {
 
 describe('CoachPage', () => {
   it('renders first prompt line', async () => {
+    console.log('▶ START: renders first prompt line');
     render(
       <MemoryRouter initialEntries={['/coach/d1']}>
         <SettingsProvider>
@@ -33,5 +34,6 @@ describe('CoachPage', () => {
       </MemoryRouter>
     )
     expect(await screen.findByText('hello')).toBeInTheDocument()
+    console.log('✔ END:   renders first prompt line');
   })
 })

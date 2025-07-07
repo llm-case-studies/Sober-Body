@@ -16,6 +16,7 @@ beforeEach(async () => {
 
 describe('Clear decks button', () => {
   it('refreshes list after Clear decks', async () => {
+    console.log('▶ START: refreshes list after Clear decks');
     const user = userEvent.setup()
     render(
       <MemoryRouter>
@@ -28,6 +29,7 @@ describe('Clear decks button', () => {
     await waitFor(() =>
       expect(screen.queryByText(/Groceries/)).not.toBeInTheDocument()
     )
+    console.log('✔ END:   refreshes list after Clear decks');
   })
 })
 
