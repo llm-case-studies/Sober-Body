@@ -1,18 +1,11 @@
-import { useEffect } from 'react'
-import { useParams, Navigate } from 'react-router-dom'
-import PronunciationCoachUI from '../components/PronunciationCoachUI'
-import { useDeck, useDecks } from '../features/games/deck-context'
+import { Link } from 'react-router-dom'
 
 export default function CoachPage() {
-  const { id = '' } = useParams<{ id: string }>()
-  const { decks, setActiveDeck } = useDecks()
-  const deck = useDeck(id)
-
-  useEffect(() => {
-    if (deck) setActiveDeck(deck.id)
-  }, [deck, setActiveDeck])
-
-  if (decks.length > 0 && !deck) return <Navigate to="/decks" replace />
-
-  return <PronunciationCoachUI />
+  return (
+    <div className="p-4">
+      <Link to="/pc/coach" className="border rounded p-4 block max-w-sm mx-auto text-center">
+        Practice decks in PronunCo ➜
+      </Link>
+    </div>
+  )
 }
