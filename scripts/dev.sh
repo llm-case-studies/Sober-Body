@@ -34,6 +34,9 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+# Export exact string "true" when handle tracing is requested
+DEBUG_HANDLES=${debug_handles:+true}
+
 #─── helpers ──────────────────────────────────────────────────────────────
 edge () {
   if command -v microsoft-edge >/dev/null 2>&1; then
@@ -84,7 +87,7 @@ if $run_tests; then
   # PronunCo app
   echo -e "\n— apps/pronunco —"
   (
-    DEBUG_HANDLES="${debug_handles:-false}"
+    DEBUG_HANDLES=$DEBUG_HANDLES \
     time timeout 600 \
       pnpm --filter ./apps/pronunco exec vitest run --reporter=verbose
   )
