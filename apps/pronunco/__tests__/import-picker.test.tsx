@@ -1,12 +1,13 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import Dexie from "dexie";
 
 const nextTick = () => new Promise((r) => setTimeout(r, 0));
 import DeckManager from "../src/components/DeckManager";
 import { MemoryRouter } from "react-router-dom";
+import { useFakeFilePicker } from "../tests/helpers/setup-fake-file-picker";
 
 const importZip = vi.fn(async () => {});
 const importFolder = vi.fn(async () => {});
@@ -26,6 +27,7 @@ vi.mock("../../packages/core-storage/src/ui-store", () => ({
   getLastDir: (...args: any[]) => getLastDir(...args),
 }));
 
+
 function setup() {
   render(
     <MemoryRouter>
@@ -34,30 +36,8 @@ function setup() {
   );
 }
 
-beforeEach(() => {
-  vi.useFakeTimers();
-  importZip.mockClear();
-  importFolder.mockClear();
-  saveLastDir.mockClear();
-  getLastDir.mockClear();
-  delete (window as any).showOpenFilePicker;
-  delete (window as any).showDirectoryPicker;
-});
-
-afterEach(async () => {
-  vi.runOnlyPendingTimers();
-  vi.useRealTimers();
-  vi.restoreAllMocks();
-  const names = await Dexie.getDatabaseNames();
-  await Promise.allSettled(
-    names.map(async (name) => {
-      const db = new Dexie(name);
-      await db.open().catch(() => {});
-      db.close();
-      indexedDB.deleteDatabase(name);
-    }),
-  );
-});
+// Setup fake timers and resolved file pickers
+useFakeFilePicker();
 
 describe("import pickers", () => {
   it("falls back to hidden input", async () => {
