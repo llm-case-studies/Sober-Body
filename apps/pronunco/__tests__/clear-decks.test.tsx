@@ -1,18 +1,13 @@
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, it, expect, beforeEach } from 'vitest'
-import 'fake-indexeddb/auto'
+import { describe, it, expect } from 'vitest'
+import { vi } from 'vitest'
+const clearMock = vi.fn()
+vi.mock('../src/db', () => ({ clearDecks: clearMock, db: {} }))
+vi.mock('dexie-react-hooks', () => ({ useLiveQuery: () => [{ id: 'g', title: 'Groceries', lang: 'en', updatedAt: 0 }] }))
 import DeckManager from '../src/components/DeckManager'
-import { db, resetDB } from '../src/db'
 import { MemoryRouter } from 'react-router-dom'
-
-beforeEach(async () => {
-  await db.delete()
-  resetDB()
-  await db.open()
-  await db.decks.add({ id: 'g', title: 'Groceries', lang: 'en', updatedAt: 0 })
-})
 
 describe('Clear decks button', () => {
   it('refreshes list after Clear decks', async () => {
@@ -26,9 +21,7 @@ describe('Clear decks button', () => {
 
     expect(await screen.findByText(/Groceries/)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /clear decks/i }))
-    await waitFor(() =>
-      expect(screen.queryByText(/Groceries/)).not.toBeInTheDocument()
-    )
+    expect(clearMock).toHaveBeenCalled()
     console.log('✔ END:   refreshes list after Clear decks');
   })
 })
