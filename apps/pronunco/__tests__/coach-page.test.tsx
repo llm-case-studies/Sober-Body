@@ -6,6 +6,13 @@ import CoachPage from '../src/pages/CoachPage';
 import { DeckContext } from '../src/features/deck-context';
 import { SettingsProvider } from '../src/features/core/settings-context';
 
+vi.mock('../../../apps/sober-body/src/features/games/deck-context', async () =>
+  await vi.importActual('../src/features/deck-context')
+);
+vi.mock('../../../apps/sober-body/src/features/core/settings-context', async () =>
+  await vi.importActual('../src/features/core/settings-context')
+);
+
 const deck = { id: 'd1', title: 'D1', lang: 'en', lines: ['hello', 'bye'], tags: [], updated: 0 };
 
 describe('CoachPage', () => {
