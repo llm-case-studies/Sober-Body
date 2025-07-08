@@ -13,7 +13,7 @@ describe('DrillLink', () => {
         <DrillLink deck={deck} />
       </MemoryRouter>
     );
-    const link = screen.getByRole('link');
-    expect(link.getAttribute('href')).toBe('/pc/drill/abc123');
+    const link = document.querySelector('a');
+    expect(link?.getAttribute('href')).toBe('/pc/drill/abc123');
   });
 });
