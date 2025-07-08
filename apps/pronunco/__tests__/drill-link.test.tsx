@@ -10,7 +10,7 @@ describe('DrillLink', () => {
   it('renders link to drill page', () => {
     render(
       <MemoryRouter>
-        <DrillLink deck={deck} />
+        <DrillLink Id="abc123">Drill deck</DrillLink>
       </MemoryRouter>
     );
     const link = screen.getByText("Drill");
