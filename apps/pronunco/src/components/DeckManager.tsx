@@ -216,7 +216,7 @@ export default function DeckManager() {
               <td className="text-center">
                 <input
                   type="checkbox"
-                  aria-label={`Select ${d.title}`}
+                  aria-label={`Select deck ${d.title}`}
                   checked={selectedIds.has(d.id)}
                   onChange={() => toggleId(d.id)}
                 />
