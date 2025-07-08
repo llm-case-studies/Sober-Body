@@ -17,7 +17,7 @@ export default function DeckManager() {
   const jsonRef = useRef<HTMLInputElement>(null);
   const pickerOpen = useRef(false);
   const navigate = useNavigate();
-  const decks = useLiveQuery(() => db.decks.toArray(), [], []) || [];
+  const decks = useLiveQuery(() => db.decks?.toArray() ?? [], [], []) || [];
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
