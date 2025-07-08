@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { db } from '../db'
-import type { Deck } from '../../sober-body/src/features/games/deck-types'
-import { DeckContext } from '../../sober-body/src/features/games/deck-context'
+import type { Deck } from '../../../../apps/sober-body/src/features/games/deck-types'
+import { DeckContext } from '../../../../apps/sober-body/src/features/games/deck-context'
 
 export interface DeckValue {
   decks: Deck[]

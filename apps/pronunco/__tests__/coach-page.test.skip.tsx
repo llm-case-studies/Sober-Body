@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import 'fake-indexeddb/auto'
 import CoachPage from '../src/pages/CoachPage'
 import { DeckProvider } from '../src/features/deck-context'
-import { SettingsProvider } from '../../sober-body/src/features/core/settings-context'
+import { SettingsProvider } from '../../../apps/sober-body/src/features/core/settings-context'
 import { db, resetDB } from '../src/db'
 
 beforeEach(async () => {
