@@ -1,6 +1,7 @@
 import 'fake-indexeddb/auto';
 import Dexie from 'dexie';
 import { afterEach, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
 
 // close & delete every dexie DB opened during a test file
 afterEach(async () => {
@@ -13,6 +14,7 @@ afterEach(async () => {
       indexedDB.deleteDatabase(name);
     }),
   );
+  cleanup();
 });
 
 // reset timers and mocks so leaks don't accumulate across suites
