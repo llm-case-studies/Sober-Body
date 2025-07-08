@@ -1,5 +1,7 @@
 import { afterAll, beforeAll } from 'vitest';
-console.log('++++ superTrace helper loaded, DEBUG_HANDLES=', process.env.DEBUG_HANDLES);
+
+// ── Side-effect tracer: runs automatically when file is imported ──
+if (process.env.DEBUG_HANDLES === 'true') {
 
 /**
  * Streams:
@@ -7,10 +9,6 @@ console.log('++++ superTrace helper loaded, DEBUG_HANDLES=', process.env.DEBUG_H
  * • a full handle dump via wtfnode every 3 s.
  * Automatically disabled unless DEBUG_HANDLES=true.
  */
-export function superTraceOpenHandles() {
-  if (process.env.DEBUG_HANDLES !== 'true') return;
-
-  // Light ticker
   const tick = setInterval(() => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore private API
