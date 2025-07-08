@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-import { join } from 'path'
+import { join, resolve } from 'path'
 
 export default defineConfig(({ mode }) => {
   const envDir = join(__dirname, '../../')
@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
     base: '/pc/',
     envDir,
     plugins: [react()],
+    resolve: { alias: { '@': resolve(__dirname, 'src') } },
     server: { port: 5174 },
     test: { environment: 'jsdom' }
   }
