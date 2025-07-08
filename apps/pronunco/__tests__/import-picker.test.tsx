@@ -1,3 +1,5 @@
+// 🔎 sanity-check
+console.log('>>>> import-picker file evaluated. DEBUG_HANDLES =', process.env.DEBUG_HANDLES);
 import { superTraceOpenHandles } from '../tests/helpers/super-trace-open-handles';
 superTraceOpenHandles();
 
