@@ -1,27 +1,27 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { db } from '../db'
-import type { Deck } from '../../../../apps/sober-body/src/features/games/deck-types'
-import { DeckContext } from '../../../../apps/sober-body/src/features/games/deck-context'
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { db } from '../db';
+import type { Deck } from '../types';
 
 export interface DeckValue {
-  decks: Deck[]
-  activeDeck: string | null
-  setActiveDeck: (id: string) => void
+  decks: Deck[];
+  activeDeck: string | null;
+  setActiveDeck: (id: string) => void;
 }
 
+export const DeckContext = createContext<DeckValue | undefined>(undefined);
 
 export function DeckProvider({ children }: { children: React.ReactNode }) {
-  const [decks, setDecks] = useState<Deck[]>([])
-  const [activeDeck, setActiveDeck] = useState<string | null>(null)
-  const loaded = useRef(false)
+  const [decks, setDecks] = useState<Deck[]>([]);
+  const [activeDeck, setActiveDeck] = useState<string | null>(null);
+  const loaded = useRef(false);
 
   useEffect(() => {
-    let alive = true
+    let alive = true;
     const load = async () => {
-      const rows = await db.decks.toArray()
-      const arr: Deck[] = []
+      const rows = await db.decks.toArray();
+      const arr: Deck[] = [];
       for (const r of rows) {
-        const cards = await db.cards.where('deckId').equals(r.id).toArray()
+        const cards = await db.cards.where('deckId').equals(r.id).toArray();
         arr.push({
           id: r.id,
           title: r.title,
@@ -29,33 +29,33 @@ export function DeckProvider({ children }: { children: React.ReactNode }) {
           lines: cards.map(c => c.text),
           tags: Array.isArray(r.tags) ? (r.tags as string[]) : [],
           updated: r.updatedAt,
-        })
+        });
       }
       if (alive) {
-        setDecks(arr)
-        loaded.current = true
+        setDecks(arr);
+        loaded.current = true;
       }
-    }
-    load()
+    };
+    void load();
     return () => {
-      alive = false
-    }
-  }, [])
+      alive = false;
+    };
+  }, []);
 
   return (
     <DeckContext.Provider value={{ decks, activeDeck, setActiveDeck }}>
       {children}
     </DeckContext.Provider>
-  )
+  );
 }
 
 export function useDecks() {
-  const ctx = useContext(DeckContext)
-  if (!ctx) throw new Error('useDecks must be used within DeckProvider')
-  return ctx
+  const ctx = useContext(DeckContext);
+  if (!ctx) throw new Error('useDecks must be used within DeckProvider');
+  return ctx;
 }
 
 export function useDeck(id: string) {
-  const { decks } = useDecks()
-  return decks.find(d => d.id === id)
+  const { decks } = useDecks();
+  return decks.find(d => d.id === id);
 }

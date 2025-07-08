@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { getLanguages } from '../../../apps/sober-body/src/features/games/get-languages';
-import type { Deck } from '../../../apps/sober-body/src/features/games/deck-types';
+import { getLanguages } from '../src/features/get-languages';
+import type { Deck } from '../src/types';
 
 describe('language filter', () => {
   it('gets unique sorted languages', () => {

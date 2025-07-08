@@ -1,14 +1,12 @@
-import React from 'react'
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Routes, Route } from 'react-router-dom'
-import { describe, it, expect } from 'vitest'
-import CoachPage from '../src/pages/CoachPage'
-import { DeckContext } from '../../sober-body/src/features/games/deck-context'
-import { SettingsProvider } from '../../sober-body/src/features/core/settings-context'
-import { vi } from 'vitest'
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { describe, it, expect, vi } from 'vitest';
+import CoachPage from '../src/pages/CoachPage';
+import { DeckContext } from '../src/features/deck-context';
+import { SettingsProvider } from '../src/features/core/settings-context';
 
-
-const deck = { id: 'd1', title: 'D1', lang: 'en', lines: ['hello', 'bye'], tags: [], updated: 0 }
+const deck = { id: 'd1', title: 'D1', lang: 'en', lines: ['hello', 'bye'], tags: [], updated: 0 };
 
 describe('CoachPage', () => {
   it('renders first prompt line', async () => {
@@ -23,8 +21,8 @@ describe('CoachPage', () => {
           </DeckContext.Provider>
         </SettingsProvider>
       </MemoryRouter>
-    )
-    expect(document.body.innerHTML).toContain('hello')
+    );
+    expect(document.body.innerHTML).toContain('hello');
     console.log('✔ END:   renders first prompt line');
-  })
-})
+  });
+});
