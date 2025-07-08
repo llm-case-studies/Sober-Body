@@ -1,4 +1,5 @@
 import { afterAll, beforeAll } from 'vitest';
+console.log('++++ superTrace helper loaded, DEBUG_HANDLES=', process.env.DEBUG_HANDLES);
 
 /**
  * Streams:
