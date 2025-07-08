@@ -1,23 +1,14 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
-import { describe, it, expect, beforeEach } from 'vitest'
-import 'fake-indexeddb/auto'
+import { describe, it, expect } from 'vitest'
 import CoachPage from '../src/pages/CoachPage'
-import { DeckProvider } from '../src/features/deck-context'
+import { DeckContext } from '../../sober-body/src/features/games/deck-context'
 import { SettingsProvider } from '../../sober-body/src/features/core/settings-context'
-import { db, resetDB } from '../src/db'
+import { vi } from 'vitest'
 
-beforeEach(async () => {
-  await db.delete()
-  resetDB()
-  await db.open()
-  await db.decks.add({ id: 'd1', title: 'D1', lang: 'en', updatedAt: 0 })
-  await db.cards.bulkAdd([
-    { id: 'c1', deckId: 'd1', text: 'hello' },
-    { id: 'c2', deckId: 'd1', text: 'bye' },
-  ])
-})
+
+const deck = { id: 'd1', title: 'D1', lang: 'en', lines: ['hello', 'bye'], tags: [], updated: 0 }
 
 describe('CoachPage', () => {
   it('renders first prompt line', async () => {
@@ -25,11 +16,11 @@ describe('CoachPage', () => {
     render(
       <MemoryRouter initialEntries={['/coach/d1']}>
         <SettingsProvider>
-          <DeckProvider>
+          <DeckContext.Provider value={{ decks: [deck], activeDeck: deck.id, setActiveDeck: vi.fn() }}>
             <Routes>
               <Route path="/coach/:deckId" element={<CoachPage />} />
             </Routes>
-          </DeckProvider>
+          </DeckContext.Provider>
         </SettingsProvider>
       </MemoryRouter>
     )

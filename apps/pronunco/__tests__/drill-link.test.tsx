@@ -10,10 +10,10 @@ describe('DrillLink', () => {
   it('renders link to drill page', () => {
     render(
       <MemoryRouter>
-        <DrillLink Id="abc123">Drill deck</DrillLink>
+        <DrillLink deck={deck} />
       </MemoryRouter>
     );
-    const link = screen.getByText("Drill");
+    const link = screen.getByRole('link', { name: /drill deck/i });
     expect(link.getAttribute('href')).toBe('/pc/drill/abc123');
   });
 });
