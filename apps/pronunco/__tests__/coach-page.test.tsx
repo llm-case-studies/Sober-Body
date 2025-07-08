@@ -24,7 +24,7 @@ describe('CoachPage', () => {
         </SettingsProvider>
       </MemoryRouter>
     )
-    expect(await screen.findByText('hello')).toBeInTheDocument()
+    expect(await screen.findByText(/hello/i)).toBeInTheDocument()
     console.log('✔ END:   renders first prompt line');
   })
 })

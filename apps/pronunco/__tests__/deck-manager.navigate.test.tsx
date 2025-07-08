@@ -25,7 +25,7 @@ describe('DeckManager drill button', () => {
         <DeckManager />
       </MemoryRouter>
     )
-    const box = await screen.findByLabelText('Select A')
+    const box = await screen.findByLabelText('Select deck A')
     await user.click(box)
     await user.click(screen.getByRole('button', { name: /drill/i }))
     expect(navigateMock).toHaveBeenCalledWith('/coach/123')
