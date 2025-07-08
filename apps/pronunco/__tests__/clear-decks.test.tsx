@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect } from 'vitest'
 import { vi } from 'vitest'
 
-let clearMock: any
+var clearMock: any
 vi.mock('../src/db', () => {
   clearMock = vi.fn()
   return { clearDecks: clearMock, db: {} }
