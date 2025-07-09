@@ -25,7 +25,7 @@ describe('DeckManager drill button', () => {
         <DeckManager />
       </MemoryRouter>
     )
-    expect(document.body.innerHTML).toContain('/coach')
+    expect(document.body.innerHTML).toContain('/pc/coach')
     console.log('✔ END:   navigates to coach route');
   })
 })
