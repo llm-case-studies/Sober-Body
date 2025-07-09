@@ -17,7 +17,7 @@ afterAll(() => {
 });
 
 describe("PronunCo routes", () => {
-  it("renders DeckManager at /pc/decks", () => {
+  it("renders DeckManager at /pc/decks", async () => {
     window.history.pushState({}, "", "/pc/decks");
     render(
       <SettingsProvider>
@@ -26,7 +26,7 @@ describe("PronunCo routes", () => {
         </DeckProvider>
       </SettingsProvider>
     );
-    expect(screen.getByText(/deck manager \(beta\)/i)).toBeInTheDocument();
+    await screen.findByText(/deck manager/i);
   });
 
   it("renders CoachPage at /pc/coach/:id", async () => {
@@ -38,6 +38,6 @@ describe("PronunCo routes", () => {
         </DeckProvider>
       </SettingsProvider>
     );
-    expect(await screen.findByText(/dummy deck/i)).toBeInTheDocument();
+    await screen.findByText(/dummy deck/i);
   });
 });

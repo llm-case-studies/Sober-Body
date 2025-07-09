@@ -27,6 +27,6 @@ it("▶ button navigates to /pc/coach/:id", async () => {
     </SettingsProvider>
   );
   const user = userEvent.setup();
-  await user.click(screen.getByRole("link", { name: /play/i }));
+  await user.click(await screen.findByRole("link", { name: /play/i }));
   expect(window.location.pathname).toMatch(/^\/pc\/coach\/.+/);
 });
