@@ -2,11 +2,14 @@ import React from 'react'
 import { vi } from 'vitest'
 // Redirect coach-ui imports that still point at Sober-Body
 vi.mock(
-  "../../../../apps/sober-body/src/features/games/deck-context",
-  async () => await import("@/features/deck-context")
+  "/workspace/Sober-Body/apps/sober-body/src/features/games/deck-context.tsx",
+  async () => {
+    console.info("✅ DeckContext mock active");
+    return await import("@/features/deck-context");
+  }
 );
 vi.mock(
-  "../../../../apps/sober-body/src/features/core/settings-context",
+  "/workspace/Sober-Body/apps/sober-body/src/features/core/settings-context.tsx",
   () => {
     console.info("✅ SettingsContext mock active");
     return {
