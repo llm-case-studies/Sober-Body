@@ -50,12 +50,13 @@ export function DeckProvider({
 }
 
 export function useDecks() {
-  const ctx = useContext(DecksContext);
-  if (!ctx) throw new Error("useDecks must be used within DeckProvider");
-  return ctx;
+  const ctx = useContext(DecksContext)
+  if (!ctx) throw new Error('useDecks must be used within DeckProvider')
+  // expose the same interface as the real DeckProvider
+  return { decks: [ctx.deck], activeDeck: ctx.deck.id, setActiveDeck: () => {} }
 }
 
-export function useDeck() {
-  const ctx = useDecks();
-  return { decks: [ctx.deck], activeDeck: ctx.deck.id, setActiveDeck: () => {} };
+export function useDeck(id: string) {
+  const { decks } = useDecks()
+  return decks.find(d => d.id === id)
 }
