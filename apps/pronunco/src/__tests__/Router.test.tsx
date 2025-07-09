@@ -1,5 +1,5 @@
-/// <reference types="vitest" />
 // @vitest-environment jsdom
+/// <reference types="vitest" />
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, afterAll } from "vitest";
 import App from "@/App";
@@ -25,10 +25,10 @@ describe("PronunCo routes", () => {
         </DeckProvider>
       </SettingsProvider>
     );
-    expect(screen.getByText(/deck manager/i)).toBeInTheDocument();
+    expect(screen.getByText(/deck manager \(beta\)/i)).toBeInTheDocument();
   });
 
-  it("renders CoachPage at /pc/coach/:id", () => {
+  it("renders CoachPage at /pc/coach/:id", async () => {
     window.history.pushState({}, "", "/pc/coach/test");
     render(
       <SettingsProvider>
@@ -37,6 +37,6 @@ describe("PronunCo routes", () => {
         </DeckProvider>
       </SettingsProvider>
     );
-    expect(screen.getByText(/dummy deck/i, { exact: false })).toBeInTheDocument();
+    expect(await screen.findByText(/dummy deck/i)).toBeInTheDocument();
   });
 });
