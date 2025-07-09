@@ -21,5 +21,5 @@ afterEach(async () => {
 afterEach(() => {
   vi.clearAllTimers();
   vi.useRealTimers();
-  vi.restoreAllMocks();
+  vi.clearAllMocks();
 });
