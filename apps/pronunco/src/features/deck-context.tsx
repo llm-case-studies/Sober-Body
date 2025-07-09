@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from "react";
 type Card = { front: string; back: string };
 type Deck = { id: string; title: string; cards: Card[]; lines?: string[] };
 
-type DeckCtx = {
+type DecksCtx = {
   deck: Deck;
   current: number;
   next(): void;
@@ -12,7 +12,7 @@ type DeckCtx = {
   listen(cb: (text: string) => void): void;
 };
 
-export const DeckContext = createContext<DeckCtx | null>(null);
+export const DecksContext = createContext<DecksCtx | null>(null);
 
 export function DeckProvider({
   deckId,
@@ -33,7 +33,7 @@ export function DeckProvider({
 
   const [idx, setIdx] = useState(0);
 
-  const value: DeckCtx = {
+  const value: DecksCtx = {
     deck: dummy,
     current: idx,
     next: () => setIdx((i) => (i + 1) % dummy.cards.length),
@@ -46,16 +46,16 @@ export function DeckProvider({
     },
   };
 
-  return <DeckContext.Provider value={value}>{children}</DeckContext.Provider>;
-}
-
-export function useDeck() {
-  const ctx = useContext(DeckContext);
-  if (!ctx) throw new Error("useDeck must be inside DeckProvider");
-  return ctx;
+  return <DecksContext.Provider value={value}>{children}</DecksContext.Provider>;
 }
 
 export function useDecks() {
-  const ctx = useDeck();
+  const ctx = useContext(DecksContext);
+  if (!ctx) throw new Error("useDecks must be used within DeckProvider");
+  return ctx;
+}
+
+export function useDeck() {
+  const ctx = useDecks();
   return { decks: [ctx.deck], activeDeck: ctx.deck.id, setActiveDeck: () => {} };
 }
