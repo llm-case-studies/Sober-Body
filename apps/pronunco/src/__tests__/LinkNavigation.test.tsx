@@ -1,5 +1,5 @@
-/// <reference types="vitest" />
 // @vitest-environment jsdom
+/// <reference types="vitest" />
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi, afterAll } from "vitest";
@@ -26,6 +26,6 @@ it("▶ button navigates to /pc/coach/:id", async () => {
     </SettingsProvider>
   );
   const user = userEvent.setup();
-  await user.click(screen.getByRole("link", { name: /play deck/i }));
+  await user.click(screen.getByRole("link", { name: /play/i }));
   expect(window.location.pathname).toMatch(/^\/pc\/coach\/.+/);
 });
