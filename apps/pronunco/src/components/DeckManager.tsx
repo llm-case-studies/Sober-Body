@@ -224,7 +224,7 @@ export default function DeckManager() {
               <td>{d.title}</td>
               <td>{d.lang}</td>
               <td className="text-center">
-                <Link to={`../coach/${d.id}`} aria-label="Drill deck">
+                <Link to={`../coach/${d.id}`} aria-label="Play deck">
                   ▶
                 </Link>
               </td>

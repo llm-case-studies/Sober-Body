@@ -10,12 +10,6 @@ import { DeckProvider } from "@/features/deck-context";
 const deck = { id: "demo", title: "D", lang: "en", updatedAt: 0 };
 vi.mock("dexie-react-hooks", () => ({ useLiveQuery: () => [deck] }));
 vi.mock("../db", () => ({ db: {} }));
-vi.mock("../../../apps/sober-body/src/features/games/deck-context", async () =>
-  await import("../features/deck-context")
-);
-vi.mock("../../../apps/sober-body/src/features/core/settings-context", async () =>
-  await import("../features/core/settings-context")
-);
 vi.mock("coach-ui", () => ({ PronunciationCoachUI: () => <div>Dummy deck</div> }));
 
 afterAll(() => {
@@ -32,6 +26,6 @@ it("▶ button navigates to /pc/coach/:id", async () => {
     </SettingsProvider>
   );
   const user = userEvent.setup();
-  await user.click(screen.getAllByRole("link", { name: /drill/i })[0]);
+  await user.click(screen.getByRole("link", { name: /play deck/i }));
   expect(window.location.pathname).toMatch(/^\/pc\/coach\/.+/);
 });

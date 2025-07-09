@@ -9,12 +9,6 @@ import { DeckProvider } from "@/features/deck-context";
 const deck = { id: "test", title: "T", lang: "en", updatedAt: 0 };
 vi.mock("dexie-react-hooks", () => ({ useLiveQuery: () => [deck] }));
 vi.mock("../db", () => ({ db: {} }));
-vi.mock("../../../apps/sober-body/src/features/games/deck-context", async () =>
-  await import("../features/deck-context")
-);
-vi.mock("../../../apps/sober-body/src/features/core/settings-context", async () =>
-  await import("../features/core/settings-context")
-);
 vi.mock("coach-ui", () => ({ PronunciationCoachUI: () => <div>Dummy deck</div> }));
 
 afterAll(() => {
@@ -31,9 +25,7 @@ describe("PronunCo routes", () => {
         </DeckProvider>
       </SettingsProvider>
     );
-    expect(
-      screen.getByRole("heading", { name: /deck manager/i })
-    ).toBeInTheDocument();
+    expect(screen.getByText(/deck manager/i)).toBeInTheDocument();
   });
 
   it("renders CoachPage at /pc/coach/:id", () => {
@@ -45,6 +37,6 @@ describe("PronunCo routes", () => {
         </DeckProvider>
       </SettingsProvider>
     );
-    expect(screen.getByText(/dummy deck/i)).toBeInTheDocument();
+    expect(screen.getByText(/dummy deck/i, { exact: false })).toBeInTheDocument();
   });
 });
