@@ -13,7 +13,7 @@ export default defineConfig({
     fileParallelism: false,    // serialise files; speed hit is tiny (<200 ms)
     hookTimeout: 10_000,
     setupFiles: ['./tests/setup-vitest.ts', './src/test/setupMocks.ts'],
-    deps: { inline: ['coach-ui'] },
+    deps: { inline: [] },
   },
 
   root: __dirname,
