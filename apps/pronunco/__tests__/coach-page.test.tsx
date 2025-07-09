@@ -6,12 +6,8 @@ import CoachPage from '../src/pages/CoachPage';
 import { DeckProvider } from '../src/features/deck-context';
 import { SettingsProvider } from '../src/features/core/settings-context';
 
-vi.mock('../../../apps/sober-body/src/features/games/deck-context', async () =>
-  await import('../src/features/deck-context')
-);
-vi.mock('../../../apps/sober-body/src/features/core/settings-context', async () =>
-  await import('../src/features/core/settings-context')
-);
+vi.mock('coach-ui', () => ({ PronunciationCoachUI: () => <div>Dummy deck</div> }));
+
 
 
 describe('CoachPage', () => {
