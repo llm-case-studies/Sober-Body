@@ -8,7 +8,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/decks" replace />} />
         <Route path="/decks" element={<DeckManager />} />
-        <Route path="/coach/:deckId" element={<CoachPage />} />
+        <Route path="coach/:deckId" element={<CoachPage />} />
+        <Route path="*" element={<Navigate to="decks" />} />
       </Routes>
     </BrowserRouter>
   )
