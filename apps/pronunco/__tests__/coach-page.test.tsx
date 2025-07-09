@@ -12,7 +12,6 @@ import { SettingsProvider } from '../src/features/core/settings-context';
 
 describe('CoachPage', () => {
   it('renders first prompt line', async () => {
-    console.log('▶ START: renders first prompt line');
     render(
       <MemoryRouter initialEntries={['/coach/d1']}>
         <SettingsProvider>
@@ -25,6 +24,5 @@ describe('CoachPage', () => {
       </MemoryRouter>
     );
     expect(document.body.innerHTML).toContain('Hola');
-    console.log('✔ END:   renders first prompt line');
   });
 });
