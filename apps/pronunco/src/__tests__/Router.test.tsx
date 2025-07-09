@@ -26,7 +26,7 @@ describe("PronunCo routes", () => {
         </DeckProvider>
       </SettingsProvider>
     );
-    expect(screen.getByText(/deck manager/i)).toBeInTheDocument();
+    expect(screen.getByText(/deck manager \(beta\)/i)).toBeInTheDocument();
   });
 
   it("renders CoachPage at /pc/coach/:id", async () => {
