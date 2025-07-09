@@ -3,17 +3,16 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
 import CoachPage from '../src/pages/CoachPage';
-import { DeckContext } from '../src/features/deck-context';
+import { DeckProvider } from '../src/features/deck-context';
 import { SettingsProvider } from '../src/features/core/settings-context';
 
 vi.mock('../../../apps/sober-body/src/features/games/deck-context', async () =>
-  await vi.importActual('../src/features/deck-context')
+  await import('../src/features/deck-context')
 );
 vi.mock('../../../apps/sober-body/src/features/core/settings-context', async () =>
-  await vi.importActual('../src/features/core/settings-context')
+  await import('../src/features/core/settings-context')
 );
 
-const deck = { id: 'd1', title: 'D1', lang: 'en', lines: ['hello', 'bye'], tags: [], updated: 0 };
 
 describe('CoachPage', () => {
   it('renders first prompt line', async () => {
@@ -21,15 +20,15 @@ describe('CoachPage', () => {
     render(
       <MemoryRouter initialEntries={['/coach/d1']}>
         <SettingsProvider>
-          <DeckContext.Provider value={{ decks: [deck], activeDeck: deck.id, setActiveDeck: vi.fn() }}>
+          <DeckProvider deckId="d1">
             <Routes>
               <Route path="/coach/:deckId" element={<CoachPage />} />
             </Routes>
-          </DeckContext.Provider>
+          </DeckProvider>
         </SettingsProvider>
       </MemoryRouter>
     );
-    expect(document.body.innerHTML).toContain('hello');
+    expect(document.body.innerHTML).toContain('Hola');
     console.log('✔ END:   renders first prompt line');
   });
 });

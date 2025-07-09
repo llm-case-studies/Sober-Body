@@ -7,7 +7,7 @@ import { DeckProvider } from './features/deck-context';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <SettingsProvider>
-      <DeckProvider>
+      <DeckProvider deckId="demo">
         <App />
       </DeckProvider>
     </SettingsProvider>
