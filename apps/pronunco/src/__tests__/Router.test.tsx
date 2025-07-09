@@ -2,14 +2,15 @@
 /// <reference types="vitest" />
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, afterAll } from "vitest";
-import App from "@/App";
-import { SettingsProvider } from "@/features/core/settings-context";
-import { DeckProvider } from "@/features/deck-context";
 
 const deck = { id: "test", title: "T", lang: "en", updatedAt: 0 };
 vi.mock("dexie-react-hooks", () => ({ useLiveQuery: () => [deck] }));
 vi.mock("../db", () => ({ db: {} }));
 vi.mock("coach-ui", () => ({ PronunciationCoachUI: () => <div>Dummy deck</div> }));
+
+import App from "@/App";
+import { SettingsProvider } from "@/features/core/settings-context";
+import { DeckProvider } from "@/features/deck-context";
 
 afterAll(() => {
   vi.unmock("coach-ui");
