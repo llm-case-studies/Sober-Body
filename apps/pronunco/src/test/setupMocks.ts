@@ -13,5 +13,6 @@ vi.mock(
     PronunciationCoachUI: () => React.createElement('div', null, 'Dummy deck'),
     default: () => React.createElement('div', null, 'Dummy deck'),
   })
+
 );
 console.info('✅ coach-ui mock active');
