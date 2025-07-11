@@ -5,9 +5,9 @@ export async function exportDeckZip(ids: string[], db: AppDB): Promise<Blob> {
   const zip = new JSZip()
   await Promise.all(
     ids.map(async id => {
-      const deck = await db.decks.get(id)
+      const deck = await db().decks.get(id)
       if (!deck) return
-      const cards = await db.cards.where('deckId').equals(id).toArray()
+      const cards = await db().cards.where('deckId').equals(id).toArray()
       zip.file(
         `decks/${id}.json`,
         JSON.stringify({

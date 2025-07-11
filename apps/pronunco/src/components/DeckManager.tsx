@@ -17,7 +17,7 @@ export default function DeckManager() {
   const jsonRef = useRef<HTMLInputElement>(null);
   const pickerOpen = useRef(false);
   const navigate = useNavigate();
-  const decks = useLiveQuery(() => db.decks?.toArray() ?? [], [], []) || [];
+  const decks = useLiveQuery(() => db().decks?.toArray() ?? [], [], []) || [];
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -29,11 +29,11 @@ export default function DeckManager() {
   }, [decks]);
 
   const handleZip = async (file: File) => {
-    await importDeckZip(file, db);
+    await importDeckZip(file, db());
   };
 
   const handleFolderFiles = async (files: FileList | File[]) => {
-    await importDeckFolder(files, db);
+    await importDeckFolder(files, db());
   };
 
   const onZipInput = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +56,7 @@ export default function DeckManager() {
   const pickZip = async () => {
     if (supportsFSA) {
       try {
-        const last = await getLastDir(db);
+        const last = await getLastDir(db());
         const [h] = await (window as any).showOpenFilePicker({
           multiple: false,
           types: [
@@ -65,7 +65,7 @@ export default function DeckManager() {
           startIn: last,
         });
         const file = await h.getFile();
-        await saveLastDir(db, h as any);
+        await saveLastDir(db(), h as any);
         await handleZip(file);
         return;
       } catch (e: any) {
@@ -79,7 +79,7 @@ export default function DeckManager() {
   const pickJson = async () => {
     if (supportsFSA) {
       try {
-        const last = await getLastDir(db);
+        const last = await getLastDir(db());
         const handles = await (window as any).showOpenFilePicker({
           multiple: true,
           types: [
@@ -89,7 +89,7 @@ export default function DeckManager() {
         });
         const files = await Promise.all(handles.map((h: any) => h.getFile()));
         if (files.length) {
-          await saveLastDir(db, handles[0] as any);
+          await saveLastDir(db(), handles[0] as any);
           await handleFolderFiles(files);
         }
         return;
@@ -101,7 +101,7 @@ export default function DeckManager() {
       if (pickerOpen.current) return;
       pickerOpen.current = true;
       try {
-        const last = await getLastDir(db);
+        const last = await getLastDir(db());
         const dir = await (window as any).showDirectoryPicker({
           startIn: last ?? "documents",
         });
@@ -112,7 +112,7 @@ export default function DeckManager() {
         }
         const files = await Promise.all(fileHandles.map((h) => h.getFile()));
         if (files.length) {
-          await saveLastDir(db, dir as any);
+          await saveLastDir(db(), dir as any);
           await handleFolderFiles(files);
         }
         return;
@@ -150,12 +150,12 @@ export default function DeckManager() {
   };
 
   const onExport = async () => {
-    await exportDeckZip([...selectedIds], db);
+    await exportDeckZip([...selectedIds], db());
   };
 
   async function handleDelete() {
-    await db.transaction("rw", db.decks, () =>
-      db.decks.bulkDelete([...selectedIds]),
+    await db().transaction("rw", db().decks, () =>
+      db().decks.bulkDelete([...selectedIds]),
     );
     setSelectedIds(new Set());
   }
@@ -224,9 +224,7 @@ export default function DeckManager() {
               <td>{d.title}</td>
               <td>{d.lang}</td>
               <td className="text-center">
-                <Link to={`../coach/${d.id}`} aria-label="Play">
-                  ▶
-                </Link>
+                <Link to={`../coach/${d.id}`} aria-label="Play">▶</Link>
               </td>
             </tr>
           ))}

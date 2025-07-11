@@ -17,6 +17,25 @@ vi.mock('../features/games/deck-storage', () => ({
   saveDecks: vi.fn(),
 }))
 
+// Mock pronunco's useDecks and useSettings to work with sober-body's providers
+vi.mock('../../../apps/pronunco/src/features/deck-context', () => ({
+  useDecks: () => {
+    const { useDecks } = require('../features/games/deck-context')
+    return useDecks()
+  },
+  useDeck: (id: string) => {
+    const { useDeck } = require('../features/games/deck-context')
+    return useDeck(id)
+  }
+}))
+
+vi.mock('../../../apps/pronunco/src/features/core/settings-context', () => ({
+  useSettings: () => {
+    const { useSettings } = require('../features/core/settings-context')
+    return useSettings()
+  }
+}))
+
 const translationMock = vi.fn(() => 'bonjour')
 vi.mock('../../../../packages/pronunciation-coach/src/useTranslation', () => ({
   default: (...args: unknown[]) => translationMock(...args)

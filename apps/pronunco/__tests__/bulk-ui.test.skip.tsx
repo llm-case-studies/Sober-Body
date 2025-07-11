@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent, within } from '@testing-library/react'
+import { render, screen, fireEvent, within, act } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import DeckManager from '../src/components/DeckManager'
 import { MemoryRouter } from 'react-router-dom'
@@ -11,14 +11,14 @@ const decks = [
 
 var bulkDeleteMock: any
 var mockDb: any
-vi.mock('dexie-react-hooks', () => ({ useLiveQuery: () => decks }))
+vi.mock('dexie-react-hooks', () => ({ useLiveQuery: vi.fn(() => decks) }))
 vi.mock('../src/db', () => {
   bulkDeleteMock = vi.fn()
   mockDb = {
-    decks: { bulkDelete: bulkDeleteMock },
+    decks: { bulkDelete: bulkDeleteMock, toArray: () => decks },
     transaction: async (_m: any, _t: any, fn: () => Promise<void>) => { await fn() }
   }
-  return { db: mockDb }
+  return { db: () => mockDb }
 })
 vi.mock('../src/exportDeckZip', () => ({
   exportDeckZip: vi.fn(async () => new Blob())
@@ -31,14 +31,16 @@ function setup() {
       <DeckManager />
     </MemoryRouter>
   )
-  const boxes = screen.getAllByLabelText('Select All')
-  fireEvent.click(boxes[boxes.length - 1])
+  const boxes = await screen.findByLabelText('Select All')
+  fireEvent.click(boxes)
 }
 
 describe('DeckManager bulk actions', () => {
-  it('selection toggles bar', () => {
+  it('selection toggles bar', async () => {
     console.log('▶ START: selection toggles bar');
-    setup()
+    await act(async () => {
+      setup()
+    })
     const bars = screen.getAllByTestId('action-bar')
     expect(bars.length).toBeGreaterThan(0)
     console.log('✔ END:   selection toggles bar');
@@ -46,16 +48,20 @@ describe('DeckManager bulk actions', () => {
 
   it('export util called with ids', async () => {
     console.log('▶ START: export util called with ids');
-    setup()
+    await act(async () => {
+      setup()
+    })
     fireEvent.click(screen.getAllByText(/export zip/i)[0])
     expect(exportDeckZip).toHaveBeenCalledWith(['a', 'b'], expect.anything())
     console.log('✔ END:   export util called with ids');
   })
 
-  it('delete clears rows & bar hides', () => {
+  it('delete clears rows & bar hides', async () => {
     console.log('▶ START: delete clears rows & bar hides');
     vi.stubGlobal('alert', () => {})
-    setup()
+    await act(async () => {
+      setup()
+    })
     const bar = screen.getAllByTestId('action-bar').pop()!
     fireEvent.click(within(bar).getByRole('button', { name: /delete/i }))
     expect(bulkDeleteMock).toHaveBeenCalledWith(['a', 'b'])
