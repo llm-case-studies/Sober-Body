@@ -4,3 +4,6 @@ package-lock.json
 packages/*/dist
 apps/*/dist
 .env.local
+
+# UI Screenshots (local development only)
+docs/ui-screenshots/
