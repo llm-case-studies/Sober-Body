@@ -41,15 +41,14 @@ describe("PronunCo routes", () => {
 
     act(() => {
       render(
-        <MemoryRouter initialEntries={["/pc/decks"]}>
+        <MemoryRouter initialEntries={["/decks"]}>
           <SettingsProvider>
             <AppRoutes />
           </SettingsProvider>
         </MemoryRouter>
       );
     });
-    await screen.findByText(/Mocked DeckManager/i, {}, { timeout: 5000 });
-    console.log(document.body.innerHTML);
+    await screen.findByText(/Deck Manager \(beta\)/i, {}, { timeout: 5000 });
   });
 
   it("renders CoachPage at /pc/coach/:id", async () => {
@@ -60,16 +59,13 @@ describe("PronunCo routes", () => {
 
     act(() => {
       render(
-        <MemoryRouter initialEntries={["/pc/coach/test"]}>
+        <MemoryRouter initialEntries={["/coach/test"]}>
           <SettingsProvider>
-            <DeckProvider deckId="test">
-              <AppRoutes />
-            </DeckProvider>
+            <AppRoutes />
           </SettingsProvider>
         </MemoryRouter>
       );
     });
-    await screen.findByText(/dummy deck/i, {}, { timeout: 5000 });
-    console.log(document.body.innerHTML);
+    await screen.findByRole('heading', { name: /Hola/i, level: 2 }, { timeout: 5000 });
   });
 });
