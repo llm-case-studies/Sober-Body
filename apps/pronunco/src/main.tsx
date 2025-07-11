@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import './index.css';
 import App from './App';
 import { SettingsProvider } from './features/core/settings-context';
 import { DeckProvider } from './features/deck-context';
