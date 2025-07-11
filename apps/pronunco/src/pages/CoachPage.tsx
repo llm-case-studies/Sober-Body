@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import { PronunciationCoachUI } from 'coach-ui'
-import { useDeck, useDecks } from '../features/deck-context'
+import { useDeck, useDecks } from '../../../sober-body/src/features/games/deck-context'
 
 export default function CoachPage() {
   const { deckId = '' } = useParams<{ deckId: string }>()

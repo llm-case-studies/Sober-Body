@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom'
+import { useEffect } from 'react'
 import DeckManager from './components/DeckManager'
 import CoachPage from './pages/CoachPage'
-import { DeckProvider } from './features/deck-context'
+import { DeckProvider } from '../../sober-body/src/features/games/deck-context'
+import { seedPresetDecks } from '../../sober-body/src/features/games/deck-storage'
 
 function CoachPageWrapper() {
   const { deckId = '' } = useParams<{ deckId: string }>()
   return (
-    <DeckProvider deckId={deckId}>
+    <DeckProvider>
       <CoachPage />
     </DeckProvider>
   )
@@ -24,6 +26,11 @@ export function AppRoutes() {
 }
 
 export default function App() {
+  useEffect(() => {
+    // Ensure preset decks are loaded
+    seedPresetDecks()
+  }, [])
+
   return (
     <BrowserRouter basename="/pc">
       <AppRoutes />
