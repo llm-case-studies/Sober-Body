@@ -5,7 +5,7 @@ import { describe, it, expect, vi } from 'vitest';
 vi.mock('coach-ui', () => ({ PronunciationCoachUI: () => <div>Dummy deck</div> }));
 
 import CoachPage from '../src/pages/CoachPage';
-import { DeckProvider } from '../src/features/deck-context';
+import { DeckProvider } from '../../sober-body/src/features/games/deck-context';
 import { SettingsProvider } from '../src/features/core/settings-context';
 
 
@@ -15,7 +15,7 @@ describe('CoachPage', () => {
     render(
       <MemoryRouter initialEntries={['/coach/d1']}>
         <SettingsProvider>
-          <DeckProvider deckId="d1">
+          <DeckProvider>
             <Routes>
               <Route path="/coach/:deckId" element={<CoachPage />} />
             </Routes>
@@ -23,6 +23,6 @@ describe('CoachPage', () => {
         </SettingsProvider>
       </MemoryRouter>
     );
-    expect(document.body.innerHTML).toContain('Hola');
+    expect(document.body.innerHTML).toContain('She sells seashells');
   });
 });

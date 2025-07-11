@@ -66,6 +66,6 @@ describe("PronunCo routes", () => {
         </MemoryRouter>
       );
     });
-    await screen.findByRole('heading', { name: /Hola/i, level: 2 }, { timeout: 5000 });
+    await screen.findByRole('heading', { name: /She sells seashells/i, level: 2 }, { timeout: 5000 });
   });
 });

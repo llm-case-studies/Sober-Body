@@ -6,7 +6,7 @@ import { splitUnits } from "../../../apps/sober-body/src/features/games/parser";
 import useTranslation from "../../pronunciation-coach/src/useTranslation";
 import { LANGS } from "../../pronunciation-coach/src/langs";
 import { useSettings } from "../../../apps/pronunco/src/features/core/settings-context";
-import { useDecks } from "../../../apps/pronunco/src/features/deck-context";
+import { useDecks } from "../../../apps/sober-body/src/features/games/deck-context";
 import type { Deck } from "../../../apps/sober-body/src/features/games/deck-types";
 import GrammarModal from "./GrammarModal";
 import { getBriefForDeck, refs } from "../../../apps/sober-body/src/grammar-loader";
