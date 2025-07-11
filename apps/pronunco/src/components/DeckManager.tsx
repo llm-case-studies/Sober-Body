@@ -14,6 +14,14 @@ import {
 } from "../../../../packages/core-storage/src/ui-store";
 import { exportDeckZip } from "../exportDeckZip";
 
+const backgroundThemes = [
+  'bg-gradient-to-br from-blue-100 via-indigo-100 to-cyan-100',
+  'bg-gradient-to-br from-slate-100 via-gray-100 to-blue-100',
+  'bg-gradient-to-br from-amber-100 via-orange-100 to-red-100',
+  'bg-gradient-to-br from-emerald-100 via-green-100 to-teal-100',
+  'bg-gradient-to-br from-purple-100 via-violet-100 to-pink-100'
+];
+
 export default function DeckManager() {
   const zipRef = useRef<HTMLInputElement>(null);
   const jsonRef = useRef<HTMLInputElement>(null);
@@ -23,6 +31,14 @@ export default function DeckManager() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [recentDirs, setRecentDirs] = useState<Array<{name: string, handle: FileSystemDirectoryHandle, timestamp: number}>>([]);
   const [showRecentDirs, setShowRecentDirs] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTheme(prev => (prev + 1) % backgroundThemes.length);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const loadRecentDirs = async () => {
@@ -69,7 +85,6 @@ export default function DeckManager() {
     if (supportsFSA) {
       try {
         const last = await getLastDir(db());
-        console.log('ZIP import - last directory:', last);
         const [h] = await (window as any).showOpenFilePicker({
           multiple: false,
           types: [
@@ -78,15 +93,10 @@ export default function DeckManager() {
           startIn: last,
         });
         const file = await h.getFile();
-        
-        // For ZIP files, we can't reliably get the parent directory
-        // So we'll skip saving the directory for now and focus on folder imports
-        console.log('ZIP file selected, not saving directory (use folder import for directory memory)');
         await handleZip(file);
         return;
       } catch (e: any) {
         if (e?.name === "AbortError") return;
-        /* fall back */
       }
     }
     zipRef.current?.click();
@@ -94,19 +104,14 @@ export default function DeckManager() {
 
   const pickRecentDir = async (recentDir: {name: string, handle: FileSystemDirectoryHandle, timestamp: number}) => {
     try {
-      console.log('Using recent directory:', recentDir.name);
       const dir = recentDir.handle;
-      
-      // Check if we still have permission
       const permission = await dir.queryPermission({ mode: 'read' });
       if (permission !== 'granted') {
         const newPermission = await dir.requestPermission({ mode: 'read' });
         if (newPermission !== 'granted') {
-          console.log('Permission denied for recent directory');
           return;
         }
       }
-      
       const fileHandles: any[] = [];
       for await (const h of dir.values()) {
         if (h.kind === "file" && h.name.endsWith(".json"))
@@ -114,51 +119,33 @@ export default function DeckManager() {
       }
       const files = await Promise.all(fileHandles.map((h) => h.getFile()));
       if (files.length) {
-        console.log('Importing from recent directory:', dir.name);
         await saveRecentDeckDir(db(), dir);
         await handleFolderFiles(files);
-        // Reload recent directories to update order
         const recent = await getRecentDeckDirs(db());
         setRecentDirs(recent);
       }
     } catch (e: any) {
-      console.log('Failed to use recent directory:', e);
-      // If the directory is no longer accessible, we could remove it from recents
     }
   };
 
   const pickJson = async () => {
-    // Check if this is being called for folder import (from the button)
-    console.log('pickJson called - checking path...');
-    
     if (supportsDir) {
-      console.log('Using directory picker for folder import');
       if (pickerOpen.current) return;
       pickerOpen.current = true;
       try {
         const last = await getLastDir(db());
-        console.log('Folder import - last directory:', last);
-        
         let startOptions: any = {};
         if (last) {
-          // Check if the directory handle is still valid
           try {
             await last.queryPermission({ mode: 'read' });
             startOptions.startIn = last;
-            console.log('Using saved directory as startIn:', last.name);
           } catch (e) {
-            console.log('Saved directory is no longer accessible, using default');
             startOptions.startIn = "documents";
           }
         } else {
           startOptions.startIn = "documents";
         }
-        
         const dir = await (window as any).showDirectoryPicker(startOptions);
-        console.log('Selected directory:', dir);
-        console.log('Directory name:', dir.name);
-        console.log('Directory kind:', dir.kind);
-        
         const fileHandles: any[] = [];
         for await (const h of dir.values()) {
           if (h.kind === "file" && h.name.endsWith(".json"))
@@ -166,23 +153,18 @@ export default function DeckManager() {
         }
         const files = await Promise.all(fileHandles.map((h) => h.getFile()));
         if (files.length) {
-          console.log('Saving folder directory:', dir);
           await saveLastDir(db(), dir as any);
           await handleFolderFiles(files);
-          // Reload recent directories
           const recent = await getRecentDeckDirs(db());
           setRecentDirs(recent);
         }
         return;
       } catch (e: any) {
         if (e?.name === "AbortError") return;
-        console.log('Directory picker failed:', e);
-        /* fall back */
       } finally {
         pickerOpen.current = false;
       }
     } else if (supportsFSA) {
-      console.log('Using file picker for JSON import');
       try {
         const last = await getLastDir(db());
         const handles = await (window as any).showOpenFilePicker({
@@ -194,20 +176,17 @@ export default function DeckManager() {
         });
         const files = await Promise.all(handles.map((h: any) => h.getFile()));
         if (files.length) {
-          console.log('JSON files selected, not saving directory');
           await handleFolderFiles(files);
         }
         return;
       } catch (e: any) {
         if (e?.name === "AbortError") return;
-        /* fall back */
       }
     } else {
       if (pickerOpen.current) return;
       pickerOpen.current = true;
       try {
         const last = await getLastDir(db());
-        console.log('Folder import - last directory:', last);
         const dir = await (window as any).showDirectoryPicker({
           startIn: last ?? "documents",
         });
@@ -218,19 +197,14 @@ export default function DeckManager() {
         }
         const files = await Promise.all(fileHandles.map((h) => h.getFile()));
         if (files.length) {
-          console.log('Saving folder directory:', dir);
-          console.log('Directory name:', dir.name);
-          console.log('Directory kind:', dir.kind);
           await saveLastDir(db(), dir as any);
           await handleFolderFiles(files);
-          // Reload recent directories
           const recent = await getRecentDeckDirs(db());
           setRecentDirs(recent);
         }
         return;
       } catch (e: any) {
         if (e?.name === "AbortError") return;
-        /* fall back */
       } finally {
         pickerOpen.current = false;
       }
@@ -273,130 +247,74 @@ export default function DeckManager() {
   }
 
   return (
-    <div className="p-4 space-y-2">
-      <h2 className="text-lg">Deck Manager (beta)</h2>
-      <button className="border px-2" onClick={pickZip}>
-        Import ZIP
-      </button>
-      <input
-        data-testid="zipInput"
-        id="zipInput"
-        ref={zipRef}
-        type="file"
-        accept="application/zip"
-        hidden
-        onChange={onZipInput}
-      />
-      <div className="relative inline-block">
-        <button 
-          className="btn btn-outline-primary m-1" 
-          onClick={pickJson}
-        >
-          Import folder
-        </button>
-        {recentDirs.length > 0 && (
-          <>
-            <button 
-              className="btn btn-outline-secondary m-1 ml-0 px-2" 
-              onClick={() => setShowRecentDirs(!showRecentDirs)}
-              title="Recent deck folders"
-            >
-              ▼
-            </button>
-            {showRecentDirs && (
-              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-10 min-w-64">
-                <div className="p-2 text-sm font-medium border-b bg-blue-50 text-blue-800">
-                  📁 Recent Deck Folders:
+    <div className={`min-h-screen py-8 transition-all duration-1000 ${backgroundThemes[currentTheme]}`}>
+      <div className="max-w-7xl mx-auto px-[10%] sm:px-[10%] lg:px-[10%]">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-2xl font-bold mb-4">Deck Manager</h2>
+          <div className="flex gap-4 mb-4">
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors" onClick={pickZip}>Import ZIP</button>
+            <div className="relative inline-block">
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors" onClick={pickJson}>Import folder</button>
+              {recentDirs.length > 0 && (
+                <>
+                  <button 
+                    className="px-2 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors ml-1"
+                    onClick={() => setShowRecentDirs(!showRecentDirs)} 
+                    title="Recent deck folders"
+                  >
+                    ▼
+                  </button>
+                  {showRecentDirs && (
+                    <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-10 min-w-64">
+                      <div className="p-2 text-sm font-medium border-b bg-blue-50 text-blue-800">📁 Recent Deck Folders:</div>
+                      {recentDirs.length === 0 ? (
+                        <div className="px-3 py-4 text-sm text-gray-500 text-center">No recent folders yet.<br />Import a folder to see it here.</div>
+                      ) : (
+                        recentDirs.map((dir, index) => {
+                          const timeAgo = new Date(dir.timestamp).toLocaleDateString();
+                          return (
+                            <button
+                              key={index}
+                              className="block w-full text-left px-3 py-3 text-sm hover:bg-blue-50 border-b last:border-b-0 transition-colors"
+                              onClick={() => { pickRecentDir(dir); setShowRecentDirs(false); }}
+                            >
+                              <div className="font-medium text-gray-800">{dir.name}</div>
+                              <div className="text-xs text-gray-500 mt-1">Last used: {timeAgo}</div>
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+            <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:outline-none transition-colors" onClick={clearDecks}>Clear decks</button>
+          </div>
+          <div className="space-y-2">
+            {decks.map((d) => (
+              <div key={d.id} className="flex items-center gap-4 p-2 border-t">
+                <input type="checkbox" aria-label={`Select deck ${d.title}`} checked={selectedIds.has(d.id)} onChange={() => toggleId(d.id)} />
+                <div className="flex-1">
+                  <div className="font-bold">{d.title}</div>
+                  <div className="text-sm text-gray-500">{d.lang}</div>
                 </div>
-                {recentDirs.length === 0 ? (
-                  <div className="px-3 py-4 text-sm text-gray-500 text-center">
-                    No recent folders yet.
-                    <br />
-                    Import a folder to see it here.
-                  </div>
-                ) : (
-                  recentDirs.map((dir, index) => {
-                    const timeAgo = new Date(dir.timestamp).toLocaleDateString();
-                    return (
-                      <button
-                        key={index}
-                        className="block w-full text-left px-3 py-3 text-sm hover:bg-blue-50 border-b last:border-b-0 transition-colors"
-                        onClick={() => {
-                          pickRecentDir(dir);
-                          setShowRecentDirs(false);
-                        }}
-                      >
-                        <div className="font-medium text-gray-800">{dir.name}</div>
-                        <div className="text-xs text-gray-500 mt-1">Last used: {timeAgo}</div>
-                      </button>
-                    );
-                  })
-                )}
+                <Link to={`../coach/${d.id}`} className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors">▶ Play</Link>
               </div>
-            )}
-          </>
-        )}
-      </div>
-      <input
-        data-testid="jsonInput"
-        id="jsonInput"
-        ref={jsonRef}
-        type="file"
-        hidden
-        webkitdirectory=""
-        multiple
-        onChange={onJsonInput}
-      />
-      <button className="border px-2" title="Clear decks" onClick={clearDecks}>
-        Clear decks (beta)
-      </button>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr>
-            <th className="w-8 text-center">
-              <input
-                type="checkbox"
-                aria-label="Select All"
-                checked={
-                  selectedIds.size > 0 &&
-                  decks.every((d) => selectedIds.has(d.id))
-                }
-                onChange={toggleAll}
-              />
-            </th>
-            <th className="text-left">Title</th>
-            <th className="text-left">Lang</th>
-            <th className="w-8" />
-          </tr>
-        </thead>
-        <tbody>
-          {decks.map((d) => (
-            <tr key={d.id} className="border-t">
-              <td className="text-center">
-                <input
-                  type="checkbox"
-                  aria-label={`Select deck ${d.title}`}
-                  checked={selectedIds.has(d.id)}
-                  onChange={() => toggleId(d.id)}
-                />
-              </td>
-              <td>{d.title}</td>
-              <td>{d.lang}</td>
-              <td className="text-center">
-                <Link to={`../coach/${d.id}`} aria-label="Play">▶</Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {selectedIds.size > 0 && (
-        <div data-testid="action-bar" className="border p-2 space-x-2">
-          <button onClick={onDrill}>▶ Drill</button>
-          <button onClick={() => alert("TODO")}>📝 Edit Grammar</button>
-          <button onClick={onExport}>📤 Export ZIP</button>
-          <button onClick={handleDelete}>🗑 Delete</button>
+            ))}
+          </div>
+          {selectedIds.size > 0 && (
+            <div className="border-t p-2 space-x-2 mt-4">
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors" onClick={onDrill}>▶ Drill</button>
+              <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors" onClick={() => alert("TODO")}>📝 Edit Grammar</button>
+              <button className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-400 focus:outline-none transition-colors" onClick={onExport}>📤 Export ZIP</button>
+              <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:outline-none transition-colors" onClick={handleDelete}>🗑 Delete</button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
+      <input ref={zipRef} type="file" accept="application/zip" hidden onChange={onZipInput} />
+      <input ref={jsonRef} type="file" hidden webkitdirectory="" multiple onChange={onJsonInput} />
     </div>
   );
 }
