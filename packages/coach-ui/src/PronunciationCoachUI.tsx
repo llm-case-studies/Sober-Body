@@ -136,175 +136,259 @@ export default function PronunciationCoachUI() {
 
   return (
     <>
-    <div
-      className="grid grid-cols-2 gap-x-28 gap-y-12 max-w-7xl mx-auto px-10 pt-10"
-    >
-      <section className="flex flex-col space-y-2">
-        <textarea
-          rows={14}
-          className="w-full resize-y min-h-40 max-h-[70vh] overflow-y-auto border p-2 bg-[rgba(255,255,255,0.8)] backdrop-blur-sm"
-          value={raw}
-          onChange={(e) => setRaw(e.target.value)}
-          onMouseUp={handleMouseUp}
-        />
-        <div className="text-xs">Mode: {mode.charAt(0).toUpperCase() + mode.slice(1)} ({lines.length} chunks)</div>
-        <div className="flex gap-2 items-center">
-          <select
-            className="border p-1"
-            value={mode}
-            onChange={(e) => setMode(e.target.value as SplitMode)}
-          >
-            <option value="word">Word</option>
-            <option value="line">Line</option>
-            <option value="phrase">Phrase</option>
-            <option value="sentence">Sentence</option>
-            <option value="paragraph">Paragraph</option>
-            <option value="full">Full</option>
-          </select>
-          <select
-            className="border p-1"
-            value={settings.locale}
-            onChange={e => setSettings(s => ({ ...s, locale: e.target.value }))}
-          >
-            {LANGS.map(l => (
-              <option key={l.code} value={l.code}>{l.label}</option>
-            ))}
-          </select>
-          <label className="text-sm">Translate to
-            <select
-              value={settings.nativeLang}
-              onChange={e => setSettings(s => ({ ...s, nativeLang: e.target.value }))}
-              className="border p-1 ml-1"
-            >
-              {LANGS.map(l => (
-                <option key={l.code} value={l.code}>{l.label}</option>
-              ))}
-            </select>
-          </label>
-          <button
-            onClick={() => navigate('/decks')}
-            className="border px-2 py-1"
-          >
-            📚 Manage Decks
-          </button>
-          <button onClick={() => setIndex(0)} className="border px-2 py-1">
-            Restart Drill
-          </button>
-        </div>
-      </section>
-      <section className="flex flex-col items-center">
-        {lines.length > 0 && (
-          <ul className="list-disc pl-12 pr-8 space-y-1 overflow-y-auto max-h-[70vh]">
-            {lines.map(
-              (line, i) =>
-                line && (
-                  <li
-                    key={i}
-                    onClick={() => setIndex(i)}
-                    className={
-                      i === index
-                        ? "font-bold cursor-pointer"
-                        : "cursor-pointer"
-                    }
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          {/* Left Panel - Text Input & Controls */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Practice Text
+                </label>
+                <textarea
+                  rows={12}
+                  className="w-full resize-y min-h-40 max-h-[60vh] overflow-y-auto rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={raw}
+                  onChange={(e) => setRaw(e.target.value)}
+                  onMouseUp={handleMouseUp}
+                  placeholder="Enter text to practice..."
+                />
+              </div>
+              
+              <div className="text-xs text-gray-500">
+                Mode: {mode.charAt(0).toUpperCase() + mode.slice(1)} ({lines.length} chunks)
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Split Mode
+                  </label>
+                  <select
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={mode}
+                    onChange={(e) => setMode(e.target.value as SplitMode)}
                   >
-                    {line}
-                  </li>
-                ),
-            )}
-          </ul>
-        )}
-        <h2
-          className="text-2xl text-center mb-8 select-text"
-        >
-          {current}
-        </h2>
-        <div className="flex gap-4 mb-8">
-            <button
-              onClick={coach.play}
-              title="Play sample"
-              aria-label="Play sample"
-              className="px-3 py-1 text-lg"
-            >
-              ▶ Play
-            </button>
-            <button
-              disabled={
-                !(
-                  "SpeechRecognition" in window ||
-                  "webkitSpeechRecognition" in window
-                )
-              }
-              onClick={coach.recording ? coach.stop : coach.start}
-              title={coach.recording ? "Stop recording" : "Record your voice"}
-              aria-label={coach.recording ? "Stop recording" : "Record your voice"}
-              className="px-3 py-1 text-lg"
-            >
-              {coach.recording ? "■ Stop" : "⏺ Record"}
-            </button>
-            {briefExists && (
-              <button onClick={handleGrammar} className="px-3 py-1 text-lg">
-                📖 Grammar
-              </button>
-            )}
-            <label className="ml-2 text-sm flex items-center gap-1">Translate:
-              <select
-                value={tMode}
-                onChange={e => setTMode(e.target.value as TranslateMode)}
-                className="border p-1 ml-1"
-              >
-                <option value="off">Off</option>
-                <option value="auto-unit">Auto</option>
-                <option value="auto-select">On Select</option>
-              </select>
-            </label>
-            <button
-              onClick={handleTranslateNow}
-              className="px-3 py-1 text-lg"
-            >
-              🔍 Translate Now
-            </button>
-            {coach.result !== null && <span>Score {coach.result}%</span>}
+                    <option value="word">Word</option>
+                    <option value="line">Line</option>
+                    <option value="phrase">Phrase</option>
+                    <option value="sentence">Sentence</option>
+                    <option value="paragraph">Paragraph</option>
+                    <option value="full">Full</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Language
+                  </label>
+                  <select
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={settings.locale}
+                    onChange={e => setSettings(s => ({ ...s, locale: e.target.value }))}
+                  >
+                    {LANGS.map(l => (
+                      <option key={l.code} value={l.code}>{l.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Translate to
+                </label>
+                <select
+                  value={settings.nativeLang}
+                  onChange={e => setSettings(s => ({ ...s, nativeLang: e.target.value }))}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {LANGS.map(l => (
+                    <option key={l.code} value={l.code}>{l.label}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => navigate('/decks')}
+                  className="flex-1 inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  📚 Manage Decks
+                </button>
+                <button 
+                  onClick={() => setIndex(0)} 
+                  className="flex-1 inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  Restart Drill
+                </button>
+              </div>
+            </div>
           </div>
-        <label className="text-xs mt-2 flex items-center gap-1">
-          <input
-            type="checkbox"
-            checked={settings.slowSpeech}
-            onChange={e => setSettings(s => ({ ...s, slowSpeech: e.target.checked }))}
-          />
-          Slow speak
-        </label>
-        {translation && showTranslation && (
-            <div className="flex items-center gap-2 flex-wrap mb-8 rounded-md border px-4 py-2 bg-white/90 shadow max-w-[60%] text-sm">
-              <span>{translation}</span>
-              <button
-                onClick={speak}
-                title="Hear translation"
-                aria-label="Hear translation"
-                className="ml-2 text-lg"
-              >
-                🔊
-              </button>
+          
+          {/* Right Panel - Practice Section */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex flex-col items-center space-y-6">
+              
+              {/* Word List */}
+              {lines.length > 0 && (
+                <div className="w-full">
+                  <h3 className="text-sm font-medium text-gray-700 mb-3">Practice Units</h3>
+                  <div className="max-h-40 overflow-y-auto border rounded-md p-3 bg-gray-50">
+                    <ul className="space-y-1">
+                      {lines.map(
+                        (line, i) =>
+                          line && (
+                            <li
+                              key={i}
+                              onClick={() => setIndex(i)}
+                              className={`cursor-pointer px-2 py-1 rounded text-sm transition-colors ${
+                                i === index
+                                  ? "bg-blue-100 text-blue-900 font-medium"
+                                  : "hover:bg-gray-100"
+                              }`}
+                            >
+                              {line}
+                            </li>
+                          ),
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              )}
+              
+              {/* Current Word Display */}
+              <div className="w-full text-center">
+                <h2 className="text-3xl font-medium text-gray-900 mb-4 select-text bg-gray-50 rounded-lg p-4 border">
+                  {current}
+                </h2>
+                
+                {/* Score Display */}
+                {coach.result !== null && (
+                  <div className="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-4">
+                    Score: {coach.result}%
+                  </div>
+                )}
+              </div>
+              
+              {/* Main Controls */}
+              <div className="flex flex-wrap gap-3 justify-center">
+                <button
+                  onClick={coach.play}
+                  title="Play sample"
+                  aria-label="Play sample"
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
+                >
+                  ▶ Play
+                </button>
+                <button
+                  disabled={
+                    !(
+                      "SpeechRecognition" in window ||
+                      "webkitSpeechRecognition" in window
+                    )
+                  }
+                  onClick={coach.recording ? coach.stop : coach.start}
+                  title={coach.recording ? "Stop recording" : "Record your voice"}
+                  aria-label={coach.recording ? "Stop recording" : "Record your voice"}
+                  className={`inline-flex items-center px-4 py-2 rounded-md focus:ring-2 focus:outline-none transition-colors ${
+                    coach.recording 
+                      ? "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500"
+                      : "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {coach.recording ? "■ Stop" : "⏺ Record"}
+                </button>
+                {briefExists && (
+                  <button 
+                    onClick={handleGrammar} 
+                    className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors"
+                  >
+                    📖 Grammar
+                  </button>
+                )}
+              </div>
+              
+              {/* Translation Controls */}
+              <div className="w-full border-t pt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-medium text-gray-700">Translation</span>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={tMode}
+                      onChange={e => setTMode(e.target.value as TranslateMode)}
+                      className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="off">Off</option>
+                      <option value="auto-unit">Auto</option>
+                      <option value="auto-select">On Select</option>
+                    </select>
+                    <button
+                      onClick={handleTranslateNow}
+                      className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none transition-colors"
+                    >
+                      🔍 Translate Now
+                    </button>
+                  </div>
+                </div>
+                
+                {translation && showTranslation && (
+                  <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                    <span className="flex-1 text-sm text-blue-900">{translation}</span>
+                    <button
+                      onClick={speak}
+                      title="Hear translation"
+                      aria-label="Hear translation"
+                      className="p-1 text-blue-600 hover:text-blue-800 focus:outline-none"
+                    >
+                      🔊
+                    </button>
+                  </div>
+                )}
+              </div>
+              
+              {/* Settings */}
+              <div className="w-full border-t pt-4">
+                <label className="flex items-center gap-2 text-sm text-gray-600">
+                  <input
+                    type="checkbox"
+                    checked={settings.slowSpeech}
+                    onChange={e => setSettings(s => ({ ...s, slowSpeech: e.target.checked }))}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  Slow speech
+                </label>
+              </div>
+              
+              {/* Navigation */}
+              {lines.length > 0 && (
+                <div className="flex gap-3 pt-4 border-t w-full justify-center">
+                  <button
+                    onClick={() => setIndex((i) => i - 1)}
+                    disabled={index === 0}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    ← Previous
+                  </button>
+                  <span className="px-3 py-2 text-sm text-gray-500 flex items-center">
+                    {index + 1} of {lines.length}
+                  </span>
+                  <button
+                    onClick={() => setIndex((i) => i + 1)}
+                    disabled={index >= lines.length - 1}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        {lines.length > 0 && (
-            <div className="flex gap-4">
-              <button
-                onClick={() => setIndex((i) => i - 1)}
-                disabled={index === 0}
-                className="border px-2 py-1"
-              >
-                Prev
-              </button>
-              <button
-                onClick={() => setIndex((i) => i + 1)}
-                disabled={index >= lines.length - 1}
-                className="border px-2 py-1"
-              >
-                Next
-              </button>
-            </div>
-          )}
-      </section>
+          </div>
+          
+        </div>
+      </div>
     </div>
     <GrammarModal open={Boolean(brief)} brief={brief!} onClose={() => setBrief(null)} />
     </>

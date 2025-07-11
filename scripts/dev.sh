@@ -6,10 +6,20 @@ echo "────────────────────────�
 # Idempotent dev helper for Sober-Body & PronunCo.
 #
 # Flags:
-#   -p | --pull      git pull --rebase --autostash
-#   -i | --install   pnpm install
-#   -t | --test      pnpm test
-#   -s | --start     (default) start dev servers
+#   -r | --remote    remote-first workflow (pull + install)
+#   -t | --test      run tests
+#   -s | --start     start dev servers (default when no args)
+#   -p | --pull      git pull --rebase --autostash (use with caution)
+#   -i | --install   pnpm install (usually not needed locally)
+#
+# Common combinations:
+#   ./dev.sh         → start servers (local dev)
+#   ./dev.sh -t      → test only
+#   ./dev.sh -t -s   → test then start
+#   ./dev.sh -r      → pull + install (remote setup)
+#   ./dev.sh -r -t   → pull + install + test
+#   ./dev.sh -r -s   → pull + install + start
+#   ./dev.sh -r -t -s → pull + install + test + start
 
 set -euo pipefail
 
@@ -29,11 +39,12 @@ debug_handles=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --debug-handles) debug_handles=true ;;
+    -r|--remote)   run_pull=true; run_install=true ;;
     -p|--pull)     run_pull=true;;
     -i|--install)  run_install=true;;
     -t|--test)     run_tests=true ;;
     -s|--start)    run_start=true ;;
-    *) echo "Usage: $0 [--debug-handles] [-p] [-i] [-t] [-s]" && exit 1;;
+    *) echo "Usage: $0 [--debug-handles] [-r] [-t] [-s] [-p] [-i]" && exit 1;;
   esac
   shift
 done
