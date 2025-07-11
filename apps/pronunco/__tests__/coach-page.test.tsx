@@ -11,7 +11,7 @@ import { SettingsProvider } from '../src/features/core/settings-context';
 
 
 describe('CoachPage', () => {
-  it('renders first prompt line', async () => {
+  it('renders coach page with deck content', async () => {
     render(
       <MemoryRouter initialEntries={['/coach/d1']}>
         <SettingsProvider>
