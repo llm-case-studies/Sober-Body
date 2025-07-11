@@ -14,7 +14,12 @@ export default defineConfig(({ mode }) => {
     envDir,
     plugins: [react()],
     resolve: { alias: { '@': resolve(__dirname, 'src') } },
-    server: { port: 5174 },
+    server: { 
+      port: 5174,
+      fs: {
+        allow: ['../../']
+      }
+    },
     test: { environment: 'jsdom' }
   }
 })
