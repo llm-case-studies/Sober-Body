@@ -1,8 +1,24 @@
+// Mock Azure Speech package FIRST (before any imports)
+vi.mock('../../azure-speech/src', () => ({
+  useAzurePronunciation: vi.fn(),
+  useAzureBudget: () => ({
+    budgetExceeded: false,
+    todaySpending: 0,
+    remainingBudget: 3,
+    addUsageEntry: vi.fn(),
+    usageEntries: []
+  })
+}));
+
+// Mock coach-ui package completely
+vi.mock('coach-ui', () => ({ 
+  PronunciationCoachUI: () => <h2>She sells seashells</h2>
+}));
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
-vi.mock('coach-ui', () => ({ PronunciationCoachUI: () => <div>Dummy deck</div> }));
 
 import CoachPage from '../src/pages/CoachPage';
 import { DeckProvider } from '../../sober-body/src/features/games/deck-context';
