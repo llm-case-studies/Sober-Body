@@ -1,4 +1,5 @@
 # PronunCo – Work / Tech Feature Back-Log
+↗ [See the Business Roadmap for context on WHY these tasks exist.](./BUSINESS-STRATEGIC.md)
 ### 🌟 Recent Wins
 * _(Add your win here – see CONTRIBUTING.md for format)_
 *(initial skeleton – import tasks from sprint board as needed)*
