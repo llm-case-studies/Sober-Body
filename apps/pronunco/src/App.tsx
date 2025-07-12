@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-
 import { useEffect } from 'react'
 import DeckManager from './components/DeckManager'
 import CoachPage from './pages/CoachPage'
+import ChallengePage from './pages/ChallengePage'
 import { DeckProvider } from '../../sober-body/src/features/games/deck-context'
 import { seedPresetDecks } from '../../sober-body/src/features/games/deck-storage'
 
@@ -20,6 +21,7 @@ export function AppRoutes() {
       <Route path="/" element={<Navigate to="/decks" replace />} />
       <Route path="/decks" element={<DeckManager />} />
       <Route path="/coach/:deckId" element={<CoachPageWrapper />} />
+      <Route path="/c/:data" element={<ChallengePage />} />
       <Route path="*" element={<Navigate to="/decks" />} />
     </Routes>
   )

@@ -15,6 +15,13 @@ import { loadBrief } from "../../../apps/sober-body/src/brief-storage";
 import useBriefExists from "../../../apps/sober-body/src/useBriefExists";
 import { useAzurePronunciation, useAzureBudget, type AzureScore } from "../../azure-speech/src";
 
+interface ChallengePayload {
+  id: string;
+  title: string;
+  units: string[];
+  grammar?: string;
+}
+
 const defaultDeck: Deck = {
   id: 'example',
   title: 'Example Lesson',
@@ -45,6 +52,7 @@ export default function PronunciationCoachUI() {
   
   // Rotate background every 30 seconds or based on deck ID
   const [currentTheme, setCurrentTheme] = useState(0);
+  const [showToast, setShowToast] = useState(false);
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -73,9 +81,46 @@ export default function PronunciationCoachUI() {
   const audioRecordingRef = useRef<Blob | null>(null);
   const budget = useAzureBudget();
 
+  const shareEnabled = ['word', 'phrase', 'sentence'].includes(mode);
+
+  const handleShareChallenge = async () => {
+    if (!shareEnabled) return;
+
+    const challengePayload: ChallengePayload = {
+      id: currentDeck.id + '-' + mode + '-' + Date.now(), // Simple unique ID
+      title: currentDeck.title,
+      units: lines,
+      // grammar: brief?.story, // Optional: include grammar if available and relevant
+    };
+
+    const encodedPayload = encodeURIComponent(btoa(JSON.stringify(challengePayload)));
+    const challengeUrl = `${window.location.origin}/pc/c/${encodedPayload}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Challenge: ${currentDeck.title}`,
+          text: `Beat my score in ${currentDeck.title}!`, 
+          url: challengeUrl,
+        });
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(challengeUrl);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      } catch (error) {
+        console.error('Error copying to clipboard:', error);
+      }
+    }
+  };
+
   useEffect(() => {
     localStorage.setItem('pc_translateMode', tMode)
   }, [tMode])
+
 
   useEffect(() => {
     setRaw(currentDeck.lines.join('\n'));
@@ -289,7 +334,20 @@ export default function PronunciationCoachUI() {
                 >
                   Restart Drill
                 </button>
+                <button
+                  onClick={handleShareChallenge}
+                  disabled={!shareEnabled}
+                  className={`flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md shadow-sm text-sm font-medium transition-colors ${shareEnabled ? 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                >
+                  🔗 Share Challenge
+                </button>
               </div>
+              
+              {showToast && (
+                <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-md shadow-lg">
+                  Challenge link copied to clipboard!
+                </div>
+              )}
               
               {/* Theme Selector */}
               <div className="pt-4 border-t">
