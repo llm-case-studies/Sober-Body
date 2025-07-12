@@ -15,6 +15,8 @@
 | Teacher PoC | Grammar modal reusable as editor | #191 | GPT |
 | Friend PoC | Share-card generator (html2canvas) | #193 | Gemini |
 | Azure | `usePronunciationScore` hook + budget watchdog | #194 | Claude |
+| Organization | **Folder tree + smart naming** for deck management | feature-branch | Claude |
+| Social | **Friend-Challenge share URLs** with encoded data | feature-branch | Claude |
 
 ---
 
@@ -31,8 +33,10 @@
 ---
 
 ## 🎉 Went well
-- [ ] *add bullet*
-- [ ] *add bullet*
+- ✅ **Sprint 3 finale exceeded expectations** - delivered folder organization + social sharing beyond planned scope
+- ✅ **AI collaboration workflow** - Claude, Gemini, and GPT worked seamlessly on complementary features  
+- ✅ **Clean git history** - complex merge scenarios handled perfectly with stashing and fast-forward merges
+- ✅ **Feature completeness** - each feature shipped production-ready with full TypeScript integration
 
 ## 😰 Pain / surprises
 - [ ] *add bullet*
@@ -54,7 +58,7 @@
 | Sync | Dexie `outbox` + Supabase flush | PoC queued | Claude |
 | Leaderboard | Supabase `challenge_scores`, Top-10 API | not started | Claude |
 | Usage cap | Slack alert on Azure $ spend | PoC in watchdog | Claude |
-| Folders | deck tree / drag-and-drop | backlog | open |
+| Drag-drop | enhance folder tree with drag-and-drop | backlog | open |
 
 ---
 
