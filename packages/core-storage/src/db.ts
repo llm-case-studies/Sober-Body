@@ -5,8 +5,16 @@ export interface Deck {
   title: string
   lang: string
   category?: string
+  folderId?: string
   tags?: string
   updatedAt: number
+}
+
+export interface Folder {
+  id: string
+  name: string
+  parentId?: string
+  createdAt: number
 }
 
 export interface Card {
@@ -18,15 +26,20 @@ export interface Card {
 export interface AppDB extends Dexie {
   decks: Table<Deck, string>
   cards: Table<Card, string>
+  folders: Table<Folder, string>
   ui: Table<any, string>
+  challenges: Table<any, string>
+  friend_scores: Table<any, string>
 }
 
-export const createAppDB = (app: 'sober' | 'pronun'): AppDB => {
+export const createAppDB = (app: 'sober' | 'pronun', schema: { [key: string]: string } = {}): AppDB => {
   const db = new Dexie(`${app}-v2`)
   db.version(1).stores({
-    decks: '&id,title,lang,category,updatedAt',
+    decks: '&id,title,lang,category,folderId,updatedAt',
     cards: 'id,deckId',
-    ui: '&id'
+    folders: '&id,name,parentId,createdAt',
+    ui: '&id',
+    ...schema,
   })
   return db as AppDB
 }
