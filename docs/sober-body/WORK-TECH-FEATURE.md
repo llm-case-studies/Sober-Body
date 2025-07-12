@@ -1,11 +1,5 @@
-# Project Backlog – Sober‑Body
-
-**v0.2 · 23 Jun 2025**
-Last updated: 23 Jun 2025
-
-Legend: **↑ = next up** · ✅ done · ⬜ open
-
----
+# Sober-Body – Work / Tech Back-Log
+*(split from original BACKLOG on 2025-07-12)*
 
 ## Core & Architecture
 
@@ -45,14 +39,3 @@ Legend: **↑ = next up** · ✅ done · ⬜ open
 * ⬜ **docs:** WP‑1 compliant core (algorithms & privacy) first draft
 * ⬜ **docs:** Update WP‑0 bus protocol after first PWA release
 
----
-
-### How to use this file
-
-* AI agents **check** items automatically in PR description (`- [x] …`).
-* Humans edit manually or via PR.
-* Keep entries one line; link to issue # if discussion >1 comment.
-
----
-
-*End of file*
