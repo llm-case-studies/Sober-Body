@@ -13,7 +13,8 @@ const DEFAULTS: Required<Settings> = {
   nativeLang: 'en',
   locale: 'en',
   slowSpeech: false,
-  useAzure: false
+  useAzure: false,
+  role: 'student'
 }
 const SettingsContext = createContext<SettingsValue | undefined>(undefined)
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
