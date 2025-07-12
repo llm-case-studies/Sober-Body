@@ -13,6 +13,8 @@ import {
   saveRecentDeckDir,
 } from "../../../../packages/core-storage/src/ui-store";
 import { exportDeckZip } from "../exportDeckZip";
+import NewDrillWizard from "./NewDrillWizard";
+import { useSettings } from "../features/core/settings-context";
 
 const backgroundThemes = [
   'bg-gradient-to-br from-blue-100 via-indigo-100 to-cyan-100',
@@ -27,11 +29,13 @@ export default function DeckManager() {
   const jsonRef = useRef<HTMLInputElement>(null);
   const pickerOpen = useRef(false);
   const navigate = useNavigate();
+  const { settings } = useSettings();
   const decks = useLiveQuery(() => db().decks?.toArray() ?? [], [], []) || [];
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [recentDirs, setRecentDirs] = useState<Array<{name: string, handle: FileSystemDirectoryHandle, timestamp: number}>>([]);
   const [showRecentDirs, setShowRecentDirs] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(0);
+  const [showWizard, setShowWizard] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -252,6 +256,9 @@ export default function DeckManager() {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h2 className="text-2xl font-bold mb-4">Deck Manager</h2>
           <div className="flex gap-4 mb-4">
+            {settings.role === 'teacher' && (
+              <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors" onClick={()=>setShowWizard(true)}>➕ New Drill</button>
+            )}
             <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors" onClick={pickZip}>Import ZIP</button>
             <div className="relative inline-block">
               <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors" onClick={pickJson}>Import folder</button>
@@ -315,6 +322,7 @@ export default function DeckManager() {
       </div>
       <input ref={zipRef} type="file" accept="application/zip" hidden onChange={onZipInput} />
       <input ref={jsonRef} type="file" hidden webkitdirectory="" multiple onChange={onJsonInput} />
+      <NewDrillWizard open={showWizard} onClose={()=>setShowWizard(false)} />
     </div>
   );
 }
