@@ -1,4 +1,6 @@
 # PronunCo – Work / Tech Feature Back-Log
+### 🌟 Recent Wins
+* _(Add your win here – see CONTRIBUTING.md for format)_
 *(initial skeleton – import tasks from sprint board as needed)*
 
 | ID   | Epic / Feature                              | Sprint | Owner   | Status        |

@@ -1,4 +1,6 @@
 # PronunCo – Business Strategy Back-Log
+### 🌟 Recent Wins
+* _(Add your win here – see CONTRIBUTING.md for format)_
 *(initial skeleton – fill during Sprint-4 planning)*
 
 ## July 2025 • Viral Loop KPI
