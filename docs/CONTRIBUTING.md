@@ -7,7 +7,8 @@ Keeper: Alex S.
 
 ## 1 · Scope
 
-This document explains **how humans *and* AI agents (Codex/Copilot)** should interact with the repository.  It is stable – everyday backlog changes live in `docs/BACKLOG.md`.
+This document explains **how humans *and* AI agents (Codex/Copilot)** should interact with the repository.  It is stable – back-log entries live in `docs/*/WORK-TECH-FEATURE.md`.
+See `docs/AI-COLLAB.md` for multi-AI workflow.
 
 ---
 
