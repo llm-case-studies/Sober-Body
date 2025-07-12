@@ -14,7 +14,7 @@ export default defineConfig({
     hookTimeout: 10_000,
     setupFiles: ['./tests/setup-vitest.ts', './src/test/setupMocks.ts'],
     deps: { inline: [] },
-    include: ['./__tests__/**/*.test.ts'],
+    include: ['./__tests__/**/*.test.{ts,tsx}'],
   },
 
   root: __dirname,

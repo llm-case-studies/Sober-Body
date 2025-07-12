@@ -14,7 +14,10 @@ import {
 } from "../../../../packages/core-storage/src/ui-store";
 import { exportDeckZip } from "../exportDeckZip";
 import NewDrillWizard from "./NewDrillWizard";
+import FolderTree from "./FolderTree";
+import NewFolderModal from "./NewFolderModal";
 import { useSettings } from "../features/core/settings-context";
+import type { Deck } from "../../../../packages/core-storage/src/db";
 
 const backgroundThemes = [
   'bg-gradient-to-br from-blue-100 via-indigo-100 to-cyan-100',
@@ -36,6 +39,10 @@ export default function DeckManager() {
   const [showRecentDirs, setShowRecentDirs] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(0);
   const [showWizard, setShowWizard] = useState(false);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [showNewFolderModal, setShowNewFolderModal] = useState(false);
+  const [showMoveDropdown, setShowMoveDropdown] = useState<string | null>(null);
+  const folders = useLiveQuery(() => db().folders?.toArray() ?? [], [], []) || [];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -59,6 +66,15 @@ export default function DeckManager() {
       return keep;
     });
   }, [decks]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setShowMoveDropdown(null);
+    if (showMoveDropdown) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showMoveDropdown]);
 
   const handleZip = async (file: File) => {
     await importDeckZip(file, db());
@@ -230,8 +246,9 @@ export default function DeckManager() {
   };
 
   const toggleAll = () => {
-    if (selectedIds.size === decks.length) setSelectedIds(new Set());
-    else setSelectedIds(new Set(decks.map((d) => d.id)));
+    const filtered = getFilteredDecks();
+    if (selectedIds.size === filtered.length) setSelectedIds(new Set());
+    else setSelectedIds(new Set(filtered.map((d) => d.id)));
   };
 
   const onDrill = () => {
@@ -250,10 +267,37 @@ export default function DeckManager() {
     setSelectedIds(new Set());
   }
 
+  const getFilteredDecks = (): Deck[] => {
+    if (selectedFolderId === null) {
+      return decks; // Show all decks
+    } else if (selectedFolderId === 'unorganized') {
+      return decks.filter(deck => !deck.folderId);
+    } else {
+      return decks.filter(deck => deck.folderId === selectedFolderId);
+    }
+  };
+
+  const moveDeckToFolder = async (deckId: string, folderId: string | null) => {
+    await db().decks.update(deckId, { folderId });
+    setShowMoveDropdown(null);
+  };
+
+  const filteredDecks = getFilteredDecks();
+
   return (
     <div className={`min-h-screen py-8 transition-all duration-1000 ${backgroundThemes[currentTheme]}`}>
       <div className="max-w-7xl mx-auto px-[10%] sm:px-[10%] lg:px-[10%]">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="flex h-[80vh]">
+            {/* Folder Tree Sidebar */}
+            <FolderTree
+              selectedFolderId={selectedFolderId}
+              onFolderSelect={setSelectedFolderId}
+              onCreateFolder={() => setShowNewFolderModal(true)}
+            />
+            
+            {/* Main Content */}
+            <div className="flex-1 p-6 overflow-y-auto">
           <h2 className="text-2xl font-bold mb-4">Deck Manager</h2>
           <div className="flex gap-4 mb-4">
             {settings.role === 'teacher' && (
@@ -299,13 +343,43 @@ export default function DeckManager() {
             <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:outline-none transition-colors" onClick={clearDecks}>Clear decks</button>
           </div>
           <div className="space-y-2">
-            {decks.map((d) => (
+            {filteredDecks.map((d) => (
               <div key={d.id} className="flex items-center gap-4 p-2 border-t">
                 <input type="checkbox" aria-label={`Select deck ${d.title}`} checked={selectedIds.has(d.id)} onChange={() => toggleId(d.id)} />
                 <div className="flex-1">
                   <div className="font-bold">{d.title}</div>
                   <div className="text-sm text-gray-500">{d.lang}</div>
                 </div>
+                
+                {/* Move to Folder Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowMoveDropdown(showMoveDropdown === d.id ? null : d.id)}
+                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none transition-colors"
+                  >
+                    📁 Move
+                  </button>
+                  {showMoveDropdown === d.id && (
+                    <div className="absolute right-0 top-full mt-1 bg-white border border-gray-300 rounded shadow-lg z-10 min-w-48">
+                      <button
+                        onClick={() => moveDeckToFolder(d.id, null)}
+                        className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+                      >
+                        📂 Unorganized
+                      </button>
+                      {folders.map(folder => (
+                        <button
+                          key={folder.id}
+                          onClick={() => moveDeckToFolder(d.id, folder.id)}
+                          className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+                        >
+                          📁 {folder.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
                 <Link to={`../coach/${d.id}`} className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors">▶ Play</Link>
               </div>
             ))}
@@ -318,11 +392,19 @@ export default function DeckManager() {
               <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:outline-none transition-colors" onClick={handleDelete}>🗑 Delete</button>
             </div>
           )}
+            </div>
+          </div>
         </div>
       </div>
+      
       <input ref={zipRef} type="file" accept="application/zip" hidden onChange={onZipInput} />
       <input ref={jsonRef} type="file" hidden webkitdirectory="" multiple onChange={onJsonInput} />
-      <NewDrillWizard open={showWizard} onClose={()=>setShowWizard(false)} />
+      
+      <NewDrillWizard open={showWizard} onClose={() => setShowWizard(false)} />
+      <NewFolderModal 
+        open={showNewFolderModal} 
+        onClose={() => setShowNewFolderModal(false)} 
+      />
     </div>
   );
 }
