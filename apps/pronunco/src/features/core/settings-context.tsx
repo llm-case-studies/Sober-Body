@@ -12,7 +12,8 @@ const DEFAULTS: Required<Settings> = {
   beta: DEFAULT_BETA,
   nativeLang: 'en',
   locale: 'en',
-  slowSpeech: false
+  slowSpeech: false,
+  useAzure: false
 }
 const SettingsContext = createContext<SettingsValue | undefined>(undefined)
 export function SettingsProvider({ children }: { children: React.ReactNode }) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { usePronunciationCoach } from "../../../apps/sober-body/src/features/games/PronunciationCoach";
 import type { SplitMode } from "../../../apps/sober-body/src/features/games/types";
@@ -13,6 +13,7 @@ import { getBriefForDeck, refs } from "../../../apps/sober-body/src/grammar-load
 import type { BriefWithRefs } from "../../../apps/sober-body/src/grammar-loader";
 import { loadBrief } from "../../../apps/sober-body/src/brief-storage";
 import useBriefExists from "../../../apps/sober-body/src/useBriefExists";
+import { useAzurePronunciation, useAzureBudget, type AzureScore } from "../../azure-speech/src";
 
 const defaultDeck: Deck = {
   id: 'example',
@@ -64,6 +65,13 @@ export default function PronunciationCoachUI() {
   const { settings, setSettings } = useSettings();
   const navigate = useNavigate();
   const [brief, setBrief] = useState<BriefWithRefs | null>(null);
+  
+  // Azure Speech Integration
+  const [azureScore, setAzureScore] = useState<AzureScore | null>(null);
+  const [azureLoading, setAzureLoading] = useState(false);
+  const [showAzureDetails, setShowAzureDetails] = useState(false);
+  const audioRecordingRef = useRef<Blob | null>(null);
+  const budget = useAzureBudget();
 
   useEffect(() => {
     localStorage.setItem('pc_translateMode', tMode)
@@ -85,7 +93,35 @@ export default function PronunciationCoachUI() {
 
 
   const current = lines[index] ?? raw;
-  const coach = usePronunciationCoach({ phrase: current, locale: settings.locale });
+  
+  // Handle Azure scoring after browser scoring completes
+  const handleScore = async (result: { score: number; transcript: string; millis: number }) => {
+    if (settings.useAzure && !budget.budgetExceeded && audioRecordingRef.current) {
+      setAzureLoading(true);
+      try {
+        const azureResult = await useAzurePronunciation(
+          audioRecordingRef.current,
+          current,
+          settings.locale
+        );
+        setAzureScore(azureResult);
+        
+        // Track usage for budget monitoring
+        const durationSecs = audioRecordingRef.current.size / 32000;
+        budget.addUsageEntry(durationSecs, azureResult.costUSD);
+      } catch (error) {
+        console.error('Azure scoring failed:', error);
+      } finally {
+        setAzureLoading(false);
+      }
+    }
+  };
+  
+  const coach = usePronunciationCoach({ 
+    phrase: current, 
+    locale: settings.locale,
+    onScore: handleScore
+  });
   const translation = useTranslation(lookupWord ?? '', settings.nativeLang);
   const speak = () => {
     if (!translation) return;
@@ -148,6 +184,12 @@ export default function PronunciationCoachUI() {
   useEffect(() => {
     if (tMode === 'auto-unit') doTranslate(current)
   }, [current, tMode])
+
+  // Clear Azure scores when phrase changes
+  useEffect(() => {
+    setAzureScore(null);
+    setShowAzureDetails(false);
+  }, [current]);
 
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
@@ -316,9 +358,61 @@ export default function PronunciationCoachUI() {
                 </h2>
                 
                 {/* Score Display */}
-                {coach.result !== null && (
-                  <div className="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-4">
-                    Score: {coach.result}%
+                {(coach.result !== null || azureScore !== null) && (
+                  <div className="mb-4 space-y-2">
+                    {/* Browser Score */}
+                    {coach.result !== null && (
+                      <div className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                        Browser clarity: {coach.result}%
+                      </div>
+                    )}
+                    
+                    {/* Azure Score */}
+                    {settings.useAzure && (
+                      <div className="flex flex-col items-center gap-2">
+                        {azureLoading ? (
+                          <div className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
+                            <div className="animate-spin w-3 h-3 border border-gray-400 border-t-transparent rounded-full mr-2"></div>
+                            Azure scoring...
+                          </div>
+                        ) : azureScore ? (
+                          <>
+                            <div className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                              Azure clarity: {azureScore.pronunciation}%
+                            </div>
+                            <button
+                              onClick={() => setShowAzureDetails(!showAzureDetails)}
+                              className="text-xs text-blue-600 hover:text-blue-800 underline"
+                            >
+                              ▶ Details
+                            </button>
+                            {showAzureDetails && (
+                              <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-700 border max-w-sm">
+                                <div className="grid grid-cols-2 gap-2 mb-2">
+                                  <div>Accuracy: {azureScore.accuracy}%</div>
+                                  <div>Fluency: {azureScore.fluency}%</div>
+                                  <div>Completeness: {azureScore.completeness}%</div>
+                                  <div>Latency: {azureScore.latencyMs}ms</div>
+                                </div>
+                                <div className="text-center font-medium text-amber-600">
+                                  Cost: ${azureScore.costUSD.toFixed(4)}
+                                </div>
+                                <details className="mt-2">
+                                  <summary className="cursor-pointer text-blue-600">Raw JSON</summary>
+                                  <pre className="mt-1 text-xs overflow-auto max-h-32 bg-white p-2 rounded border">
+                                    {JSON.stringify(azureScore.json, null, 2)}
+                                  </pre>
+                                </details>
+                              </div>
+                            )}
+                          </>
+                        ) : budget.budgetExceeded ? (
+                          <div className="inline-flex items-center px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                            ⚠️ Daily budget reached
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -401,15 +495,47 @@ export default function PronunciationCoachUI() {
               
               {/* Settings */}
               <div className="w-full border-t pt-4">
-                <label className="flex items-center gap-2 text-sm text-gray-600">
-                  <input
-                    type="checkbox"
-                    checked={settings.slowSpeech}
-                    onChange={e => setSettings(s => ({ ...s, slowSpeech: e.target.checked }))}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  Slow speech
-                </label>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-2 text-sm text-gray-600">
+                    <input
+                      type="checkbox"
+                      checked={settings.slowSpeech}
+                      onChange={e => setSettings(s => ({ ...s, slowSpeech: e.target.checked }))}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    Slow speech
+                  </label>
+                  
+                  {/* Azure Speech Assessment */}
+                  <div className="border-t pt-3">
+                    <div className="text-xs font-medium text-gray-700 mb-2">Speech Scoring</div>
+                    <label className="flex items-center gap-2 text-sm text-gray-600">
+                      <input
+                        type="checkbox"
+                        checked={settings.useAzure}
+                        onChange={e => setSettings(s => ({ ...s, useAzure: e.target.checked }))}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      Use Azure Assessment (beta)
+                    </label>
+                    {settings.useAzure && (
+                      <div className="mt-2 space-y-1">
+                        <div className="text-xs text-amber-600">
+                          ⚠️ Professional scoring with usage costs ($3/day limit)
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Today: ${budget.todaySpending.toFixed(2)} / $3.00 
+                          (${budget.remainingBudget.toFixed(2)} remaining)
+                        </div>
+                        {budget.budgetExceeded && (
+                          <div className="text-xs text-red-600 font-medium">
+                            ⛔ Budget exceeded - scoring paused until midnight
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
               
               {/* Navigation */}

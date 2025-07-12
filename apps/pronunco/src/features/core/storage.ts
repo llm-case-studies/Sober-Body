@@ -18,6 +18,7 @@ export interface Settings {
   nativeLang?: string
   locale?: string
   slowSpeech?: boolean
+  useAzure?: boolean
 }
 
 export async function loadSettings(): Promise<Settings | undefined> {

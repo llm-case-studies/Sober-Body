@@ -1,3 +1,15 @@
+// Mock Azure Speech package FIRST (before any imports)
+vi.mock("../../azure-speech/src", () => ({
+  useAzurePronunciation: vi.fn(),
+  useAzureBudget: () => ({
+    budgetExceeded: false,
+    todaySpending: 0,
+    remainingBudget: 3,
+    addUsageEntry: vi.fn(),
+    usageEntries: []
+  })
+}));
+
 vi.mock("dexie-react-hooks", () => ({
   useLiveQuery: vi.fn(),
 }));
@@ -13,7 +25,7 @@ vi.mock("../db", () => ({
     transaction: vi.fn((mode, stores, fn) => fn()),
   })),
 }));
-vi.mock("coach-ui", () => ({ PronunciationCoachUI: () => <div>Dummy deck</div> }));
+vi.mock("coach-ui", () => ({ PronunciationCoachUI: () => <h2>She sells seashells</h2> }));
 
 
 // @vitest-environment jsdom
