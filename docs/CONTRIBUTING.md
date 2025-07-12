@@ -70,4 +70,26 @@ Common prompts:
 
 ---
 
+### 🌟 Recent Wins – how to add yours
+1. **Add a bullet** under the “Recent Wins” block in either the business or tech doc.  
+Feature title – one-liner impact.
+
+sql
+Copy
+Edit
+2. **(Optional) Add a 2-3 sentence story** wrapped in `<details>` so the doc stays tidy:  
+```md
+* **Bulk toolbar** – export/delete selected decks.  
+  <details><summary>💬 mini-story</summary>
+  Watching teachers delete 30 trial decks one-by-one hurt our souls.
+  Bulk delete now saves ~20 clicks per class.  
+  </details>
+```
+Keep bullet list to last 7–10 wins; move older ones to the
+sprint retro doc during retro.
+
+That’s it—your brag now powers future release notes & blog posts!
+
+---
+
 *End of file*
