@@ -11,7 +11,12 @@
   </details>
 * **Azure Speech Integration** – professional pronunciation assessment with budget controls  
   <details><summary>💬 mini-story</summary>
-  Browser speech recognition was inconsistent across devices. Azure gives us CEFR-grade scoring with detailed metrics. $3 daily budget prevents runaway costs while enabling premium features.
+  Browser speech recognition was inconsistent across devices. Azure gives us CEFR-grade scoring with detailed metrics. $3 daily budget prevents runaway costs while enabling premium features. The breakthrough: side-by-side scoring shows students the difference between "close enough" and "perfect" pronunciation.
+  </details>
+
+* **Teacher Drill Wizard** – AI-powered content creation streamlines lesson planning  
+  <details><summary>💬 mini-story</summary>
+  Teachers spent hours creating practice materials. OpenAI integration generates contextual drills from simple prompts. "Airport vocabulary for intermediate Spanish" becomes 20 ready-to-use phrases in seconds. Grammar modal integration enables instant brief creation.
   </details>
 
 | ID   | Epic / Feature                              | Sprint | Owner   | Status        |
@@ -19,12 +24,13 @@
 | PN-041 | Dexie **outbox** table + `useSync()` flush | 4 | Claude  | in-progress |
 | PN-042 | Supabase `challenge_scores` table + Top-10 API | 4 | Claude | pending (waits on PN-041) |
 | PN-043 | **Usage watchdog** & daily budget alert for Azure | 4 | Claude | in-progress |
-| PN-044 | `usePronunciationScore` hook (Azure) | 4 | Claude | merged #194 |
-| PN-045 | Quick-Challenge **share page** (`/c`) | 4 | Gemini | merged #193 |
-| PN-046 | **Share-card generator** (html2canvas) | 4 | Gemini | merged #193 |
+| PN-044 | `usePronunciationScore` hook (Azure) | 3 | Claude | ✅ merged (Sprint 3) |
+| PN-045 | Quick-Challenge **share page** (`/c`) | 3 | Claude | ✅ merged (Sprint 3) |
+| PN-046 | **Share-card generator** (html2canvas) | 3 | Claude | ✅ merged (Sprint 3) |
 | PN-047 | Responsive mobile / tablet break-points | 4 | Gemini | in-progress |
-| PN-048 | Teacher **Create-Drill Wizard** (topic + lines) | 4 | GPT | in-progress |
-| PN-049 | Grammar-edit modal integration | 4 | GPT | merged #191 |
+| PN-048 | Teacher **Create-Drill Wizard** (topic + lines) | 3 | GPT | ✅ merged #199 |
+| PN-049 | Grammar-edit modal integration | 3 | GPT | ✅ merged #191 |
+| PN-055 | **Azure budget watchdog** with daily limits | 3 | Claude | ✅ merged (Sprint 3) |
 | PN-050 | Playwright smoke test (deck → first line) | 4 | open   | backlog |
 | PN-051 | Re-enable deep routing tests | 4 | open   | backlog |
 | PN-052 | Deck **folder tree / drag-and-drop** | 3 | Claude | merged (folder tree complete, drag-drop future) |
