@@ -19,6 +19,7 @@ interface ChallengePayload {
   id: string;
   title: string;
   units: string[];
+  lang: string;
   grammar?: string;
 }
 
@@ -90,6 +91,7 @@ export default function PronunciationCoachUI() {
       id: currentDeck.id + '-' + mode + '-' + Date.now(), // Simple unique ID
       title: currentDeck.title,
       units: lines,
+      lang: settings.locale,
       // grammar: brief?.story, // Optional: include grammar if available and relevant
     };
 

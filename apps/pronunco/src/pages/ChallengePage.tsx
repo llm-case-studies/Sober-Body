@@ -18,6 +18,7 @@ interface ChallengePayload {
   id: string;
   title: string;
   units: string[];
+  lang: string;
   grammar?: string;
 }
 
@@ -69,7 +70,7 @@ export default function ChallengePage() {
   const currentUnit = challenge?.units[currentUnitIndex] || '';
   const coach = usePronunciationCoach({
     phrase: currentUnit,
-    locale: 'en-US', // Assuming English for now, can be dynamic later
+    locale: challenge?.lang || 'en-US',
     onScore: useCallback(async (result: { score: number; transcript: string; millis: number }) => {
       setCurrentScore(result.score);
       if (challenge) {

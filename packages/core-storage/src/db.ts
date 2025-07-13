@@ -15,6 +15,15 @@ export interface Folder {
   name: string
   parentId?: string
   createdAt: number
+  type: 'custom' | 'auto'
+  autoRule?: {
+    field: 'lang' | 'category' | 'date' | 'tags'
+    value?: string
+    pattern?: string
+  }
+  diskPath?: string // For sync with file system
+  color?: string // Visual organization
+  order?: number // Manual ordering
 }
 
 export interface Card {
@@ -37,7 +46,7 @@ export const createAppDB = (app: 'sober' | 'pronun', schema: { [key: string]: st
   db.version(1).stores({
     decks: '&id,title,lang,category,folderId,updatedAt',
     cards: 'id,deckId',
-    folders: '&id,name,parentId,createdAt',
+    folders: '&id,name,parentId,createdAt,type',
     ui: '&id',
     ...schema,
   })

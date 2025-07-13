@@ -20,6 +20,19 @@ export default function NewFolderModal({ open, onClose, parentId }: NewFolderMod
     }
   }, [open, decks]);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && open) {
+        onClose();
+      }
+    };
+
+    if (open) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [open, onClose]);
+
   const generateSuggestions = () => {
     // Analyze deck categories and tags to suggest folder names
     const categoryMap = new Map<string, number>();
@@ -32,11 +45,20 @@ export default function NewFolderModal({ open, onClose, parentId }: NewFolderMod
       }
 
       // Count tags (if they exist and are comma-separated)
-      if (deck.tags) {
+      if (deck.tags && typeof deck.tags === 'string') {
         const tags = deck.tags.split(',').map(tag => tag.trim().toLowerCase());
         tags.forEach(tag => {
           if (tag) {
             tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
+          }
+        });
+      } else if (Array.isArray(deck.tags)) {
+        deck.tags.forEach(tag => {
+          if (tag && typeof tag === 'string') {
+            const cleanTag = tag.trim().toLowerCase();
+            if (cleanTag) {
+              tagMap.set(cleanTag, (tagMap.get(cleanTag) || 0) + 1);
+            }
           }
         });
       }
@@ -120,16 +142,21 @@ export default function NewFolderModal({ open, onClose, parentId }: NewFolderMod
   const handleCreate = async () => {
     if (!folderName.trim()) return;
 
-    const folder = {
-      id: `folder_${Date.now()}`,
-      name: folderName.trim(),
-      parentId,
-      createdAt: Date.now()
-    };
+    try {
+      const folder = {
+        id: `folder_${Date.now()}`,
+        name: folderName.trim(),
+        parentId,
+        createdAt: Date.now()
+      };
 
-    await db().folders.add(folder);
-    setFolderName('');
-    onClose();
+      await db().folders.add(folder);
+      setFolderName('');
+      onClose();
+    } catch (error) {
+      console.error('Error creating folder:', error);
+      alert('Failed to create folder. Please try again.');
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -139,8 +166,14 @@ export default function NewFolderModal({ open, onClose, parentId }: NewFolderMod
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-96 max-w-sm mx-4">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-lg p-6 w-96 max-w-sm mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h3 className="text-lg font-semibold mb-4">Create New Folder</h3>
         
         <div className="mb-4">
@@ -151,6 +184,12 @@ export default function NewFolderModal({ open, onClose, parentId }: NewFolderMod
             type="text"
             value={folderName}
             onChange={(e) => setFolderName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleCreate();
+              }
+            }}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Enter folder name..."
             autoFocus

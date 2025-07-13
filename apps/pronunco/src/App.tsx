@@ -3,6 +3,8 @@ import { useEffect } from 'react'
 import DeckManager from './components/DeckManager'
 import CoachPage from './pages/CoachPage'
 import ChallengePage from './pages/ChallengePage'
+import SettingsPage from './pages/SettingsPage'
+import TeacherWizardPage from './pages/TeacherWizardPage'
 import { DeckProvider } from '../../sober-body/src/features/games/deck-context'
 import { seedPresetDecks } from '../../sober-body/src/features/games/deck-storage'
 
@@ -15,6 +17,10 @@ function CoachPageWrapper() {
   )
 }
 
+import SidebarLayout from './components/SidebarLayout'
+
+// ... (rest of your imports and CoachPageWrapper function)
+
 export function AppRoutes() {
   return (
     <Routes>
@@ -22,6 +28,8 @@ export function AppRoutes() {
       <Route path="/decks" element={<DeckManager />} />
       <Route path="/coach/:deckId" element={<CoachPageWrapper />} />
       <Route path="/c/:data" element={<ChallengePage />} />
+      <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/teacher-wizard" element={<TeacherWizardPage />} />
       <Route path="*" element={<Navigate to="/decks" />} />
     </Routes>
   )
@@ -35,7 +43,9 @@ export default function App() {
 
   return (
     <BrowserRouter basename="/pc">
-      <AppRoutes />
+      <SidebarLayout>
+        <AppRoutes />
+      </SidebarLayout>
     </BrowserRouter>
   )
 }
