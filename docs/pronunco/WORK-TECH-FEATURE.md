@@ -48,3 +48,6 @@
 ### Backlog
 
 * [Implement first TikTok Stitch challenge (ref: TikTok-Stitch-01)](UX-USER-JOURNEY.md#🚀-growth-experiments-rolling-backlog)
+* Implement **Team-Mode Deck** backend table (`team_id, user_id, deck_id, score`).
+* Build **Share Link** generator & handler route.
+* Add **Embed Leaderboard** endpoint (`/embed/leaderboard/:slug`) – no auth.

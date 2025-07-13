@@ -46,6 +46,14 @@
 #  • Leaderboard back-end (Supabase challenge_scores) | Builds on completed challenge system for social proof & virality
 #  • Topic-Pack marketplace (GitHub Pages CDN / Supabase bucket) | Leverage folder organization for community growth channel
 #  • Growth Experiment implementation | Medium priority
+#
+| Theme | Feature / Deliverable | Why it matters | Priority |
+|-------|-----------------------|----------------|----------|
+| Engagement & Sharing | **Team-Mode Deck** (invite link joins a group score board) | Corporate trips & classrooms learn together; boosts retention via peer pressure | Medium |
+| Engagement & Sharing | **One-click Share Link** (public or private) | Teachers or travellers can send a micro-deck in WhatsApp; viral channel | High |
+| Engagement & Sharing | **Self-hosted Leaderboard** (social embed) | Any user can drop a leaderboard iframe into FB profile or blog, creates UGC funnels | Medium |
+
+> 🔗 Detailed growth hooks live in [UX-USER-JOURNEY ▸ Growth Experiments](UX-USER-JOURNEY.md#🚀-growth-experiments-rolling-backlog).
 #  -------------------------------------------------------
 #  Monetization (READY FOR IMPLEMENTATION)
 #  • Stripe checkout & "pro" flag (localStorage + JWT stub) | Pays for Azure calls - FOUNDATION COMPLETE
