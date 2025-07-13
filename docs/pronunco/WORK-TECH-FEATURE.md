@@ -19,6 +19,16 @@
   Teachers spent hours creating practice materials. OpenAI integration generates contextual drills from simple prompts. "Airport vocabulary for intermediate Spanish" becomes 20 ready-to-use phrases in seconds. Grammar modal integration enables instant brief creation.
   </details>
 
+* **Enhanced Folder Organization** – auto-arrange + manual organization with disk sync
+  <details><summary>💬 mini-story</summary>
+  Teachers needed flexible organization beyond basic folders. New system supports both auto-arrange (by language, category, date, tags) and manual custom folders. Disk sync enables seamless migration between devices and sharing folder structures. "Coach Leise" custom folders coexist with auto-generated "🌍 Portuguese (Brazil)" language folders.
+  </details>
+
+* **Test Suite Stability** – resolved test isolation issues for reliable CI/CD
+  <details><summary>💬 mini-story</summary>
+  Tests were failing inconsistently when run as a full suite, while passing individually. Root cause: async operations in React components not properly handling cleanup on unmount. Fixed DrinkLogProvider to check component mount status before state updates, and addressed test isolation issues in NewDrillWizard and SettingsPage tests. Now 100% of tests pass reliably.
+  </details>
+
 | ID   | Epic / Feature                              | Sprint | Owner   | Status        |
 |------|---------------------------------------------|--------|---------|---------------|
 | PN-041 | Dexie **outbox** table + `useSync()` flush | 4 | Claude  | in-progress |
@@ -38,6 +48,11 @@
 | PN-054 | **Share Challenge URLs** with encoded data | 3 | Claude | merged (via Friend-Challenge feature) |
 | PN-056 | Inappropriate-content guard (word-list, flag modal, report queue) | 4 | Gemini + Claude | backlog |
 | PN-057 | Deck signature & verify (hash + optional Ed25519) | 4 | Gemini + GPT | backlog |
+| PN-058 | **Enhanced folder organization** system | 4 | Claude | ✅ merged (Sprint 4) |
+| PN-059 | **Full Settings page** (plan, role, strictness, Azure, reset) | 4 | Claude | ✅ merged (Sprint 4) |
+| PN-060 | **Auto-arrange folders** by language/category/date | 4 | Claude | ✅ implemented |
+| PN-061 | **Disk sync** for folder hierarchy | 4 | Claude | ✅ implemented |
+| PN-062 | **Test suite stability** - fixed test isolation issues | 4 | Claude | ✅ completed |
 
 > **Legend**  
 > *merged # xxx* – already on main  

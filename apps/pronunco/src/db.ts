@@ -3,7 +3,7 @@ import { createAppDB } from '../../../packages/core-storage/src/db'
 let _db = createAppDB(import.meta.env.MODE === 'sb' ? 'sober' : 'pronun', {
   challenges: 'id',
   friend_scores: 'challengeId',
-})
+}, 3)
 
 export const db = () => _db
 
@@ -11,7 +11,7 @@ export const resetDB = () => {
   _db = createAppDB('pronun', {
     challenges: 'id',
     friend_scores: 'challengeId',
-  })
+  }, 3)
 }
 
 export async function clearDecks() {

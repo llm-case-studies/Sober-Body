@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, type ChangeEvent } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate, Link } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db, clearDecks as clearAllDecks } from "../db";
@@ -42,6 +43,8 @@ export default function DeckManager() {
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [showNewFolderModal, setShowNewFolderModal] = useState(false);
   const [showMoveDropdown, setShowMoveDropdown] = useState<string | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<{top: number, left: number} | null>(null);
+  const moveButtonRefs = useRef<{[key: string]: HTMLButtonElement | null}>({});
   const folders = useLiveQuery(() => db().folders?.toArray() ?? [], [], []) || [];
 
   useEffect(() => {
@@ -69,7 +72,13 @@ export default function DeckManager() {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = () => setShowMoveDropdown(null);
+    const handleClickOutside = (e: MouseEvent) => {
+      // Don't close if clicking on a move button
+      if ((e.target as Element)?.closest('[data-move-button]')) return;
+      setShowMoveDropdown(null);
+      setDropdownPosition(null);
+    };
+    
     if (showMoveDropdown) {
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
@@ -354,30 +363,27 @@ export default function DeckManager() {
                 {/* Move to Folder Dropdown */}
                 <div className="relative">
                   <button
-                    onClick={() => setShowMoveDropdown(showMoveDropdown === d.id ? null : d.id)}
+                    ref={(el) => {moveButtonRefs.current[d.id] = el;}}
+                    data-move-button
+                    onClick={() => {
+                      const newValue = showMoveDropdown === d.id ? null : d.id;
+                      
+                      if (newValue && moveButtonRefs.current[d.id]) {
+                        const rect = moveButtonRefs.current[d.id]!.getBoundingClientRect();
+                        setDropdownPosition({
+                          top: rect.bottom + window.scrollY,
+                          left: rect.right - 200 + window.scrollX // 200px is dropdown width
+                        });
+                      } else {
+                        setDropdownPosition(null);
+                      }
+                      
+                      setShowMoveDropdown(newValue);
+                    }}
                     className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none transition-colors"
                   >
                     📁 Move
                   </button>
-                  {showMoveDropdown === d.id && (
-                    <div className="absolute right-0 top-full mt-1 bg-white border border-gray-300 rounded shadow-lg z-10 min-w-48">
-                      <button
-                        onClick={() => moveDeckToFolder(d.id, null)}
-                        className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
-                      >
-                        📂 Unorganized
-                      </button>
-                      {folders.map(folder => (
-                        <button
-                          key={folder.id}
-                          onClick={() => moveDeckToFolder(d.id, folder.id)}
-                          className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
-                        >
-                          📁 {folder.name}
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </div>
                 
                 <Link to={`../coach/${d.id}`} className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors">▶ Play</Link>
@@ -405,6 +411,36 @@ export default function DeckManager() {
         open={showNewFolderModal} 
         onClose={() => setShowNewFolderModal(false)} 
       />
+      
+      {/* Move Dropdown Portal */}
+      {showMoveDropdown && dropdownPosition && createPortal(
+        <div 
+          className="fixed bg-white border-2 border-blue-500 rounded shadow-lg z-[9999] min-w-48 max-h-64 overflow-y-auto"
+          style={{
+            top: dropdownPosition.top,
+            left: dropdownPosition.left,
+            boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+            backgroundColor: '#ffffff'
+          }}
+        >
+          <button
+            onClick={() => moveDeckToFolder(showMoveDropdown, null)}
+            className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+          >
+            📂 Unorganized
+          </button>
+          {folders.map(folder => (
+            <button
+              key={folder.id}
+              onClick={() => moveDeckToFolder(showMoveDropdown, folder.id)}
+              className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+            >
+              📁 {folder.name}
+            </button>
+          ))}
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
