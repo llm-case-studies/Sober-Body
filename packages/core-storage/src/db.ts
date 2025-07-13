@@ -7,6 +7,9 @@ export interface Deck {
   category?: string
   folderId?: string
   tags?: string
+  grammarBrief?: string
+  vocabulary?: { word: string; definition: string }[];
+  complexityLevel?: string;
   updatedAt: number
 }
 

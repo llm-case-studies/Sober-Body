@@ -11,10 +11,13 @@ const DEFAULTS: Required<Settings> = {
   sex: 'm',
   beta: DEFAULT_BETA,
   nativeLang: 'en',
-  locale: 'en',
+  locale: 'en-US',
   slowSpeech: false,
   useAzure: false,
-  role: 'student'
+  role: 'student',
+  isPro: false,
+  strictness: 1, // 0=casual, 1=balanced, 2=strict, 3=native
+  offlineOnly: false
 }
 const SettingsContext = createContext<SettingsValue | undefined>(undefined)
 export function SettingsProvider({ children }: { children: React.ReactNode }) {

@@ -19,7 +19,11 @@ export interface Settings {
   locale?: string
   slowSpeech?: boolean
   useAzure?: boolean
-  role?: string
+  role?: 'student' | 'teacher'
+  // New settings from PN-059 spec
+  isPro?: boolean
+  strictness?: number // 0-3 (casual to native)
+  offlineOnly?: boolean
 }
 
 export async function loadSettings(): Promise<Settings | undefined> {

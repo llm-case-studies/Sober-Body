@@ -14,14 +14,22 @@ const DrinkLogContext = createContext<DrinkLogValue | undefined>(undefined)
 export function DrinkLogProvider({ children }: { children: React.ReactNode }) {
   const [drinks, setDrinks] = useState<DrinkEvent[]>([])
   const loaded = useRef(false)
+  const mounted = useRef(true)
 
   useEffect(() => {
+    mounted.current = true
     loadDrinks().then(arr => {
-      setDrinks(prev => {
-        loaded.current = true
-        return prev.length > 0 ? [...arr, ...prev] : arr
-      })
+      if (mounted.current) {
+        setDrinks(prev => {
+          loaded.current = true
+          return prev.length > 0 ? [...arr, ...prev] : arr
+        })
+      }
     })
+    
+    return () => {
+      mounted.current = false
+    }
   }, [])
 
   useEffect(() => {
