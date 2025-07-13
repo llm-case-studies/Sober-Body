@@ -45,6 +45,7 @@
 #  Engagement & sharing (SPRINT 4+)
 #  • Leaderboard back-end (Supabase challenge_scores) | Builds on completed challenge system for social proof & virality
 #  • Topic-Pack marketplace (GitHub Pages CDN / Supabase bucket) | Leverage folder organization for community growth channel
+#  • Growth Experiment implementation | Medium priority
 #  -------------------------------------------------------
 #  Monetization (READY FOR IMPLEMENTATION)
 #  • Stripe checkout & "pro" flag (localStorage + JWT stub) | Pays for Azure calls - FOUNDATION COMPLETE
@@ -62,6 +63,8 @@
 #  – Remember last import folder – Deck progress badge – Add Cypress job to Actions
 ## ─────────────────────────────────────────────────────────
 ## 💡 Vision & Go-to-Market
+
+↗ Growth backlog lives in [UX-USER-JOURNEY.md ▸ Growth Experiments](UX-USER-JOURNEY.md#🚀-growth-experiments-rolling-backlog)
 
 ## 2 Acquisition channels
 * Challenge link virality
