@@ -38,9 +38,7 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
     const lines=preview.split('\n').filter(Boolean);
     const deckId=await db().decks.add({
       title: topic,
-      type: 'pronun',
       lang,
-      grammar,
       lines,
       createdAt: Date.now(),
       updatedAt: Date.now()
