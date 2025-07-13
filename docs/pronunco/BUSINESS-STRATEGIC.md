@@ -89,5 +89,7 @@ _Note: Leaderboard & marketplace remain stretch goals for Q4 unless Azure toggle
 ships early and costs remain within CAC < $0.60 per activated user._
 
 *Added by Founder chat — preserves long-horizon context while Dev-lead tackles implementation details in Sprint #3.*
+## Risk & Trust
+- Ship kid-safe filter + teacher-signed decks to reassure schools & parents.
 
 ↗ See UX – User Journey for personas and funnel.
