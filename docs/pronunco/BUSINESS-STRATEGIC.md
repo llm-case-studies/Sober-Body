@@ -41,6 +41,7 @@
 #  • Responsive layouts (phone / tablet) | 40-50 % users drill on mobile - CRITICAL PATH
 #  • Icon + tooltip component (🏠 Manage, 🏆 Challenge, 📖 Brief …) | Reduces onboarding friction
 #  • Teacher Brief drawer polish (markdown toolbar, quick ref search) | Improves teacher adoption
+#  • Side-Nav shell – keeps users one-click away from Coach, Decks, and Settings; improves daily retention.
 #  -------------------------------------------------------
 #  Engagement & sharing (SPRINT 4+)
 #  • Leaderboard back-end (Supabase challenge_scores) | Builds on completed challenge system for social proof & virality
