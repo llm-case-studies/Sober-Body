@@ -42,3 +42,7 @@
 > *in-progress* – branch open this sprint  
 > *backlog* – should land before Sprint 4 closes  
 > *ice-box* – nice-to-have, no capacity yet
+
+### Backlog
+
+* [Implement first TikTok Stitch challenge (ref: TikTok-Stitch-01)](UX-USER-JOURNEY.md#🚀-growth-experiments-rolling-backlog)
