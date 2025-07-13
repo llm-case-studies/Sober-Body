@@ -45,3 +45,6 @@ graph TD
 | **FB-Nomad-Pack** | Post in Digital-Nomad FB groups | Free mini Spanish airport deck ZIP | ZIP downloads |
 | **WeeklyLeaderboardTweet** | Twitter bot | Auto-tweet top-3 scores every Monday | Impressions, clicks |
 | **SlackSlashCommand-PoC** | Slack integration | `/drill luggage-es` inside corp Slack | Slash-command usage / day |
+| **TeamDash-01** | Internal Slack / Teams | `/team drill airport-es` → shared scoreboard | Active teams / week |
+| **ShareLink-WhatsApp** | WhatsApp / iMessage | One-tap link opens mini-deck; badge screenshot to sender | Click-to-drill % |
+| **EmbedLeaderboard-FB** | User FB profile / blog | iFrame shows top-10 friends on “Taxi Spanish” | Impressions, new sign-ups |
