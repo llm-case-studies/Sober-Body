@@ -36,6 +36,8 @@
 | PN-052 | Deck **folder tree / drag-and-drop** | 3 | Claude | merged (folder tree complete, drag-drop future) |
 | PN-053 | **Smart folder naming** with topic analysis | 3 | Claude | merged (suggests "Food & Dining" etc.) |
 | PN-054 | **Share Challenge URLs** with encoded data | 3 | Claude | merged (via Friend-Challenge feature) |
+| PN-056 | Inappropriate-content guard (word-list, flag modal, report queue) | 4 | Gemini + Claude | backlog |
+| PN-057 | Deck signature & verify (hash + optional Ed25519) | 4 | Gemini + GPT | backlog |
 
 > **Legend**  
 > *merged # xxx* – already on main  
