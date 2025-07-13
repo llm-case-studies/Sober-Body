@@ -51,3 +51,7 @@
 * Implement **Team-Mode Deck** backend table (`team_id, user_id, deck_id, score`).
 * Build **Share Link** generator & handler route.
 * Add **Embed Leaderboard** endpoint (`/embed/leaderboard/:slug`) – no auth.
+
+| Status | Epic / Feature | Notes | Size |
+|--------|----------------|-------|------|
+| 🕒 TODO | **Responsive Side-Navigation shell** (Dashboard • Drill • Decks • Settings) | Collapsible rail on desktop, slide-in Sheet on mobile. Lays groundwork for future Dashboard & Leaderboard pages. | Medium |
