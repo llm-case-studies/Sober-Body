@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import openai from '../openai';
 import { db } from '../db';
+import { saveDeck } from '../../../sober-body/src/features/games/deck-storage';
 import GrammarModal from './GrammarModal';
 import { toast } from '../toast';
 import { useSettings } from '../features/core/settings-context';
@@ -205,14 +206,14 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
         grammarBrief,
         vocabulary,
         complexityLevel,
-        folderId: selectedFolderId,
-        createdAt: Date.now(),
-        updatedAt: Date.now()
+        tags: selectedFolderId ? [`folder:${selectedFolderId}`] : [],
+        updated: Date.now()
       };
       
-      await db().decks.add(deckData);
+      // Save to SoberBody storage (for coach compatibility)
+      await saveDeck(deckData);
       
-      // Sync to disk if folder has diskPath
+      // Also save folder info to PronunCo for folder organization
       if (selectedFolderId) {
         const folder = folders.find(f => f.id === selectedFolderId);
         if (folder?.diskPath) {
