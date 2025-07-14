@@ -29,6 +29,16 @@
   Tests were failing inconsistently when run as a full suite, while passing individually. Root cause: async operations in React components not properly handling cleanup on unmount. Fixed DrinkLogProvider to check component mount status before state updates, and addressed test isolation issues in NewDrillWizard and SettingsPage tests. Now 100% of tests pass reliably.
   </details>
 
+* **Wizard State Machine** – graceful offline/free/Pro flow with proper fallbacks
+  <details><summary>💬 mini-story</summary>
+  Teachers needed reliable drill generation regardless of connectivity or subscription status. Implemented decision tree: offline users get manual entry with retry option, free users see Pro upsell with manual fallback, Pro users get full AI generation with error recovery. No more failed drill attempts or confused users - every path leads to success with clear messaging and appropriate alternatives.
+  </details>
+
+* **Enhanced Drill Wizard UI** – improved layout and dual-mode generation
+  <details><summary>💬 mini-story</summary>
+  Teachers struggled with cramped wizard layout and needed flexible content creation options. Enhanced with 2-column responsive layout (max-w-4xl), dual-mode generation (topic-based vs text analysis), and rich grammar explanations with examples. Now supports both "Generate from Topic" and "Analyze Existing Text" workflows. Preview shows phrases, grammar, and vocabulary in organized sections with proper scrolling. All 10 tests maintained compatibility.
+  </details>
+
 | ID   | Epic / Feature                              | Sprint | Owner   | Status        |
 |------|---------------------------------------------|--------|---------|---------------|
 | PN-041 | Dexie **outbox** table + `useSync()` flush | 4 | Claude  | in-progress |
@@ -53,6 +63,8 @@
 | PN-060 | **Auto-arrange folders** by language/category/date | 4 | Claude | ✅ implemented |
 | PN-061 | **Disk sync** for folder hierarchy | 4 | Claude | ✅ implemented |
 | PN-062 | **Test suite stability** - fixed test isolation issues | 4 | Claude | ✅ completed |
+| PN-063 | **Wizard state-machine** (offline, free, Pro) | 4 | Claude | ✅ completed |
+| PN-064 | **Enhanced wizard UI** - layout + dual-mode generation | 4 | Claude | ✅ completed |
 
 > **Legend**  
 > *merged # xxx* – already on main  
