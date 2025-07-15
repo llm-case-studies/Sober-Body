@@ -1,0 +1,16 @@
+{
+  "id": "preset-restaurant-en-US",
+  "title": "At the Restaurant (EN-US)",
+  "lang": "en-US",
+  "lines": [
+    "A table for two, please.",
+    "Could we see the menu?",
+    "What do you recommend?",
+    "I’m allergic to nuts.",
+    "Could we get the bill, please?"
+  ],
+  "tags": [
+    "official",
+    "cat:restaurant"
+  ]
+}

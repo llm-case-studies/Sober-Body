@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
     base: '/pc/',
     envDir,
     plugins: [react()],
-    resolve: { alias: { '@': resolve(__dirname, 'src') } },
+    resolve: { alias: { '@': resolve(__dirname, 'src'), 'ui': resolve(__dirname, '../../packages/ui/src') } },
     server: { 
       port: 5174,
       fs: {

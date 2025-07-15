@@ -1,0 +1,16 @@
+{
+  "id": "preset-groceries-es-ES",
+  "title": "En el Mercado (ES-ES)",
+  "lang": "es-ES",
+  "lines": [
+    "¿Dónde está la sección de lácteos?",
+    "¿Cuánto cuesta por kilo?",
+    "¿Aceptan tarjeta de crédito?",
+    "¿Podría pesar estas manzanas, por favor?",
+    "¿Tienen bolsas reutilizables?"
+  ],
+  "tags": [
+    "official",
+    "cat:groceries"
+  ]
+}
