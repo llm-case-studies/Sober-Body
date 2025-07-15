@@ -80,13 +80,13 @@
 | PN-067 | **Folder counter bug fix** - reactive updates | High | Claude | pending |
 | PN-068 | **JSON import/export** for selected decks | High | Claude | pending |
 
-## 🚀 Phase 2 - Enhanced Content Management 
+## 🚀 Phase 2 - Enhanced Content Management ✅ COMPLETED
 
 | ID   | Feature                                  | Priority | Owner   | Status    |
 |------|------------------------------------------|----------|---------|-----------|
-| PN-069 | **Extended deck editor** - text/vocab/grammar/categories/difficulty | High | Claude | pending |
-| PN-070 | **Enhanced coach page tabs** - drill/vocab/grammar sections | High | Claude | pending |
-| PN-071 | **Custom user tags** system beyond folders | Medium | Claude | pending |
+| PN-069 | **Extended deck editor** - text/vocab/grammar/categories/difficulty | High | Claude | ✅ completed |
+| PN-070 | **Enhanced coach page tabs** - drill/vocab/grammar sections | High | Claude | ✅ completed |
+| PN-071 | **Custom user tags** system beyond folders | Medium | Claude | ✅ completed |
 
 ## 🌟 Phase 3 - Advanced Features
 
