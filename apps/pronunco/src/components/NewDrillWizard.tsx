@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { LANGS } from '../../../../packages/pronunciation-coach/src/langs';
 import { useNavigate } from 'react-router-dom';
+import { useLiveQuery } from 'dexie-react-hooks';
 import openai from '../openai';
 import { db } from '../db';
+import { saveDeck } from '../../../sober-body/src/features/games/deck-storage';
 import GrammarModal from './GrammarModal';
 import { toast } from '../toast';
 import { useSettings } from '../features/core/settings-context';
@@ -25,6 +27,10 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
   const navigate=useNavigate();
   const [showManualEditOption, setShowManualEditOption] = useState(false);
   const [inputText, setInputText] = useState('');
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+
+  // Get available folders for selection
+  const folders = useLiveQuery(() => db().folders?.toArray() ?? [], [], []) || [];
 
   if(!open) return null;
 
@@ -190,20 +196,39 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
   };
 
   const save=async()=>{
-    const lines=preview.split('\n').filter(Boolean);
-    const deckId=await db().decks.add({
-      title: topic,
-      lang,
-      lines,
-      grammarBrief,
-      vocabulary,
-      complexityLevel,
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    });
-    navigate(`/pc/coach/${deckId}`);
-    toast.success('Drill created 🎉');
-    onClose();
+    try {
+      const lines=preview.split('\n').filter(Boolean);
+      const deckData = {
+        id: crypto.randomUUID(),
+        title: topic,
+        lang,
+        lines,
+        grammarBrief,
+        vocabulary,
+        complexityLevel,
+        tags: selectedFolderId ? [`folder:${selectedFolderId}`] : [],
+        updated: Date.now()
+      };
+      
+      // Save to SoberBody storage (for coach compatibility)
+      await saveDeck(deckData);
+      
+      // Also save folder info to PronunCo for folder organization
+      if (selectedFolderId) {
+        const folder = folders.find(f => f.id === selectedFolderId);
+        if (folder?.diskPath) {
+          // TODO: Implement disk sync when folder sync is ready
+          console.log(`Would sync deck "${topic}" to disk path: ${folder.diskPath}`);
+        }
+      }
+      
+      navigate(`/pc/coach/${deckData.id}`);
+      toast.success(`Drill "${topic}" created successfully! 🎉`);
+      onClose();
+    } catch (error) {
+      console.error('Failed to save drill:', error);
+      toast.error('Failed to save drill. Please try again.');
+    }
   };
 
   const handleManualEdit = () => {
@@ -402,6 +427,25 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
                 onChange={e => setGrammarBrief(e.target.value)}
               />
             </div>
+            {/* Folder Selection */}
+            <div className="border-t pt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                📁 Save to Folder (optional)
+              </label>
+              <select 
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+                value={selectedFolderId || ''}
+                onChange={(e) => setSelectedFolderId(e.target.value || null)}
+              >
+                <option value="">📂 No folder (root level)</option>
+                {folders.map(folder => (
+                  <option key={folder.id} value={folder.id}>
+                    {folder.type === 'auto' ? '🤖' : '📁'} {folder.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="flex justify-between">
               <button 
                 className="border px-2 py-1" 
@@ -419,7 +463,7 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
                 <button 
                   className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" 
                   onClick={save}
-                  disabled={!preview.trim()}
+                  disabled={!preview.trim() || !topic.trim()}
                 >
                   Save & Exit
                 </button>
@@ -471,6 +515,25 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
                 )}
               </div>
             </div>
+            {/* Folder Selection */}
+            <div className="border-t pt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                📁 Save to Folder (optional)
+              </label>
+              <select 
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+                value={selectedFolderId || ''}
+                onChange={(e) => setSelectedFolderId(e.target.value || null)}
+              >
+                <option value="">📂 No folder (root level)</option>
+                {folders.map(folder => (
+                  <option key={folder.id} value={folder.id}>
+                    {folder.type === 'auto' ? '🤖' : '📁'} {folder.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="flex justify-between">
               <button 
                 className="border px-2 py-1" 
@@ -488,6 +551,7 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
                 <button 
                   className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" 
                   onClick={save}
+                  disabled={!topic.trim()}
                 >
                   Save & Exit
                 </button>

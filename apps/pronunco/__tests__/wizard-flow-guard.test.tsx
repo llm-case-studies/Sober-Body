@@ -5,6 +5,12 @@ import { MemoryRouter } from 'react-router-dom';
 import NewDrillWizard from '../src/components/NewDrillWizard';
 import { SettingsProvider } from '../src/features/core/settings-context';
 
+// Mock functions
+const mockOpenAI = vi.fn();
+const mockAdd = vi.fn(async (d: any) => '1');
+const mockSaveDeck = vi.fn(async (d: any) => void 0);
+const mockToast = { success: vi.fn(), error: vi.fn() };
+
 // Mock the openai module
 vi.mock('../src/openai', () => ({
   default: {
@@ -16,8 +22,17 @@ vi.mock('../src/openai', () => ({
   },
 }));
 
-const add = vi.fn(async (d: any) => '1');
-vi.mock('../src/db', () => ({ db: () => ({ decks: { add } }) }));
+vi.mock('../src/db', () => ({ 
+  db: () => ({ 
+    decks: { add: vi.fn(async (d: any) => '1') }, 
+    folders: { toArray: () => [] } 
+  }) 
+}));
+
+vi.mock('../../sober-body/src/features/games/deck-storage', () => ({ 
+  saveDeck: vi.fn(async (d: any) => void 0)
+}));
+
 vi.mock('../src/toast', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
 // Mock environment variable for OpenAI
@@ -383,8 +398,9 @@ describe('Wizard Flow Guard (PN-063)', () => {
       // Save the drill
       await userEvent.click(screen.getByRole('button', { name: /save & exit/i }));
 
-      // Should call db.add with manual content
-      expect(add).toHaveBeenCalledWith(
+      // Should call saveDeck with manual content
+      const { saveDeck } = await import('../../sober-body/src/features/games/deck-storage');
+      expect(saveDeck).toHaveBeenCalledWith(
         expect.objectContaining({
           title: 'Test topic',
           lines: ['Manual line 1', 'Manual line 2', 'Manual line 3'],

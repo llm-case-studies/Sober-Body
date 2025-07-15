@@ -2,23 +2,23 @@ import { useRef, useState, useEffect, type ChangeEvent } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, Link } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
-import { db, clearDecks as clearAllDecks } from "../db";
+import { db } from "../db";
 import {
-  importDeckZip,
-  importDeckFolder,
-} from "../../../../packages/core-storage/src/import-decks";
+  importDeckFiles,
+  saveDecks,
+} from "../../../sober-body/src/features/games/deck-storage";
+import { useDecks } from "../../../sober-body/src/features/games/deck-context";
 import {
   saveLastDir,
   getLastDir,
   getRecentDeckDirs,
   saveRecentDeckDir,
 } from "../../../../packages/core-storage/src/ui-store";
-import { exportDeckZip } from "../exportDeckZip";
 import NewDrillWizard from "./NewDrillWizard";
 import FolderTree from "./FolderTree";
 import NewFolderModal from "./NewFolderModal";
 import { useSettings } from "../features/core/settings-context";
-import type { Deck } from "../../../../packages/core-storage/src/db";
+import type { Deck } from "../../../sober-body/src/features/games/deck-types";
 
 const backgroundThemes = [
   'bg-gradient-to-br from-blue-100 via-indigo-100 to-cyan-100',
@@ -34,7 +34,8 @@ export default function DeckManager() {
   const pickerOpen = useRef(false);
   const navigate = useNavigate();
   const { settings } = useSettings();
-  const decks = useLiveQuery(() => db().decks?.toArray() ?? [], [], []) || [];
+  const { decks: soberBodyDecks } = useDecks();
+  const decks = soberBodyDecks;
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [recentDirs, setRecentDirs] = useState<Array<{name: string, handle: FileSystemDirectoryHandle, timestamp: number}>>([]);
   const [showRecentDirs, setShowRecentDirs] = useState(false);
@@ -86,11 +87,28 @@ export default function DeckManager() {
   }, [showMoveDropdown]);
 
   const handleZip = async (file: File) => {
-    await importDeckZip(file, db());
+    // Extract zip and import individual files to SoberBody storage
+    const JSZip = (await import('jszip')).default;
+    const zip = await JSZip.loadAsync(file);
+    const jsonFiles: File[] = [];
+    
+    await Promise.all(
+      Object.entries(zip.files).map(async ([name, f]) => {
+        if (name.startsWith('decks/') && name.endsWith('.json')) {
+          const content = await f.async('string');
+          const blob = new Blob([content], { type: 'application/json' });
+          jsonFiles.push(new File([blob], name.replace('decks/', ''), { type: 'application/json' }));
+        }
+      })
+    );
+    
+    if (jsonFiles.length > 0) {
+      await importDeckFiles(jsonFiles);
+    }
   };
 
   const handleFolderFiles = async (files: FileList | File[]) => {
-    await importDeckFolder(files, db());
+    await importDeckFiles(files);
   };
 
   const onZipInput = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -242,7 +260,7 @@ export default function DeckManager() {
   };
 
   const clearDecks = async () => {
-    await clearAllDecks();
+    await saveDecks([]);
   };
 
   const toggleId = (id: string) => {
@@ -266,13 +284,28 @@ export default function DeckManager() {
   };
 
   const onExport = async () => {
-    await exportDeckZip([...selectedIds], db());
+    const JSZip = (await import('jszip')).default;
+    const zip = new JSZip();
+    
+    selectedIds.forEach(id => {
+      const deck = decks.find(d => d.id === id);
+      if (deck) {
+        zip.file(`decks/${id}.json`, JSON.stringify(deck));
+      }
+    });
+    
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'decks.zip';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   async function handleDelete() {
-    await db().transaction("rw", db().decks, () =>
-      db().decks.bulkDelete([...selectedIds]),
-    );
+    const updatedDecks = decks.filter(deck => !selectedIds.has(deck.id));
+    await saveDecks(updatedDecks);
     setSelectedIds(new Set());
   }
 
@@ -280,14 +313,24 @@ export default function DeckManager() {
     if (selectedFolderId === null) {
       return decks; // Show all decks
     } else if (selectedFolderId === 'unorganized') {
-      return decks.filter(deck => !deck.folderId);
+      return decks.filter(deck => !deck.tags?.some(tag => tag.startsWith('folder:')));
     } else {
-      return decks.filter(deck => deck.folderId === selectedFolderId);
+      return decks.filter(deck => deck.tags?.includes(`folder:${selectedFolderId}`));
     }
   };
 
   const moveDeckToFolder = async (deckId: string, folderId: string | null) => {
-    await db().decks.update(deckId, { folderId });
+    const updatedDecks = decks.map(deck => {
+      if (deck.id === deckId) {
+        const tags = deck.tags?.filter(tag => !tag.startsWith('folder:')) || [];
+        if (folderId) {
+          tags.push(`folder:${folderId}`);
+        }
+        return { ...deck, tags, updated: Date.now() };
+      }
+      return deck;
+    });
+    await saveDecks(updatedDecks);
     setShowMoveDropdown(null);
   };
 
