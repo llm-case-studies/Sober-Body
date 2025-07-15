@@ -366,6 +366,176 @@ export default function DeckManager() {
     }
   };
 
+  const onExportFolderStructure = async () => {
+    const supportsDir = "showDirectoryPicker" in window;
+    if (!supportsDir) {
+      alert('Folder sync requires a modern browser with directory picker support');
+      return;
+    }
+
+    try {
+      const dirHandle = await (window as any).showDirectoryPicker({
+        mode: 'readwrite'
+      });
+
+      // Create folder structure on disk
+      const folderMap = new Map<string, any>();
+      folderMap.set('root', dirHandle);
+
+      // Create directories for each folder
+      for (const folder of folders) {
+        try {
+          const folderHandle = await dirHandle.getDirectoryHandle(folder.name, { create: true });
+          folderMap.set(folder.id, folderHandle);
+        } catch (e) {
+          console.warn(`Failed to create folder ${folder.name}:`, e);
+        }
+      }
+
+      // Export decks to appropriate folders
+      let exportedCount = 0;
+      for (const deck of decks) {
+        const folderTag = deck.tags?.find(tag => tag.startsWith('folder:'));
+        const folderId = folderTag ? folderTag.replace('folder:', '') : 'root';
+        
+        const targetHandle = folderMap.get(folderId) || folderMap.get('root');
+        if (targetHandle) {
+          try {
+            const fileName = `${deck.title.replace(/[^a-zA-Z0-9]/g, '_')}.json`;
+            const fileHandle = await targetHandle.getFileHandle(fileName, { create: true });
+            const writable = await fileHandle.createWritable();
+            await writable.write(JSON.stringify(deck, null, 2));
+            await writable.close();
+            exportedCount++;
+          } catch (e) {
+            console.warn(`Failed to export deck ${deck.title}:`, e);
+          }
+        }
+      }
+
+      // Export folder metadata
+      try {
+        const metaHandle = await dirHandle.getFileHandle('_folders.json', { create: true });
+        const writable = await metaHandle.createWritable();
+        await writable.write(JSON.stringify(folders, null, 2));
+        await writable.close();
+      } catch (e) {
+        console.warn('Failed to export folder metadata:', e);
+      }
+
+      alert(`Successfully exported ${exportedCount} decks to folder structure`);
+    } catch (e: any) {
+      if (e?.name === "AbortError") return;
+      console.error('Export failed:', e);
+      alert('Failed to export folder structure');
+    }
+  };
+
+  const onImportFolderStructure = async () => {
+    const supportsDir = "showDirectoryPicker" in window;
+    if (!supportsDir) {
+      alert('Folder sync requires a modern browser with directory picker support');
+      return;
+    }
+
+    try {
+      const dirHandle = await (window as any).showDirectoryPicker({
+        mode: 'read'
+      });
+
+      // Import folder metadata if it exists
+      let importedFolders: any[] = [];
+      try {
+        const metaHandle = await dirHandle.getFileHandle('_folders.json');
+        const metaFile = await metaHandle.getFile();
+        const metaText = await metaFile.text();
+        importedFolders = JSON.parse(metaText);
+      } catch (e) {
+        console.log('No folder metadata found, will recreate from structure');
+      }
+
+      // Scan directory structure
+      const foundFolders: string[] = [];
+      const deckFiles: { file: File, folderName?: string }[] = [];
+
+      for await (const [name, handle] of dirHandle.entries()) {
+        if (handle.kind === 'directory') {
+          foundFolders.push(name);
+          // Scan folder for deck files
+          for await (const [fileName, fileHandle] of handle.entries()) {
+            if (fileHandle.kind === 'file' && fileName.endsWith('.json') && fileName !== '_folders.json') {
+              const file = await fileHandle.getFile();
+              deckFiles.push({ file, folderName: name });
+            }
+          }
+        } else if (handle.kind === 'file' && name.endsWith('.json') && name !== '_folders.json') {
+          // Root level deck files
+          const file = await handle.getFile();
+          deckFiles.push({ file });
+        }
+      }
+
+      // Create/update folders in database
+      const existingFolders = new Map(folders.map(f => [f.name, f]));
+      const newFolders: any[] = [];
+
+      for (const folderName of foundFolders) {
+        const existing = existingFolders.get(folderName);
+        if (existing) {
+          newFolders.push(existing);
+        } else {
+          // Create new folder
+          const importedMeta = importedFolders.find(f => f.name === folderName);
+          newFolders.push({
+            id: crypto.randomUUID(),
+            name: folderName,
+            createdAt: Date.now(),
+            type: importedMeta?.type || 'custom',
+            diskPath: folderName,
+            ...importedMeta
+          });
+        }
+      }
+
+      // Save folders to database
+      await db().folders?.clear();
+      await db().folders?.bulkAdd(newFolders);
+
+      // Import deck files
+      const importedDecks: any[] = [];
+      for (const { file, folderName } of deckFiles) {
+        try {
+          const text = await file.text();
+          const deck = JSON.parse(text);
+          
+          // Update deck tags for folder association
+          if (folderName) {
+            const folder = newFolders.find(f => f.name === folderName);
+            if (folder) {
+              const tags = deck.tags?.filter((tag: string) => !tag.startsWith('folder:')) || [];
+              tags.push(`folder:${folder.id}`);
+              deck.tags = tags;
+            }
+          }
+
+          deck.updated = Date.now();
+          importedDecks.push(deck);
+        } catch (e) {
+          console.warn(`Failed to import deck from ${file.name}:`, e);
+        }
+      }
+
+      // Save decks
+      await saveDecks(importedDecks);
+
+      alert(`Successfully imported ${importedDecks.length} decks and ${newFolders.length} folders`);
+    } catch (e: any) {
+      if (e?.name === "AbortError") return;
+      console.error('Import failed:', e);
+      alert('Failed to import folder structure');
+    }
+  };
+
   async function handleDelete() {
     const updatedDecks = decks.filter(deck => !selectedIds.has(deck.id));
     await saveDecks(updatedDecks);
@@ -466,6 +636,8 @@ export default function DeckManager() {
                 </>
               )}
             </div>
+            <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors" onClick={onExportFolderStructure}>📂⬆️ Export to Disk</button>
+            <button className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:ring-2 focus:ring-purple-400 focus:outline-none transition-colors" onClick={onImportFolderStructure}>📂⬇️ Import from Disk</button>
             <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:outline-none transition-colors" onClick={clearDecks}>Clear decks</button>
           </div>
           <div className="space-y-2">

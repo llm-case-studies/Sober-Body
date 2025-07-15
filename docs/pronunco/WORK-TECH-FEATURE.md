@@ -44,6 +44,11 @@
   Platform was limited to 5 Western European languages, missing key global markets. Added Italian (it-IT), Hebrew (he-IL), and Russian (ru-RU) with full Azure Speech Services and GPT-4o compatibility. Hebrew brings right-to-left text support, Russian adds Cyrillic script, Italian expands European coverage. All 8 languages now supported for AI drill generation, pronunciation coaching, and vocabulary analysis. Tests updated to accommodate dynamic language scaling.
   </details>
 
+* **Folder/Disk Sync System** – replicate app folder structure on disk with bi-directional sync
+  <details><summary>💬 mini-story</summary>
+  Teachers needed seamless migration between devices and backup capabilities for their organized content. Implemented carefully designed folder sync with user-invoked export/import actions. Export creates directory structure matching app folders, places deck JSON files in appropriate directories, and includes metadata preservation. Import reconstructs folder hierarchy from disk structure, maintaining tags and organization. Features safety alerts for modern browser requirements and comprehensive error handling for production reliability.
+  </details>
+
 | ID   | Epic / Feature                              | Sprint | Owner   | Status        |
 |------|---------------------------------------------|--------|---------|---------------|
 | PN-041 | Dexie **outbox** table + `useSync()` flush | 4 | Claude  | in-progress |
@@ -79,6 +84,7 @@
 |------|------------------------------------------|----------|---------|-----------|
 | PN-067 | **Folder counter bug fix** - reactive updates | High | Claude | pending |
 | PN-068 | **JSON import/export** for selected decks | High | Claude | pending |
+| PN-074 | **Folder/disk sync functionality** - export/import folder structure to/from disk | High | Claude | ✅ completed |
 
 ## 🚀 Phase 2 - Enhanced Content Management ✅ COMPLETED
 
