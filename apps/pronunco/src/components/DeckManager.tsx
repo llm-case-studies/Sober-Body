@@ -17,6 +17,7 @@ import {
 import NewDrillWizard from "./NewDrillWizard";
 import FolderTree from "./FolderTree";
 import NewFolderModal from "./NewFolderModal";
+import DeckEditor from "./DeckEditor";
 import { useSettings } from "../features/core/settings-context";
 import type { Deck } from "../../../sober-body/src/features/games/deck-types";
 
@@ -44,6 +45,8 @@ export default function DeckManager() {
   const [showWizard, setShowWizard] = useState(false);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [showNewFolderModal, setShowNewFolderModal] = useState(false);
+  const [showDeckEditor, setShowDeckEditor] = useState(false);
+  const [editingDeckId, setEditingDeckId] = useState<string | null>(null);
   const [showMoveDropdown, setShowMoveDropdown] = useState<string | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{top: number, left: number} | null>(null);
   const moveButtonRefs = useRef<{[key: string]: HTMLButtonElement | null}>({});
@@ -394,6 +397,16 @@ export default function DeckManager() {
     setShowMoveDropdown(null);
   };
 
+  const openDeckEditor = (deckId?: string) => {
+    setEditingDeckId(deckId || null);
+    setShowDeckEditor(true);
+  };
+
+  const closeDeckEditor = () => {
+    setShowDeckEditor(false);
+    setEditingDeckId(null);
+  };
+
   const filteredDecks = getFilteredDecks();
 
   return (
@@ -497,7 +510,7 @@ export default function DeckManager() {
           {selectedIds.size > 0 && (
             <div className="border-t p-2 space-x-2 mt-4">
               <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors" onClick={onDrill}>▶ Drill</button>
-              <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors" onClick={() => alert("TODO")}>📝 Edit Grammar</button>
+              <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors" onClick={() => openDeckEditor([...selectedIds][0])}>✏️ Edit Deck</button>
               <button className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-400 focus:outline-none transition-colors" onClick={onExportJson}>📄 Export JSON</button>
               <button className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:ring-2 focus:ring-yellow-500 focus:outline-none transition-colors" onClick={onExportZip}>📤 Export ZIP</button>
               <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:outline-none transition-colors" onClick={handleDelete}>🗑 Delete</button>
@@ -516,6 +529,11 @@ export default function DeckManager() {
       <NewFolderModal 
         open={showNewFolderModal} 
         onClose={() => setShowNewFolderModal(false)} 
+      />
+      <DeckEditor 
+        open={showDeckEditor} 
+        onClose={closeDeckEditor}
+        deckId={editingDeckId} 
       />
       
       {/* Move Dropdown Portal */}

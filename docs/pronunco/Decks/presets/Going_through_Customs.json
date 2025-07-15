@@ -1,0 +1,65 @@
+{
+  "id": "4471d6b5-2b1d-4309-aee8-95650a296b8a",
+  "title": "Going through Customs",
+  "lang": "fr-FR",
+  "lines": [
+    "Bonjour, avez-vous quelque chose à déclarer ?",
+    "Montrez-moi votre passeport, s'il vous plaît.",
+    "Quel est le but de votre visite ?",
+    "Combien de temps comptez-vous rester ?",
+    "Avez-vous des marchandises à déclarer ?",
+    "Où avez-vous séjourné lors de votre voyage ?",
+    "Ces articles sont-ils pour usage personnel ou à vendre ?",
+    "Puis-je vérifier votre bagage ?",
+    "Votre vol a-t-il été agréable ?",
+    "Merci pour votre coopération."
+  ],
+  "grammarBrief": "In this drill, we focus on forming formal and polite questions and statements, utilizing the inversion method for questions and the use of formal pronouns. \nFor example, 'Avez-vous quelque chose à déclarer ?' features the inversion of 'avez' and 'vous' to form a formal question. Inversion is commonly used in formal interactions. \nFurthermore, 'pouvez-vous' in 'Puis-je vérifier votre bagage ?' illustrates the inversion with 'puis-je', a polite way to ask for permission.\nAdditionally, the use of formal 'vous' as opposed to informal 'tu' is crucial in a customs context to convey respect.",
+  "vocabulary": [
+    {
+      "word": "déclarer",
+      "definition": "to declare"
+    },
+    {
+      "word": "passeport",
+      "definition": "passport"
+    },
+    {
+      "word": "visite",
+      "definition": "visit"
+    },
+    {
+      "word": "séjourner",
+      "definition": "to stay"
+    },
+    {
+      "word": "marchandises",
+      "definition": "goods"
+    },
+    {
+      "word": "usage personnel",
+      "definition": "personal use"
+    },
+    {
+      "word": "cooperation",
+      "definition": "cooperation"
+    },
+    {
+      "word": "agréable",
+      "definition": "pleasant"
+    },
+    {
+      "word": "vol",
+      "definition": "flight"
+    },
+    {
+      "word": "bagage",
+      "definition": "luggage"
+    }
+  ],
+  "complexityLevel": "Intermediate",
+  "tags": [
+    "folder:folder_1752537272392"
+  ],
+  "updated": 1752538625589
+}
