@@ -1,0 +1,18 @@
+{
+  "id": "hw1-apresentacao-pt-BR",
+  "version": 1,
+  "title": "Apresentação pessoal",
+  "lang": "pt-BR",
+  "tags": [
+    "cat:lesson",
+    "author:Leise"
+  ],
+  "lines": [
+    "Olá! Eu me chamo Ana.",
+    "Eu sou da Colômbia.",
+    "Eu sou estudante.",
+    "Eu falo espanhol e um pouco de português.",
+    "Eu gosto de estudar línguas.",
+    "E você?"
+  ]
+}

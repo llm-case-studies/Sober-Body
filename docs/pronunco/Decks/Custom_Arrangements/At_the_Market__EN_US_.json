@@ -1,0 +1,16 @@
+{
+  "id": "preset-groceries-en-US",
+  "title": "At the Market (EN-US)",
+  "lang": "en-US",
+  "lines": [
+    "Where is the dairy section?",
+    "How much does it cost per kilo?",
+    "Do you take credit cards?",
+    "Could you weigh these apples, please?",
+    "Do you have reusable bags?"
+  ],
+  "tags": [
+    "official",
+    "cat:groceries"
+  ]
+}
