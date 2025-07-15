@@ -71,6 +71,29 @@
 | PN-063 | **Wizard state-machine** (offline, free, Pro) | 4 | Claude | ✅ completed |
 | PN-064 | **Enhanced wizard UI** - layout + dual-mode generation | 4 | Claude | ✅ completed |
 | PN-065 | **Multi-language expansion** - Italian, Hebrew, Russian | 4 | Claude | ✅ completed |
+| PN-066 | **Wizard save button & unified storage** - fix save functionality | 4 | Claude | ✅ completed |
+
+## 🎯 Phase 1 - Immediate Improvements (Next Sprint)
+
+| ID   | Feature                                  | Priority | Owner   | Status    |
+|------|------------------------------------------|----------|---------|-----------|
+| PN-067 | **Folder counter bug fix** - reactive updates | High | Claude | pending |
+| PN-068 | **JSON import/export** for selected decks | High | Claude | pending |
+
+## 🚀 Phase 2 - Enhanced Content Management 
+
+| ID   | Feature                                  | Priority | Owner   | Status    |
+|------|------------------------------------------|----------|---------|-----------|
+| PN-069 | **Extended deck editor** - text/vocab/grammar/categories/difficulty | High | Claude | pending |
+| PN-070 | **Enhanced coach page tabs** - drill/vocab/grammar sections | High | Claude | pending |
+| PN-071 | **Custom user tags** system beyond folders | Medium | Claude | pending |
+
+## 🌟 Phase 3 - Advanced Features
+
+| ID   | Feature                                  | Priority | Owner   | Status    |
+|------|------------------------------------------|----------|---------|-----------|
+| PN-072 | **ID/alias system** - display names & memo aliases | Medium | Claude | pending |
+| PN-073 | **Rich content support** - links/images/videos | Future | Claude | pending |
 
 > **Legend**  
 > *merged # xxx* – already on main  

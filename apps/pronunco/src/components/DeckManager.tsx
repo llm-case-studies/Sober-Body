@@ -31,6 +31,7 @@ const backgroundThemes = [
 export default function DeckManager() {
   const zipRef = useRef<HTMLInputElement>(null);
   const jsonRef = useRef<HTMLInputElement>(null);
+  const singleJsonRef = useRef<HTMLInputElement>(null);
   const pickerOpen = useRef(false);
   const navigate = useNavigate();
   const { settings } = useSettings();
@@ -111,6 +112,10 @@ export default function DeckManager() {
     await importDeckFiles(files);
   };
 
+  const handleJsonImport = async (files: FileList | File[]) => {
+    await importDeckFiles(files);
+  };
+
   const onZipInput = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       await handleZip(e.target.files[0]);
@@ -121,6 +126,13 @@ export default function DeckManager() {
   const onJsonInput = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length) {
       await handleFolderFiles(e.target.files);
+    }
+    e.target.value = "";
+  };
+
+  const onSingleJsonInput = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length) {
+      await handleJsonImport(e.target.files);
     }
     e.target.value = "";
   };
@@ -259,6 +271,29 @@ export default function DeckManager() {
     jsonRef.current?.click();
   };
 
+  const pickSingleJson = async () => {
+    if (supportsFSA) {
+      try {
+        const last = await getLastDir(db());
+        const handles = await (window as any).showOpenFilePicker({
+          multiple: true,
+          types: [
+            { description: "JSON", accept: { "application/json": [".json"] } },
+          ],
+          startIn: last,
+        });
+        const files = await Promise.all(handles.map((h: any) => h.getFile()));
+        if (files.length) {
+          await handleJsonImport(files);
+        }
+        return;
+      } catch (e: any) {
+        if (e?.name === "AbortError") return;
+      }
+    }
+    singleJsonRef.current?.click();
+  };
+
   const clearDecks = async () => {
     await saveDecks([]);
   };
@@ -283,14 +318,14 @@ export default function DeckManager() {
     if (id) navigate(`../coach/${id}`);
   };
 
-  const onExport = async () => {
+  const onExportZip = async () => {
     const JSZip = (await import('jszip')).default;
     const zip = new JSZip();
     
     selectedIds.forEach(id => {
       const deck = decks.find(d => d.id === id);
       if (deck) {
-        zip.file(`decks/${id}.json`, JSON.stringify(deck));
+        zip.file(`decks/${id}.json`, JSON.stringify(deck, null, 2));
       }
     });
     
@@ -301,6 +336,31 @@ export default function DeckManager() {
     a.download = 'decks.zip';
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const onExportJson = async () => {
+    const selectedDecks = [...selectedIds].map(id => decks.find(d => d.id === id)).filter(Boolean);
+    
+    if (selectedDecks.length === 1) {
+      // Single deck - export as individual JSON file
+      const deck = selectedDecks[0];
+      const blob = new Blob([JSON.stringify(deck, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${deck.title.replace(/[^a-zA-Z0-9]/g, '_')}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      // Multiple decks - export as array
+      const blob = new Blob([JSON.stringify(selectedDecks, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `decks_${selectedDecks.length}_selected.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
   };
 
   async function handleDelete() {
@@ -356,6 +416,7 @@ export default function DeckManager() {
               <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors" onClick={()=>setShowWizard(true)}>➕ New Drill</button>
             )}
             <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors" onClick={pickZip}>Import ZIP</button>
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-colors" onClick={pickSingleJson}>Import JSON</button>
             <div className="relative inline-block">
               <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors" onClick={pickJson}>Import folder</button>
               {recentDirs.length > 0 && (
@@ -437,7 +498,8 @@ export default function DeckManager() {
             <div className="border-t p-2 space-x-2 mt-4">
               <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors" onClick={onDrill}>▶ Drill</button>
               <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors" onClick={() => alert("TODO")}>📝 Edit Grammar</button>
-              <button className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-400 focus:outline-none transition-colors" onClick={onExport}>📤 Export ZIP</button>
+              <button className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-400 focus:outline-none transition-colors" onClick={onExportJson}>📄 Export JSON</button>
+              <button className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:ring-2 focus:ring-yellow-500 focus:outline-none transition-colors" onClick={onExportZip}>📤 Export ZIP</button>
               <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:outline-none transition-colors" onClick={handleDelete}>🗑 Delete</button>
             </div>
           )}
@@ -448,6 +510,7 @@ export default function DeckManager() {
       
       <input ref={zipRef} type="file" accept="application/zip" hidden onChange={onZipInput} />
       <input ref={jsonRef} type="file" hidden webkitdirectory="" multiple onChange={onJsonInput} />
+      <input ref={singleJsonRef} type="file" accept="application/json" multiple hidden onChange={onSingleJsonInput} />
       
       <NewDrillWizard open={showWizard} onClose={() => setShowWizard(false)} />
       <NewFolderModal 

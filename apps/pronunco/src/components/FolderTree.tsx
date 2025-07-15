@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db';
-import type { Folder, Deck } from '../../../../packages/core-storage/src/db';
+import { useDecks } from '../../../sober-body/src/features/games/deck-context';
+import type { Folder } from '../../../../packages/core-storage/src/db';
+import type { Deck } from '../../../sober-body/src/features/games/deck-types';
 
 interface FolderTreeProps {
   selectedFolderId: string | null;
@@ -16,7 +18,7 @@ interface FolderWithCounts extends Folder {
 
 export default function FolderTree({ selectedFolderId, onFolderSelect, onCreateFolder }: FolderTreeProps) {
   const folders = useLiveQuery(() => db().folders?.toArray() ?? [], [], []) || [];
-  const decks = useLiveQuery(() => db().decks?.toArray() ?? [], [], []) || [];
+  const { decks } = useDecks(); // Use SoberBody storage instead of Dexie
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['root']));
 
   // Build folder tree with deck counts
@@ -32,10 +34,15 @@ export default function FolderTree({ selectedFolderId, onFolderSelect, onCreateF
       });
     });
 
-    // Count decks in each folder
+    // Count decks in each folder (using SoberBody tag system)
     decks.forEach(deck => {
-      if (deck.folderId && folderMap.has(deck.folderId)) {
-        folderMap.get(deck.folderId)!.deckCount++;
+      // Find folder tag in deck.tags array
+      const folderTag = deck.tags?.find(tag => tag.startsWith('folder:'));
+      if (folderTag) {
+        const folderId = folderTag.replace('folder:', '');
+        if (folderMap.has(folderId)) {
+          folderMap.get(folderId)!.deckCount++;
+        }
       }
     });
 
@@ -101,7 +108,7 @@ export default function FolderTree({ selectedFolderId, onFolderSelect, onCreateF
   };
 
   const folderTree = buildFolderTree();
-  const unorganizedDecks = decks.filter(deck => !deck.folderId);
+  const unorganizedDecks = decks.filter(deck => !deck.tags?.some(tag => tag.startsWith('folder:')));
   const totalDecks = decks.length;
 
   return (
