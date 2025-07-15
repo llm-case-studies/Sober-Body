@@ -21,11 +21,19 @@ import SidebarLayout from './components/SidebarLayout'
 
 // ... (rest of your imports and CoachPageWrapper function)
 
+function DeckManagerWrapper() {
+  return (
+    <DeckProvider>
+      <DeckManager />
+    </DeckProvider>
+  )
+}
+
 export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/decks" replace />} />
-      <Route path="/decks" element={<DeckManager />} />
+      <Route path="/decks" element={<DeckManagerWrapper />} />
       <Route path="/coach/:deckId" element={<CoachPageWrapper />} />
       <Route path="/c/:data" element={<ChallengePage />} />
       <Route path="/settings" element={<SettingsPage />} />
