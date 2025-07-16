@@ -196,39 +196,9 @@ export default function CoachPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Tab Navigation */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4">
-          <nav className="flex space-x-8" aria-label="Tabs">
-            {[
-              { id: 'drill', label: '🎯 Drill', description: 'Practice pronunciation' },
-              { id: 'vocabulary', label: '📚 Vocabulary', description: 'Word definitions' },
-              { id: 'grammar', label: '📝 Grammar', description: 'Language rules' },
-              { id: 'overview', label: '📊 Overview', description: 'Deck information' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as TabType)}
-                className={`${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
-                aria-current={activeTab === tab.id ? 'page' : undefined}
-              >
-                <div className="text-center">
-                  <div>{tab.label}</div>
-                  <div className="text-xs text-gray-400 mt-1">{tab.description}</div>
-                </div>
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-
-      {/* Tab Content */}
+      {/* Direct Coach UI - tabs moved to right panel */}
       <div className="flex-1">
-        {renderTabContent()}
+        <PronunciationCoachUI />
       </div>
     </div>
   )

@@ -51,6 +51,9 @@ export default function PronunciationCoachUI() {
   const currentDeck = decks.find(d => d.id === activeDeck) ?? defaultDeck;
   const briefExists = useBriefExists(currentDeck.id);
   
+  // Extended deck interface to handle additional fields from wizard
+  const extendedDeck = currentDeck as any; // Will contain grammarBrief, vocabulary, complexityLevel if present
+  
   // Rotate background every 30 seconds or based on deck ID
   const [currentTheme, setCurrentTheme] = useState(0);
   const [showToast, setShowToast] = useState(false);
@@ -81,6 +84,10 @@ export default function PronunciationCoachUI() {
   const [showAzureDetails, setShowAzureDetails] = useState(false);
   const audioRecordingRef = useRef<Blob | null>(null);
   const budget = useAzureBudget();
+  
+  // Right panel tab state
+  const [activeRightTab, setActiveRightTab] = useState<'drill' | 'vocabulary' | 'grammar'>('drill');
+  const [selectedVocabIndex, setSelectedVocabIndex] = useState(0);
 
   const shareEnabled = ['word', 'phrase', 'sentence'].includes(mode);
 
@@ -380,246 +387,435 @@ export default function PronunciationCoachUI() {
             </div>
           </div>
           
-          {/* Right Panel - Practice Section */}
-          <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full" style={{minWidth: '0px', maxWidth: '100%'}}>
-            <div className="flex flex-col items-center space-y-6">
-              
-              {/* Word List */}
-              {lines.length > 0 && (
-                <div className="w-full">
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Practice Units</h3>
-                  <div className="max-h-40 overflow-y-auto border rounded-md p-3 bg-gray-50">
-                    <ul className="space-y-1">
-                      {lines.map(
-                        (line, i) =>
-                          line && (
-                            <li
-                              key={i}
-                              onClick={() => setIndex(i)}
-                              className={`cursor-pointer px-2 py-1 rounded text-sm transition-colors ${
-                                i === index
-                                  ? "bg-blue-100 text-blue-900 font-medium"
-                                  : "hover:bg-gray-100"
-                              }`}
-                            >
-                              {line}
-                            </li>
-                          ),
-                      )}
-                    </ul>
-                  </div>
-                </div>
-              )}
-              
-              {/* Current Word Display */}
-              <div className="w-full text-center">
-                <h2 className="text-3xl font-medium text-gray-900 mb-4 select-text bg-gray-50 rounded-lg p-4 border">
-                  {current}
-                </h2>
-                
-                {/* Score Display */}
-                {(coach.result !== null || azureScore !== null) && (
-                  <div className="mb-4 space-y-2">
-                    {/* Browser Score */}
-                    {coach.result !== null && (
-                      <div className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                        Browser clarity: {coach.result}%
-                      </div>
-                    )}
-                    
-                    {/* Azure Score */}
-                    {settings.useAzure && (
-                      <div className="flex flex-col items-center gap-2">
-                        {azureLoading ? (
-                          <div className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
-                            <div className="animate-spin w-3 h-3 border border-gray-400 border-t-transparent rounded-full mr-2"></div>
-                            Azure scoring...
-                          </div>
-                        ) : azureScore ? (
-                          <>
-                            <div className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
-                              Azure clarity: {azureScore.pronunciation}%
-                            </div>
-                            <button
-                              onClick={() => setShowAzureDetails(!showAzureDetails)}
-                              className="text-xs text-blue-600 hover:text-blue-800 underline"
-                            >
-                              ▶ Details
-                            </button>
-                            {showAzureDetails && (
-                              <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-700 border max-w-sm">
-                                <div className="grid grid-cols-2 gap-2 mb-2">
-                                  <div>Accuracy: {azureScore.accuracy}%</div>
-                                  <div>Fluency: {azureScore.fluency}%</div>
-                                  <div>Completeness: {azureScore.completeness}%</div>
-                                  <div>Latency: {azureScore.latencyMs}ms</div>
-                                </div>
-                                <div className="text-center font-medium text-amber-600">
-                                  Cost: ${azureScore.costUSD.toFixed(4)}
-                                </div>
-                                <details className="mt-2">
-                                  <summary className="cursor-pointer text-blue-600">Raw JSON</summary>
-                                  <pre className="mt-1 text-xs overflow-auto max-h-32 bg-white p-2 rounded border">
-                                    {JSON.stringify(azureScore.json, null, 2)}
-                                  </pre>
-                                </details>
-                              </div>
-                            )}
-                          </>
-                        ) : budget.budgetExceeded ? (
-                          <div className="inline-flex items-center px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-                            ⚠️ Daily budget reached
-                          </div>
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              
-              {/* Main Controls */}
-              <div className="flex flex-wrap gap-3 justify-center">
-                <button
-                  onClick={coach.play}
-                  title="Play sample"
-                  aria-label="Play sample"
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
-                >
-                  ▶ Play
-                </button>
-                <button
-                  disabled={
-                    !(
-                      "SpeechRecognition" in window ||
-                      "webkitSpeechRecognition" in window
-                    )
-                  }
-                  onClick={coach.recording ? coach.stop : coach.start}
-                  title={coach.recording ? "Stop recording" : "Record your voice"}
-                  aria-label={coach.recording ? "Stop recording" : "Record your voice"}
-                  className={`inline-flex items-center px-4 py-2 rounded-md focus:ring-2 focus:outline-none transition-colors ${
-                    coach.recording 
-                      ? "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500"
-                      : "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {coach.recording ? "■ Stop" : "⏺ Record"}
-                </button>
-                {briefExists && (
-                  <button 
-                    onClick={handleGrammar} 
-                    className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors"
+          {/* Right Panel - Tabbed Practice Section */}
+          <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 w-full" style={{minWidth: '0px', maxWidth: '100%'}}>
+            
+            {/* Tab Navigation */}
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8 px-6 pt-4" aria-label="Tabs">
+                {[
+                  { id: 'drill', label: '🎯 Drill Items', description: 'Practice pronunciation' },
+                  { id: 'vocabulary', label: '📖 Vocabulary', description: 'Word definitions' },
+                  { id: 'grammar', label: '📝 Grammar', description: 'Language patterns' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveRightTab(tab.id as 'drill' | 'vocabulary' | 'grammar')}
+                    className={`${
+                      activeRightTab === tab.id
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    } whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}
+                    aria-current={activeRightTab === tab.id ? 'page' : undefined}
                   >
-                    📖 Grammar
+                    <div className="text-center">
+                      <div>{tab.label}</div>
+                      <div className="text-xs text-gray-400 mt-1">{tab.description}</div>
+                    </div>
                   </button>
-                )}
-              </div>
+                ))}
+              </nav>
+            </div>
+
+            {/* Tab Content */}
+            <div className="p-6">
               
-              {/* Translation Controls */}
-              <div className="w-full border-t pt-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-gray-700">Translation</span>
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={tMode}
-                      onChange={e => setTMode(e.target.value as TranslateMode)}
-                      className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="off">Off</option>
-                      <option value="auto-unit">Auto</option>
-                      <option value="auto-select">On Select</option>
-                    </select>
-                    <button
-                      onClick={handleTranslateNow}
-                      className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none transition-colors"
-                    >
-                      🔍 Translate Now
-                    </button>
-                  </div>
-                </div>
-                
-                {translation && showTranslation && (
-                  <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                    <span className="flex-1 text-sm text-blue-900">{translation}</span>
-                    <button
-                      onClick={speak}
-                      title="Hear translation"
-                      aria-label="Hear translation"
-                      className="p-1 text-blue-600 hover:text-blue-800 focus:outline-none"
-                    >
-                      🔊
-                    </button>
-                  </div>
-                )}
-              </div>
-              
-              {/* Settings */}
-              <div className="w-full border-t pt-4">
-                <div className="space-y-3">
-                  <label className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                      type="checkbox"
-                      checked={settings.slowSpeech}
-                      onChange={e => setSettings(s => ({ ...s, slowSpeech: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    Slow speech
-                  </label>
+              {/* Drill Tab */}
+              {activeRightTab === 'drill' && (
+                <div className="flex flex-col items-center space-y-6">
                   
-                  {/* Azure Speech Assessment */}
-                  <div className="border-t pt-3">
-                    <div className="text-xs font-medium text-gray-700 mb-2">Speech Scoring</div>
-                    <label className="flex items-center gap-2 text-sm text-gray-600">
-                      <input
-                        type="checkbox"
-                        checked={settings.useAzure}
-                        onChange={e => setSettings(s => ({ ...s, useAzure: e.target.checked }))}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      Use Azure Assessment (beta)
-                    </label>
-                    {settings.useAzure && (
-                      <div className="mt-2 space-y-1">
-                        <div className="text-xs text-amber-600">
-                          ⚠️ Professional scoring with usage costs ($3/day limit)
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Today: ${budget.todaySpending.toFixed(2)} / $3.00 
-                          (${budget.remainingBudget.toFixed(2)} remaining)
-                        </div>
-                        {budget.budgetExceeded && (
-                          <div className="text-xs text-red-600 font-medium">
-                            ⛔ Budget exceeded - scoring paused until midnight
+                  {/* Word List */}
+                  {lines.length > 0 && (
+                    <div className="w-full">
+                      <h3 className="text-sm font-medium text-gray-700 mb-3">Practice Units</h3>
+                      <div className="max-h-40 overflow-y-auto border rounded-md p-3 bg-gray-50">
+                        <ul className="space-y-1">
+                          {lines.map(
+                            (line, i) =>
+                              line && (
+                                <li
+                                  key={i}
+                                  onClick={() => setIndex(i)}
+                                  className={`cursor-pointer px-2 py-1 rounded text-sm transition-colors ${
+                                    i === index
+                                      ? "bg-blue-100 text-blue-900 font-medium"
+                                      : "hover:bg-gray-100"
+                                  }`}
+                                >
+                                  {line}
+                                </li>
+                              ),
+                          )}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Current Word Display */}
+                  <div className="w-full text-center">
+                    <h2 className="text-3xl font-medium text-gray-900 mb-4 select-text bg-gray-50 rounded-lg p-4 border">
+                      {current}
+                    </h2>
+                    
+                    {/* Score Display */}
+                    {(coach.result !== null || azureScore !== null) && (
+                      <div className="mb-4 space-y-2">
+                        {/* Browser Score */}
+                        {coach.result !== null && (
+                          <div className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                            Browser clarity: {coach.result}%
+                          </div>
+                        )}
+                        
+                        {/* Azure Score */}
+                        {settings.useAzure && (
+                          <div className="flex flex-col items-center gap-2">
+                            {azureLoading ? (
+                              <div className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
+                                <div className="animate-spin w-3 h-3 border border-gray-400 border-t-transparent rounded-full mr-2"></div>
+                                Azure scoring...
+                              </div>
+                            ) : azureScore ? (
+                              <>
+                                <div className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                                  Azure clarity: {azureScore.pronunciation}%
+                                </div>
+                                <button
+                                  onClick={() => setShowAzureDetails(!showAzureDetails)}
+                                  className="text-xs text-blue-600 hover:text-blue-800 underline"
+                                >
+                                  ▶ Details
+                                </button>
+                                {showAzureDetails && (
+                                  <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-700 border max-w-sm">
+                                    <div className="grid grid-cols-2 gap-2 mb-2">
+                                      <div>Accuracy: {azureScore.accuracy}%</div>
+                                      <div>Fluency: {azureScore.fluency}%</div>
+                                      <div>Completeness: {azureScore.completeness}%</div>
+                                      <div>Latency: {azureScore.latencyMs}ms</div>
+                                    </div>
+                                    <div className="text-center font-medium text-amber-600">
+                                      Cost: ${azureScore.costUSD.toFixed(4)}
+                                    </div>
+                                    <details className="mt-2">
+                                      <summary className="cursor-pointer text-blue-600">Raw JSON</summary>
+                                      <pre className="mt-1 text-xs overflow-auto max-h-32 bg-white p-2 rounded border">
+                                        {JSON.stringify(azureScore.json, null, 2)}
+                                      </pre>
+                                    </details>
+                                  </div>
+                                )}
+                              </>
+                            ) : budget.budgetExceeded ? (
+                              <div className="inline-flex items-center px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                                ⚠️ Daily budget reached
+                              </div>
+                            ) : null}
                           </div>
                         )}
                       </div>
                     )}
                   </div>
-                </div>
-              </div>
-              
-              {/* Navigation */}
-              {lines.length > 0 && (
-                <div className="flex gap-3 pt-4 border-t w-full justify-center">
-                  <button
-                    onClick={() => setIndex((i) => i - 1)}
-                    disabled={index === 0}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    ← Previous
-                  </button>
-                  <span className="px-3 py-2 text-sm text-gray-500 flex items-center">
-                    {index + 1} of {lines.length}
-                  </span>
-                  <button
-                    onClick={() => setIndex((i) => i + 1)}
-                    disabled={index >= lines.length - 1}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Next →
-                  </button>
+                  
+                  {/* Navigation */}
+                  {lines.length > 0 && (
+                    <div className="flex gap-3 pt-4 border-t w-full justify-center">
+                      <button
+                        onClick={() => setIndex((i) => i - 1)}
+                        disabled={index === 0}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        ← Previous
+                      </button>
+                      <span className="px-3 py-2 text-sm text-gray-500 flex items-center">
+                        {index + 1} of {lines.length}
+                      </span>
+                      <button
+                        onClick={() => setIndex((i) => i + 1)}
+                        disabled={index >= lines.length - 1}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Next →
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
+
+              {/* Vocabulary Tab */}
+              {activeRightTab === 'vocabulary' && (
+                <div className="flex flex-col items-center space-y-6">
+                  
+                  {extendedDeck?.vocabulary?.length > 0 ? (
+                    <>
+                      {/* Vocabulary List */}
+                      <div className="w-full">
+                        <h3 className="text-sm font-medium text-gray-700 mb-3">Vocabulary Words</h3>
+                        <div className="max-h-40 overflow-y-auto border rounded-md p-3 bg-gray-50">
+                          <ul className="space-y-1">
+                            {extendedDeck.vocabulary.map((item: any, i: number) => (
+                              <li
+                                key={i}
+                                onClick={() => setSelectedVocabIndex(i)}
+                                className={`cursor-pointer px-2 py-1 rounded text-sm transition-colors ${
+                                  i === selectedVocabIndex
+                                    ? "bg-green-100 text-green-900 font-medium"
+                                    : "hover:bg-gray-100"
+                                }`}
+                              >
+                                {item.word}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                      
+                      {/* Selected Vocabulary Display */}
+                      <div className="w-full text-center">
+                        <h2 className="text-3xl font-medium text-gray-900 mb-2 select-text bg-green-50 rounded-lg p-4 border border-green-200">
+                          {extendedDeck.vocabulary[selectedVocabIndex]?.word}
+                        </h2>
+                        <p className="text-lg text-gray-600 mb-4 bg-gray-50 rounded-lg p-3 border">
+                          {extendedDeck.vocabulary[selectedVocabIndex]?.definition}
+                        </p>
+                        
+                        {/* Vocabulary Score Display - Same as drill items */}
+                        {(coach.result !== null || azureScore !== null) && (
+                          <div className="mb-4 space-y-2">
+                            {coach.result !== null && (
+                              <div className="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                                Vocabulary clarity: {coach.result}%
+                              </div>
+                            )}
+                            {settings.useAzure && azureScore && (
+                              <div className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                                Azure vocabulary: {azureScore.pronunciation}%
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Vocabulary Navigation */}
+                      <div className="flex gap-3 pt-4 border-t w-full justify-center">
+                        <button
+                          onClick={() => setSelectedVocabIndex((i) => Math.max(0, i - 1))}
+                          disabled={selectedVocabIndex === 0}
+                          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          ← Previous
+                        </button>
+                        <span className="px-3 py-2 text-sm text-gray-500 flex items-center">
+                          {selectedVocabIndex + 1} of {extendedDeck.vocabulary.length}
+                        </span>
+                        <button
+                          onClick={() => setSelectedVocabIndex((i) => Math.min(extendedDeck.vocabulary.length - 1, i + 1))}
+                          disabled={selectedVocabIndex >= extendedDeck.vocabulary.length - 1}
+                          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          Next →
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="text-gray-400 text-6xl mb-4">📚</div>
+                      <p className="text-gray-500">No vocabulary available for this deck.</p>
+                      <p className="text-sm text-gray-400 mt-2">Vocabulary is available for AI-generated decks.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Grammar Tab */}
+              {activeRightTab === 'grammar' && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-800">📝 Grammar</h3>
+                  {extendedDeck?.grammarBrief ? (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                      <div className="prose max-w-none">
+                        <div className="whitespace-pre-line text-gray-800 leading-relaxed">
+                          {extendedDeck.grammarBrief}
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-6">
+                        <button 
+                          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                          onClick={() => {
+                            if ('speechSynthesis' in window) {
+                              const utterance = new SpeechSynthesisUtterance(extendedDeck.grammarBrief);
+                              utterance.lang = currentDeck?.lang || 'en-US';
+                              utterance.rate = 0.8; // Slower for grammar explanation
+                              speechSynthesis.speak(utterance);
+                            }
+                          }}
+                        >
+                          🔊 Read Aloud
+                        </button>
+                        <button 
+                          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                          onClick={() => doTranslate(extendedDeck.grammarBrief)}
+                        >
+                          🌐 Translate
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="text-gray-400 text-6xl mb-4">📝</div>
+                      <p className="text-gray-500">No grammar explanation available for this deck.</p>
+                      <p className="text-sm text-gray-400 mt-2">Grammar explanations are available for AI-generated decks.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Unified Controls - Always Visible */}
+              <div className="border-t pt-6 mt-6">
+                
+                {/* Main Controls */}
+                <div className="flex flex-wrap gap-3 justify-center mb-6">
+                  <button
+                    onClick={() => {
+                      if (activeRightTab === 'vocabulary' && extendedDeck?.vocabulary?.length > 0) {
+                        // Play vocabulary word
+                        const word = extendedDeck.vocabulary[selectedVocabIndex]?.word;
+                        if (word && 'speechSynthesis' in window) {
+                          const utterance = new SpeechSynthesisUtterance(word);
+                          utterance.lang = currentDeck?.lang || 'en-US';
+                          speechSynthesis.speak(utterance);
+                        }
+                      } else {
+                        // Play drill item
+                        coach.play();
+                      }
+                    }}
+                    title="Play sample"
+                    aria-label="Play sample"
+                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
+                  >
+                    ▶ Play
+                  </button>
+                  <button
+                    disabled={
+                      !(
+                        "SpeechRecognition" in window ||
+                        "webkitSpeechRecognition" in window
+                      )
+                    }
+                    onClick={coach.recording ? coach.stop : coach.start}
+                    title={coach.recording ? "Stop recording" : "Record your voice"}
+                    aria-label={coach.recording ? "Stop recording" : "Record your voice"}
+                    className={`inline-flex items-center px-4 py-2 rounded-md focus:ring-2 focus:outline-none transition-colors ${
+                      coach.recording 
+                        ? "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500"
+                        : "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {coach.recording ? "■ Stop" : "⏺ Record"}
+                  </button>
+                  {briefExists && (
+                    <button 
+                      onClick={handleGrammar} 
+                      className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors"
+                    >
+                      📖 Grammar
+                    </button>
+                  )}
+                </div>
+                
+                {/* Translation Controls */}
+                <div className="border-t pt-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-gray-700">Translation</span>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={tMode}
+                        onChange={e => setTMode(e.target.value as TranslateMode)}
+                        className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="off">Off</option>
+                        <option value="auto-unit">Auto</option>
+                        <option value="auto-select">On Select</option>
+                      </select>
+                      <button
+                        onClick={() => {
+                          if (activeRightTab === 'vocabulary' && extendedDeck?.vocabulary?.length > 0) {
+                            // Translate vocabulary word
+                            const word = extendedDeck.vocabulary[selectedVocabIndex]?.word;
+                            if (word) doTranslate(word);
+                          } else {
+                            // Translate drill item
+                            handleTranslateNow();
+                          }
+                        }}
+                        className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:ring-2 focus:ring-gray-500 focus:outline-none transition-colors"
+                      >
+                        🔍 Translate Now
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {translation && showTranslation && (
+                    <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                      <span className="flex-1 text-sm text-blue-900">{translation}</span>
+                      <button
+                        onClick={speak}
+                        title="Hear translation"
+                        aria-label="Hear translation"
+                        className="p-1 text-blue-600 hover:text-blue-800 focus:outline-none"
+                      >
+                        🔊
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Settings */}
+                <div className="border-t pt-4">
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2 text-sm text-gray-600">
+                      <input
+                        type="checkbox"
+                        checked={settings.slowSpeech}
+                        onChange={e => setSettings(s => ({ ...s, slowSpeech: e.target.checked }))}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      Slow speech
+                    </label>
+                    
+                    {/* Azure Speech Assessment */}
+                    <div className="border-t pt-3">
+                      <div className="text-xs font-medium text-gray-700 mb-2">Speech Scoring</div>
+                      <label className="flex items-center gap-2 text-sm text-gray-600">
+                        <input
+                          type="checkbox"
+                          checked={settings.useAzure}
+                          onChange={e => setSettings(s => ({ ...s, useAzure: e.target.checked }))}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        Use Azure Assessment (beta)
+                      </label>
+                      {settings.useAzure && (
+                        <div className="mt-2 space-y-1">
+                          <div className="text-xs text-amber-600">
+                            ⚠️ Professional scoring with usage costs ($3/day limit)
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Today: ${budget.todaySpending.toFixed(2)} / $3.00 
+                            (${budget.remainingBudget.toFixed(2)} remaining)
+                          </div>
+                          {budget.budgetExceeded && (
+                            <div className="text-xs text-red-600 font-medium">
+                              ⛔ Budget exceeded - scoring paused until midnight
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           
