@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "coach-ui": "workspace:*",
+    "ui": "workspace:*",
     "dexie-react-hooks": "^1.1.7",
     "idb-keyval": "^6.2.2",
     "openai": "^4.104.0",

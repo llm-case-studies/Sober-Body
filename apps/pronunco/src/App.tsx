@@ -1,4 +1,3 @@
-import 'ui/mobile.css';
 import { BrowserRouter, Routes, Route, Navigate, useParams, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import DeckManager from './components/DeckManager';
@@ -6,7 +5,7 @@ import CoachPage from './pages/CoachPage';
 import ChallengePage from './pages/ChallengePage';
 import SettingsPage from './pages/SettingsPage';
 import TeacherWizardPage from './pages/TeacherWizardPage';
-import { DeckProvider } from '../../sober-body/src/features/games/deck-context';
+import { DeckProvider, useDecks } from '../../sober-body/src/features/games/deck-context';
 import { seedPresetDecks } from '../../sober-body/src/features/games/deck-storage';
 import SidebarLayout from './components/SidebarLayout';
 import DeckListMobile from './components/DeckListMobile';
@@ -34,9 +33,20 @@ function DeckManagerWrapper() {
 function MobileDeckManagerWrapper() {
   return (
     <DeckProvider>
-      <DeckListMobile />
+      <MobileDeckManagerInner />
     </DeckProvider>
   );
+}
+
+function MobileDeckManagerInner() {
+  const { decks } = useDecks();
+  const deckList = decks.map(deck => ({
+    id: deck.id,
+    title: deck.title,
+    language: deck.language || 'Unknown'
+  }));
+  
+  return <DeckListMobile decks={deckList} />;
 }
 
 function AppRoutes() {
@@ -45,6 +55,13 @@ function AppRoutes() {
   const isMobile = useIsMobile();
 
   const isMobileView = isMobile || settings.enableMobileBeta || location.pathname.startsWith('/m/');
+
+  // Dynamically import mobile CSS only when needed
+  useEffect(() => {
+    if (isMobileView) {
+      import('./styles/mobile.css');
+    }
+  }, [isMobileView]);
 
   if (isMobileView) {
     return (

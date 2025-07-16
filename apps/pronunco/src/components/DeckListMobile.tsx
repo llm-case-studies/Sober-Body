@@ -1,45 +1,78 @@
 import React from 'react';
-import { useDecks } from '../../../sober-body/src/features/games/deck-context';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardHeader, CardTitle, CardContent, Button } from 'ui';
 
-const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className="bg-white shadow-md rounded-lg p-4 mb-4">{children}</div>
-);
+// Define the shape of a single deck object (adjust based on actual data structure)
+interface Deck {
+  id: string;
+  title: string;
+  language: string;
+}
 
-const CardHeader = ({ children }: { children: React.ReactNode }) => (
-  <div className="font-bold text-lg mb-2">{children}</div>
-);
+interface DeckListMobileProps {
+  decks: Deck[];
+}
 
-const CardContent = ({ children }: { children: React.ReactNode }) => (
-  <div>{children}</div>
-);
+interface DeckCardProps {
+  deck: Deck;
+}
 
-const CardFooter = ({ children }: { children: React.ReactNode }) => (
-  <div className="mt-4 flex justify-end">{children}</div>
-);
+const DeckCard: React.FC<DeckCardProps> = ({ deck }) => {
+  const navigate = useNavigate();
+  
+  // Handler for the drill button
+  const handleDrillClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent the whole card from being "clicked"
+    navigate(`/m/coach/${deck.id}`);
+  };
 
-export default function DeckListMobile() {
-  const { decks } = useDecks();
+  // Handler for a long press (for multi-select)
+  const handleLongPress = () => {
+    console.log(`Long press on deck: ${deck.title}`);
+    // TODO: Implement multi-select logic
+  };
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Decks</h2>
+    <Card
+      className="w-full transition-transform transform active:scale-95"
+      onTouchStart={handleLongPress} // Simple long-press placeholder
+      onContextMenu={(e) => e.preventDefault()} // Prevents context menu on long press
+    >
+      <CardHeader className="flex flex-row items-center justify-between p-4">
+        <div>
+          <CardTitle className="text-lg">{deck.title}</CardTitle>
+          <p className="text-sm text-muted-foreground">{deck.language}</p>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleDrillClick}
+          aria-label={`Start drill for ${deck.title}`}
+        >
+          {/* Using a simple play icon placeholder. Replace with an actual SVG icon component if available */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </Button>
+      </CardHeader>
+    </Card>
+  );
+};
+
+const DeckListMobile: React.FC<DeckListMobileProps> = ({ decks }) => {
+  if (!decks || decks.length === 0) {
+    return <p className="text-center text-gray-500 mt-8">No decks found. Create one to get started!</p>;
+  }
+
+  return (
+    <div className="p-4 space-y-4">
       {decks.map((deck) => (
-        <Card key={deck.id}>
-          <CardHeader>{deck.title}</CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-500">{deck.lang}</p>
-          </CardContent>
-          <CardFooter>
-            <Link
-              to={`../coach/${deck.id}`}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors"
-            >
-              ▶ Play
-            </Link>
-          </CardFooter>
-        </Card>
+        // We will build the DeckCard component next
+        <DeckCard key={deck.id} deck={deck} />
       ))}
     </div>
   );
-}
+};
+
+export default DeckListMobile;
