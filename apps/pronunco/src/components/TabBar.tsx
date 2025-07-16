@@ -4,7 +4,6 @@ import { NavLink } from 'react-router-dom';
 export default function TabBar() {
   const navItems = [
     { name: 'Home', path: '/m/decks', icon: '🏠' },
-    { name: 'Drill', path: '/m/coach', icon: '🎤' },
     { name: 'Wizard', path: '/m/teacher-wizard', icon: '🧙‍♂️' },
     { name: 'Settings', path: '/m/settings', icon: '⚙️' },
   ];
