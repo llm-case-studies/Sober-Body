@@ -250,10 +250,10 @@ export default function PronunciationCoachUI() {
     <>
     <div className={`min-h-screen py-8 transition-all duration-1000 ${backgroundThemes[currentTheme]}`}>
       <div className="max-w-7xl mx-auto px-[10%] sm:px-[10%] lg:px-[10%]">
-        <div className="flex flex-row min-h-[600px] gap-12">
+        <div className="flex flex-col sm:flex-row min-h-[600px] gap-4 sm:gap-12">
           
           {/* Left Panel - Text Input & Controls */}
-          <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6" style={{minWidth: '300px', maxWidth: '50%'}}>
+          <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full" style={{minWidth: '0px', maxWidth: '100%'}}>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -381,7 +381,7 @@ export default function PronunciationCoachUI() {
           </div>
           
           {/* Right Panel - Practice Section */}
-          <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6" style={{minWidth: '300px', maxWidth: '50%'}}>
+          <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full" style={{minWidth: '0px', maxWidth: '100%'}}>
             <div className="flex flex-col items-center space-y-6">
               
               {/* Word List */}
