@@ -49,6 +49,14 @@ function MobileDeckManagerInner() {
   return <DeckListMobile decks={deckList} />;
 }
 
+function TeacherWizardPageWrapper() {
+  return (
+    <DeckProvider>
+      <TeacherWizardPage />
+    </DeckProvider>
+  );
+}
+
 function AppRoutes() {
   const { settings } = useSettings();
   const location = useLocation();
@@ -72,7 +80,7 @@ function AppRoutes() {
           <Route path="/m/coach/:deckId" element={<CoachPageWrapper />} />
           <Route path="/m/c/:data" element={<ChallengePage />} />
           <Route path="/m/settings" element={<SettingsPage />} />
-          <Route path="/m/teacher-wizard" element={<TeacherWizardPage />} />
+          <Route path="/m/teacher-wizard" element={<TeacherWizardPageWrapper />} />
           <Route path="/m/*" element={<Navigate to="/m/decks" replace />} />
           <Route path="/*" element={<Navigate to="/decks" replace />} />
         </Routes>
@@ -87,7 +95,7 @@ function AppRoutes() {
         <Route path="/coach/:deckId" element={<CoachPageWrapper />} />
         <Route path="/c/:data" element={<ChallengePage />} />
         <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/teacher-wizard" element={<TeacherWizardPage />} />
+        <Route path="/teacher-wizard" element={<TeacherWizardPageWrapper />} />
         <Route path="*" element={<Navigate to="/decks" replace />} />
       </Routes>
     </SidebarLayout>

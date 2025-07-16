@@ -9,8 +9,9 @@ import GrammarModal from './GrammarModal';
 import { toast } from '../toast';
 import { useSettings } from '../features/core/settings-context';
 import { useIsMobile } from 'ui';
+import { useDecks } from '../../../sober-body/src/features/games/deck-context';
 
-type WizardMode = 'setup' | 'generating' | 'preview' | 'offline' | 'paywall' | 'manual' | 'text-analysis';
+type WizardMode = 'setup' | 'generating' | 'preview' | 'offline' | 'paywall' | 'manual' | 'text-analysis' | 'deck-preview';
 
 export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose:()=>void }) {
   const { settings } = useSettings();
@@ -30,9 +31,23 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
   const [showManualEditOption, setShowManualEditOption] = useState(false);
   const [inputText, setInputText] = useState('');
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [selectedDeckId, setSelectedDeckId] = useState<string>('');
+  const [enhancementType, setEnhancementType] = useState<'enrich' | 'difficulty'>('enrich');
+  const [addVocabulary, setAddVocabulary] = useState(true);
+  const [addGrammar, setAddGrammar] = useState(true);
 
   // Get available folders for selection
   const folders = useLiveQuery(() => db().folders?.toArray() ?? [], [], []) || [];
+  
+  // Get existing decks for enhancement (safe for tests)
+  let decks: any[] = [];
+  try {
+    const { decks: contextDecks } = useDecks();
+    decks = contextDecks || [];
+  } catch (error) {
+    // useDecks hook not available (likely in test environment)
+    decks = [];
+  }
 
   if(!open) return null;
 
@@ -121,6 +136,133 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
   const retryGenerate = () => {
     setMode('setup');
     generate();
+  };
+
+  const enhanceDeck = async () => {
+    const selectedDeck = decks.find(d => d.id === selectedDeckId);
+    if (!selectedDeck) return;
+
+    // Step 1: Check if online
+    if (!navigator.onLine) {
+      setMode('offline');
+      return;
+    }
+
+    // Step 2: Check if Pro user
+    if (!settings.isPro) {
+      setMode('paywall');
+      return;
+    }
+
+    // Step 3: Enhance the selected deck
+    try {
+      setLoading(true);
+      setMode('generating');
+      
+      if (enhancementType === 'enrich') {
+        // Add vocabulary and grammar to existing deck
+        const contentRequests = [];
+        if (addGrammar) contentRequests.push('detailed grammar explanation identifying patterns, verb tenses, sentence structures');
+        if (addVocabulary) contentRequests.push('key vocabulary words with definitions');
+        
+        const res = await openai.chat.completions.create({
+          model: 'gpt-4o',
+          messages: [{
+            role: 'user',
+            content: `Analyze this ${selectedDeck.lang} pronunciation drill and add educational content: ${contentRequests.join(' and ')}.
+            
+Deck Title: "${selectedDeck.title}"
+Language: ${selectedDeck.lang}
+Phrases: ${selectedDeck.lines?.join('\n')}
+
+Generate a JSON object with:
+{
+  "title": "${selectedDeck.title} (Enhanced)",
+  "lang": "${selectedDeck.lang}",
+  "phrases": [keep original phrases exactly as provided],
+  ${addGrammar ? '"grammarBrief": "[Detailed grammar explanation identifying patterns, verb tenses, sentence structures in the given phrases. Provide 2-3 concrete examples from the phrases.]",' : '"grammarBrief": "",'}
+  ${addVocabulary ? '"vocabulary": [{"word": "word1", "definition": "definition1"}],' : '"vocabulary": [],'}
+  "complexityLevel": "[Beginner/Intermediate/Advanced based on phrase complexity]"
+}`
+          }],
+          response_format: { type: "json_object" },
+        });
+
+        const content = res.choices[0].message.content || '';
+        const parsedContent = JSON.parse(content);
+        
+        setPreview(parsedContent.phrases.join('\n'));
+        setTopic(parsedContent.title);
+        setGrammarBrief(parsedContent.grammarBrief || '');
+        setVocabulary(parsedContent.vocabulary || []);
+        setComplexityLevel(parsedContent.complexityLevel || '');
+        
+      } else if (enhancementType === 'difficulty') {
+        // Create difficulty progression variants
+        const res = await openai.chat.completions.create({
+          model: 'gpt-4o',
+          messages: [{
+            role: 'user',
+            content: `Create a difficulty progression for this ${selectedDeck.lang} pronunciation drill. Generate Basic, Intermediate, and Advanced versions.
+
+Original Deck: "${selectedDeck.title}"
+Language: ${selectedDeck.lang}
+Original Phrases: ${selectedDeck.lines?.join('\n')}
+
+Generate a JSON object with THREE difficulty levels:
+{
+  "basic": {
+    "title": "${selectedDeck.title} (Basic)",
+    "lang": "${selectedDeck.lang}",
+    "phrases": [simplified phrases with easier vocabulary and shorter sentences],
+    "grammarBrief": "[Simple grammar explanation for beginners]",
+    "vocabulary": [{"word": "basic_word", "definition": "simple definition"}],
+    "complexityLevel": "Beginner"
+  },
+  "intermediate": {
+    "title": "${selectedDeck.title} (Intermediate)", 
+    "lang": "${selectedDeck.lang}",
+    "phrases": [original phrases or slightly modified],
+    "grammarBrief": "[Intermediate grammar explanation]",
+    "vocabulary": [{"word": "intermediate_word", "definition": "detailed definition"}],
+    "complexityLevel": "Intermediate"
+  },
+  "advanced": {
+    "title": "${selectedDeck.title} (Advanced)",
+    "lang": "${selectedDeck.lang}",
+    "phrases": [more complex phrases with advanced vocabulary and longer sentences],
+    "grammarBrief": "[Advanced grammar explanation with nuances]",
+    "vocabulary": [{"word": "advanced_word", "definition": "sophisticated definition"}],
+    "complexityLevel": "Advanced"
+  }
+}`
+          }],
+          response_format: { type: "json_object" },
+        });
+
+        const content = res.choices[0].message.content || '';
+        const parsedContent = JSON.parse(content);
+        
+        // For now, show the intermediate version in preview
+        // TODO: Allow user to choose which difficulty to save
+        const intermediate = parsedContent.intermediate;
+        setPreview(intermediate.phrases.join('\n'));
+        setTopic(intermediate.title);
+        setGrammarBrief(intermediate.grammarBrief || '');
+        setVocabulary(intermediate.vocabulary || []);
+        setComplexityLevel(intermediate.complexityLevel || '');
+      }
+      
+      setMode('preview');
+      setStep(2);
+      
+    } catch (e: any) {
+      console.error("Deck enhancement failed:", e);
+      toast.error('Enhancement failed, please try again.');
+      setMode('setup');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const analyzeText = async () => {
@@ -271,6 +413,12 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
                   >
                     Analyze Existing Text
                   </button>
+                  <button 
+                    className={`px-4 ${isMobile ? 'py-3' : 'py-2'} rounded border ${step === 4 ? 'bg-purple-500 text-white' : 'bg-gray-100'}`}
+                    onClick={() => setStep(4)}
+                  >
+                    🔧 Enhance Existing Deck
+                  </button>
                 </div>
               </div>
 
@@ -311,6 +459,45 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
                 </>
               )}
 
+              {step === 4 && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Deck to Enhance
+                    </label>
+                    <select 
+                      className="border w-full p-2 rounded" 
+                      value={selectedDeckId} 
+                      onChange={e => setSelectedDeckId(e.target.value)}
+                    >
+                      <option value="">Choose a deck... ({decks.length} available)</option>
+                      {decks.map(deck => {
+                        const extendedDeck = deck as any; // Type cast to access extended fields
+                        const hasVocab = extendedDeck.vocabulary && extendedDeck.vocabulary.length > 0;
+                        const hasGrammar = extendedDeck.grammarBrief && extendedDeck.grammarBrief.trim();
+                        const difficulty = extendedDeck.complexityLevel || 'Unknown';
+                        
+                        const indicators = [];
+                        if (hasVocab) indicators.push('📖V');
+                        if (hasGrammar) indicators.push('📝G');
+                        indicators.push(`💡${difficulty.charAt(0)}`);
+                        
+                        return (
+                          <option key={deck.id} value={deck.id}>
+                            {deck.title} ({deck.lang}) - {deck.lines?.length || 0} phrases {indicators.length > 0 ? `[${indicators.join(' ')}]` : '[Basic]'}
+                          </option>
+                        );
+                      })}
+                    </select>
+                    {decks.length === 0 && (
+                      <p className="text-sm text-gray-500 mt-1">
+                        No decks available. Create some decks first to use the enhancement feature.
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
+
               <select className="border w-full p-2 rounded" value={lang} onChange={e => setLang(e.target.value)}>
                 {LANGS.map(l => (<option key={l.code} value={l.code}>{l.label}</option>))}
               </select>
@@ -336,6 +523,22 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
                       onClick={analyzeText}
                     >
                       Analyze Text
+                    </button>
+                  )}
+                  {step === 4 && (
+                    <button 
+                      className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 disabled:opacity-50" 
+                      disabled={!selectedDeckId} 
+                      onClick={() => {
+                        const selectedDeck = decks.find(d => d.id === selectedDeckId);
+                        if (selectedDeck) {
+                          setTopic(selectedDeck.title);
+                          setPreview(selectedDeck.lines?.join('\n') || '');
+                          setMode('deck-preview');
+                        }
+                      }}
+                    >
+                      Preview & Enhance
                     </button>
                   )}
                 </div>
@@ -470,6 +673,123 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
                   Save & Exit
                 </button>
               </div>
+            </div>
+          </>
+        )}
+
+        {/* Deck Preview Mode - Show selected deck content and enhancement options */}
+        {mode === 'deck-preview' && (
+          <>
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold text-lg mb-3">Deck Overview: {topic}</h3>
+                <div className="grid grid-cols-1 gap-4">
+                  {/* Current Deck Content */}
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h4 className="font-medium mb-2">📝 Current Content</h4>
+                    <div className="text-sm space-y-2">
+                      <div><strong>Phrases:</strong> {preview.split('\n').filter(Boolean).length}</div>
+                      <div className="max-h-32 overflow-y-auto bg-white p-2 rounded border text-xs">
+                        {preview.split('\n').filter(Boolean).map((line, i) => (
+                          <div key={i} className="py-1">{line}</div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Current Metadata */}
+                  <div className="border rounded-lg p-4 bg-blue-50">
+                    <h4 className="font-medium mb-2">📊 Current Metadata</h4>
+                    {(() => {
+                      const selectedDeck = decks.find(d => d.id === selectedDeckId) as any;
+                      const hasVocab = selectedDeck?.vocabulary && selectedDeck.vocabulary.length > 0;
+                      const hasGrammar = selectedDeck?.grammarBrief && selectedDeck.grammarBrief.trim();
+                      const difficulty = selectedDeck?.complexityLevel || 'Not specified';
+                      
+                      return (
+                        <div className="text-sm space-y-1">
+                          <div className={`${hasVocab ? 'text-green-600' : 'text-gray-500'}`}>
+                            📖 Vocabulary: {hasVocab ? `${selectedDeck.vocabulary.length} words` : 'None'}
+                          </div>
+                          <div className={`${hasGrammar ? 'text-green-600' : 'text-gray-500'}`}>
+                            📝 Grammar: {hasGrammar ? 'Available' : 'None'}
+                          </div>
+                          <div>💡 Difficulty: {difficulty}</div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+
+              {/* Enhancement Options */}
+              <div className="border-t pt-4">
+                <h4 className="font-medium mb-3">🔧 Enhancement Options</h4>
+                <div className="space-y-3">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="enhancementType"
+                      value="enrich"
+                      checked={enhancementType === 'enrich'}
+                      onChange={e => setEnhancementType(e.target.value as 'enrich' | 'difficulty')}
+                      className="mr-3"
+                    />
+                    📚 Add/Improve Educational Content
+                  </label>
+                  
+                  {enhancementType === 'enrich' && (
+                    <div className="ml-6 mt-2 space-y-2">
+                      <label className="flex items-center text-sm">
+                        <input
+                          type="checkbox"
+                          checked={addVocabulary}
+                          onChange={e => setAddVocabulary(e.target.checked)}
+                          className="mr-2"
+                        />
+                        📖 Add/Improve Vocabulary (key words with definitions)
+                      </label>
+                      <label className="flex items-center text-sm">
+                        <input
+                          type="checkbox"
+                          checked={addGrammar}
+                          onChange={e => setAddGrammar(e.target.checked)}
+                          className="mr-2"
+                        />
+                        📝 Add/Improve Grammar (patterns and explanations)
+                      </label>
+                    </div>
+                  )}
+                  
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="enhancementType"
+                      value="difficulty"
+                      checked={enhancementType === 'difficulty'}
+                      onChange={e => setEnhancementType(e.target.value as 'enrich' | 'difficulty')}
+                      className="mr-3"
+                    />
+                    📈 Create Difficulty Progression (Basic → Intermediate → Advanced)
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between pt-4 border-t">
+              <button 
+                className="border px-4 py-2 rounded" 
+                onClick={() => setMode('setup')}
+              >
+                ⟲ Back to Selection
+              </button>
+              <button 
+                className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 disabled:opacity-50" 
+                disabled={enhancementType === 'enrich' && !addVocabulary && !addGrammar} 
+                onClick={enhanceDeck}
+              >
+                🚀 Start Enhancement
+              </button>
             </div>
           </>
         )}
