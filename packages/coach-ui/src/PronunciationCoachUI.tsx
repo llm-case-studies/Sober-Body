@@ -184,11 +184,41 @@ export default function PronunciationCoachUI() {
       .getVoices()
       .find(v => v.lang.startsWith(settings.nativeLang)) ?? null;
     utter.voice = voice || null;
-    utter.lang = settings.nativeLang;
+    // Use language detection for translations since they might be English explanations
+    utter.lang = detectLanguageForSpeech(translation, settings.nativeLang);
     utter.rate = settings.slowSpeech ? 0.7 : 0.9;
     utter.pitch = 1.0;
     speechSynthesis.cancel();
     speechSynthesis.speak(utter);
+  };
+
+  // Helper function to detect language for speech synthesis
+  const detectLanguageForSpeech = (text: string, defaultLang: string = 'en-US'): string => {
+    // Simple heuristic: if text contains mostly English grammar terms, use English
+    const englishGrammarTerms = /\b(verb|noun|adjective|adverb|subject|object|predicate|tense|grammar|sentence|phrase|word|definition|example|pattern|structure|rule|conjugation|declension|article|pronoun|preposition|conjunction|syntax|morphology|phonology|linguistics|language|english|explanation|means|used|refers|indicates|describes|expresses|form|past|present|future|singular|plural|case|gender|number|person|voice|mood|aspect|conditional|subjunctive|imperative|infinitive|gerund|participle|clause|dependent|independent|relative|subordinate|compound|complex|simple|active|passive|direct|indirect|transitive|intransitive|auxiliary|modal|regular|irregular|comparative|superlative|positive|negative|interrogative|declarative|exclamatory|affirmative)\b/gi;
+    
+    const matches = text.match(englishGrammarTerms);
+    const englishTermsCount = matches ? matches.length : 0;
+    const totalWords = text.split(/\s+/).length;
+    
+    // If more than 15% of words are English grammar terms, use English
+    if (englishTermsCount > 0 && (englishTermsCount / totalWords) > 0.15) {
+      return 'en-US';
+    }
+    
+    // Check if text contains mostly English characters and common English words
+    const englishWords = /\b(the|and|or|but|in|on|at|to|for|of|with|by|from|about|into|through|during|before|after|above|below|up|down|out|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|can|will|just|should|now|this|that|these|those|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|get|got|getting|go|goes|went|going|make|makes|made|making|take|takes|took|taking|come|comes|came|coming|see|sees|saw|seeing|know|knows|knew|knowing|think|thinks|thought|thinking|say|says|said|saying|tell|tells|told|telling|ask|asks|asked|asking|work|works|worked|working|seem|seems|seemed|seeming|feel|feels|felt|feeling|try|tries|tried|trying|leave|leaves|left|leaving|call|calls|called|calling)\b/gi;
+    
+    const englishMatches = text.match(englishWords);
+    const englishWordsCount = englishMatches ? englishMatches.length : 0;
+    
+    // If more than 30% of words are common English words, use English
+    if (englishWordsCount > 0 && (englishWordsCount / totalWords) > 0.30) {
+      return 'en-US';
+    }
+    
+    // Otherwise use the default language
+    return defaultLang;
   };
 
   const doTranslate = (text: string) => {
@@ -392,11 +422,11 @@ export default function PronunciationCoachUI() {
             
             {/* Tab Navigation */}
             <div className="border-b border-gray-200">
-              <nav className="flex space-x-8 px-6 pt-4" aria-label="Tabs">
+              <nav className="flex space-x-4 px-6 pt-4" aria-label="Tabs">
                 {[
-                  { id: 'drill', label: '🎯 Drill Items', description: 'Practice pronunciation' },
-                  { id: 'vocabulary', label: '📖 Vocabulary', description: 'Word definitions' },
-                  { id: 'grammar', label: '📝 Grammar', description: 'Language patterns' },
+                  { id: 'drill', label: '🎯 Drill', description: 'Practice pronunciation', fullLabel: 'Drill Items' },
+                  { id: 'vocabulary', label: '📖 Vocab', description: 'Word definitions', fullLabel: 'Vocabulary' },
+                  { id: 'grammar', label: '📝 Grammar', description: 'Language patterns', fullLabel: 'Grammar' },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -405,8 +435,9 @@ export default function PronunciationCoachUI() {
                       activeRightTab === tab.id
                         ? 'border-blue-500 text-blue-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    } whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}
+                    } whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm transition-colors flex-1`}
                     aria-current={activeRightTab === tab.id ? 'page' : undefined}
+                    title={tab.fullLabel}
                   >
                     <div className="text-center">
                       <div>{tab.label}</div>
@@ -644,7 +675,8 @@ export default function PronunciationCoachUI() {
                           onClick={() => {
                             if ('speechSynthesis' in window) {
                               const utterance = new SpeechSynthesisUtterance(extendedDeck.grammarBrief);
-                              utterance.lang = currentDeck?.lang || 'en-US';
+                              // Use language detection for grammar explanations
+                              utterance.lang = detectLanguageForSpeech(extendedDeck.grammarBrief, currentDeck?.lang || 'en-US');
                               utterance.rate = 0.8; // Slower for grammar explanation
                               speechSynthesis.speak(utterance);
                             }
@@ -682,6 +714,7 @@ export default function PronunciationCoachUI() {
                         const word = extendedDeck.vocabulary[selectedVocabIndex]?.word;
                         if (word && 'speechSynthesis' in window) {
                           const utterance = new SpeechSynthesisUtterance(word);
+                          // Vocabulary words should use the target language (what the user is learning)
                           utterance.lang = currentDeck?.lang || 'en-US';
                           speechSynthesis.speak(utterance);
                         }

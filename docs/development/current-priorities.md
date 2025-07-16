@@ -12,12 +12,26 @@
 
 ### **Deck Enhancement Wizard Polish** 🔧
 1. **Add "New Folder" to folder selection**: Avoid multi-step route for new folder creation
-2. **Sweet G-V indicators in Deck Manager**: Bring 📖V 📝G 💡B/I/A indicators to main deck list
+2. ✅ **Sweet G-V indicators in Deck Manager**: Bring 📖V 📝G 💡B/I/A indicators to main deck list
 3. **Tabbed layout for long drills**: Prevent tall forms with tabs (Content | Enhancement Options | Folder Selection)
-4. **Group deck selection by folder**: Organize long dropdown lists by folders
-5. **Add legend/hover info**: Explain what V/G/I indicators mean
+4. ✅ **Group deck selection by folder**: Organize long dropdown lists by folders
+5. ✅ **Add legend/hover info**: Explain what V/G/I indicators mean
 
 *Captured: 2025-07-16 - User feedback after successful implementation*
+
+### **Coach UI Follow-up Items** 🎤
+1. **Tab width optimization**: How to fit more tabs on students' pane? 
+   - Shortened tab text + hover feedback expansion?
+   - Make pane wider?
+   - Introduce "active pane" concept (wide active, narrow inactive)?
+2. **Grammar translation language mixing**: German phrases read with heavy English accent or vice versa
+   - Need 4o to change pattern for grammar to fit our concept
+   - Currently using language detection heuristics as temporary fix
+3. **Vocabulary translation/read-out language confusion**: Same mixing issue as grammar
+   - Vocabulary words vs definitions using different languages
+   - Need better AI prompt engineering for language-specific content
+
+*Captured: 2025-07-16 - User feedback after coach UI improvements*
 
 ### **Coach UI Polish** 🎤
 1. ✅ **Remove redundant top tab bar**: Student pane tabs duplicate top navigation
