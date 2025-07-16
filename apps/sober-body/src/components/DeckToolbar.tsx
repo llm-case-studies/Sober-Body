@@ -38,21 +38,21 @@ export default function DeckToolbar({
     if (supportsDir) {
       try {
         const last = await getLastDir(db)
-        const dir = await (window as any).showDirectoryPicker({
+        const dir: FileSystemDirectoryHandle = await window.showDirectoryPicker({
           startIn: last ?? "documents",
         })
-        const fileHandles: any[] = []
+        const fileHandles: FileSystemFileHandle[] = []
         for await (const h of dir.values()) {
           if (h.kind === "file" && h.name.endsWith(".json"))
-            fileHandles.push(h)
+            fileHandles.push(h as FileSystemFileHandle)
         }
-        const files = await Promise.all(fileHandles.map((h: any) => h.getFile()))
+        const files = await Promise.all(fileHandles.map((h: FileSystemFileHandle) => h.getFile()))
         if (files.length) {
-          await saveLastDir(db, dir as any)
+          await saveLastDir(db, dir)
           await handleFolderFiles(files)
         }
         return
-      } catch (e: any) {
+      } catch (e: DOMException) {
         if (e?.name === "AbortError") return
         /* fall back */
       }
@@ -83,7 +83,7 @@ export default function DeckToolbar({
         }
         await handleZipImport(file)
         return
-      } catch (e: any) {
+      } catch (e: DOMException) {
         if (e?.name === "AbortError") return
         /* fall back */
       }
@@ -102,7 +102,7 @@ export default function DeckToolbar({
           ],
           startIn: last,
         })
-        const files = await Promise.all(handles.map((h: any) => h.getFile()))
+        const files = await Promise.all(handles.map((h: FileSystemFileHandle) => h.getFile()))
         if (files.length) {
           // Save the parent directory of the first file
           if (handles[0].getParent) {
@@ -117,7 +117,7 @@ export default function DeckToolbar({
           onFile(files[0])
         }
         return
-      } catch (e: any) {
+      } catch (e: DOMException) {
         if (e?.name === "AbortError") return
         /* fall back */
       }
@@ -132,7 +132,8 @@ export default function DeckToolbar({
     }
     const blob = await exportZip(decks, briefs)
     const url = URL.createObjectURL(blob)
-    const a = Object.assign(document.createElement('a'), {
+    const a = document.createElement('a')
+    Object.assign(a, {
       href: url,
       download: 'decks.zip',
     })
@@ -152,7 +153,7 @@ export default function DeckToolbar({
         type="file"
         accept="application/json"
         className="hidden"
-        onChange={e => {
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           if (e.target.files && e.target.files[0]) {
             onFile(e.target.files[0])
             e.target.value = ""
@@ -169,10 +170,10 @@ export default function DeckToolbar({
         webkitdirectory=""
         multiple
         className="hidden"
-        onChange={e => {
-          if (!e.target.files) return
-          handleFolderFiles(e.target.files)
-          e.target.value = ""
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          if (!files) return
+          handleFolderFiles(Array.from(files))
+          files.value = ""
         }}
       />
       <button className="border px-2 cursor-pointer" onClick={pickZip}>
@@ -183,7 +184,7 @@ export default function DeckToolbar({
         type="file"
         accept="application/zip"
         className="hidden"
-        onChange={e => {
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           if (e.target.files && e.target.files[0]) {
             handleZipImport(e.target.files[0])
             e.target.value = ""

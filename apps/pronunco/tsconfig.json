@@ -10,7 +10,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "ui": ["../../packages/ui/src"]
+      "ui": ["../../packages/ui/src", "../../packages/ui/src/components"]
     }
   },
   "include": ["src", "test", "__tests__"]

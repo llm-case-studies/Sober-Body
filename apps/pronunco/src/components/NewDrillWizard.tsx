@@ -8,11 +8,13 @@ import { saveDeck } from '../../../sober-body/src/features/games/deck-storage';
 import GrammarModal from './GrammarModal';
 import { toast } from '../toast';
 import { useSettings } from '../features/core/settings-context';
+import { useIsMobile } from 'ui';
 
 type WizardMode = 'setup' | 'generating' | 'preview' | 'offline' | 'paywall' | 'manual' | 'text-analysis';
 
 export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose:()=>void }) {
   const { settings } = useSettings();
+  const isMobile = useIsMobile();
   const [step,setStep]=useState(1);
   const [mode, setMode] = useState<WizardMode>('setup');
   const [topic,setTopic]=useState('');
@@ -242,7 +244,7 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white p-6 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto space-y-4">
+      <div className={`bg-white ${isMobile ? 'p-4' : 'p-6'} rounded-lg w-full ${isMobile ? 'max-w-full' : 'max-w-4xl'} max-h-[90vh] overflow-y-auto space-y-4`}>
         <div className="flex justify-between items-center">
           <h2 className="font-semibold">New Drill</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
@@ -256,15 +258,15 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Mode Selection
                 </label>
-                <div className="flex space-x-4 mb-4">
+                <div className={`${isMobile ? 'flex flex-col space-y-2' : 'flex space-x-4'} mb-4`}>
                   <button 
-                    className={`px-4 py-2 rounded border ${step === 1 ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                    className={`px-4 ${isMobile ? 'py-3' : 'py-2'} rounded border ${step === 1 ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
                     onClick={() => setStep(1)}
                   >
                     Generate from Topic
                   </button>
                   <button 
-                    className={`px-4 py-2 rounded border ${step === 3 ? 'bg-green-500 text-white' : 'bg-gray-100'}`}
+                    className={`px-4 ${isMobile ? 'py-3' : 'py-2'} rounded border ${step === 3 ? 'bg-green-500 text-white' : 'bg-gray-100'}`}
                     onClick={() => setStep(3)}
                   >
                     Analyze Existing Text
@@ -359,9 +361,9 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
                 Auto-generate requires an internet connection. You can still type grammar & lines manually or try again once you're back online.
               </p>
             </div>
-            <div className="flex space-x-2">
+            <div className={`${isMobile ? 'flex flex-col space-y-2' : 'flex space-x-2'}`}>
               <button 
-                className="flex-1 border px-4 py-2 rounded hover:bg-gray-50" 
+                className={`flex-1 border px-4 ${isMobile ? 'py-3' : 'py-2'} rounded hover:bg-gray-50`} 
                 onClick={goManual}
               >
                 Go Manual
@@ -385,9 +387,9 @@ export default function NewDrillWizard({ open, onClose }:{ open:boolean; onClose
                 AI-generated drills are part of the Pro plan ($4.99/mo).
               </p>
             </div>
-            <div className="flex space-x-2">
+            <div className={`${isMobile ? 'flex flex-col space-y-2' : 'flex space-x-2'}`}>
               <button 
-                className="flex-1 border px-4 py-2 rounded hover:bg-gray-50" 
+                className={`flex-1 border px-4 ${isMobile ? 'py-3' : 'py-2'} rounded hover:bg-gray-50`} 
                 onClick={goManual}
               >
                 Go Manual

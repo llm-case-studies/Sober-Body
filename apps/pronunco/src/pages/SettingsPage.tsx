@@ -3,11 +3,13 @@ import { useSettings } from '../features/core/settings-context';
 import { LANGS } from '../../../../packages/pronunciation-coach/src/langs';
 import { db } from '../db';
 import { toast } from '../toast';
+import { useIsMobile } from 'ui';
 
 export default function SettingsPage() {
   const { settings, setSettings } = useSettings();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleUpgrade = () => {
     setSettings(prev => ({ ...prev, isPro: true }));
@@ -49,15 +51,15 @@ export default function SettingsPage() {
   const hasAzureKey = !!import.meta.env.VITE_AZURE_SPEECH_KEY;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-2xl mx-auto px-6">
+    <div className={`min-h-screen bg-gray-50 ${isMobile ? 'py-4' : 'py-8'}`}>
+      <div className={`${isMobile ? 'max-w-full mx-4' : 'max-w-2xl mx-auto px-6'}`}>
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           {/* Header */}
-          <div className="p-6 border-b border-gray-200">
-            <h1 className="text-3xl font-bold text-gray-900">⚙️ Settings</h1>
+          <div className={`${isMobile ? 'p-4' : 'p-6'} border-b border-gray-200`}>
+            <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-gray-900`}>⚙️ Settings</h1>
           </div>
 
-          <div className="p-6 space-y-8">
+          <div className={`${isMobile ? 'p-4 space-y-6' : 'p-6 space-y-8'}`}>
             {/* Account Section */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
@@ -76,7 +78,7 @@ export default function SettingsPage() {
                   {!settings.isPro && (
                     <button
                       onClick={() => setShowUpgradeModal(true)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
+                      className={`px-4 ${isMobile ? 'py-3 text-base' : 'py-2'} bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors`}
                     >
                       Upgrade →
                     </button>

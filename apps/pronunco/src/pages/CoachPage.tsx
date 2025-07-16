@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import { PronunciationCoachUI } from 'coach-ui'
 import { useDeck, useDecks } from '../../../sober-body/src/features/games/deck-context'
+import { useIsMobile } from 'ui'
+import CoachMobile from '../components/CoachMobile'
 
 type TabType = 'drill' | 'vocabulary' | 'grammar' | 'overview';
 
@@ -10,6 +12,7 @@ export default function CoachPage() {
   const { decks, setActiveDeck } = useDecks()
   const deck = useDeck(deckId)
   const [activeTab, setActiveTab] = useState<TabType>('drill')
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     if (deck) setActiveDeck(deck.id)
@@ -23,7 +26,7 @@ export default function CoachPage() {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'drill':
-        return <PronunciationCoachUI />
+        return isMobile ? <CoachMobile /> : <PronunciationCoachUI />
       
       case 'vocabulary':
         return (
