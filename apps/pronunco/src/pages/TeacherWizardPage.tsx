@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useIsMobile } from 'ui';
 import NewDrillWizard from '../components/NewDrillWizard';
 
 export default function TeacherWizardPage() {
   const [showWizard, setShowWizard] = useState(false);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
-      <div className="max-w-4xl mx-auto px-6">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-6">🧙‍♂️ Teacher Drill Wizard</h1>
+    <div className={`min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 ${isMobile ? 'py-4' : 'py-8'}`}>
+      <div className={`${isMobile ? 'max-w-full mx-4' : 'max-w-4xl mx-auto px-6'}`}>
+        <div className={`bg-white rounded-lg shadow-lg ${isMobile ? 'p-4' : 'p-8'}`}>
+          <h1 className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-bold text-gray-900 mb-6`}>🧙‍♂️ Teacher Drill Wizard</h1>
           
           <div className="space-y-6">
-            <p className="text-lg text-gray-700">
+            <p className={`${isMobile ? 'text-base' : 'text-lg'} text-gray-700`}>
               Welcome to the Teacher Drill Wizard! Create engaging pronunciation drills for your students with AI assistance.
             </p>
             
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className={`grid ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2'} gap-6`}>
               <div className="bg-blue-50 rounded-lg p-6">
                 <h2 className="text-xl font-semibold text-blue-900 mb-3">✨ Create New Drill</h2>
                 <p className="text-blue-700 mb-4">
@@ -25,7 +27,7 @@ export default function TeacherWizardPage() {
                 </p>
                 <button
                   onClick={() => setShowWizard(true)}
-                  className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors font-medium"
+                  className={`w-full px-6 ${isMobile ? 'py-4 text-lg' : 'py-3'} bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors font-medium`}
                 >
                   🚀 Launch Drill Creator
                 </button>
@@ -37,8 +39,8 @@ export default function TeacherWizardPage() {
                   Organize your drills into folders, import content, and manage your lesson library.
                 </p>
                 <button
-                  onClick={() => navigate('/decks')}
-                  className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors font-medium"
+                  onClick={() => navigate(isMobile ? '/m/decks' : '/decks')}
+                  className={`w-full px-6 ${isMobile ? 'py-4 text-lg' : 'py-3'} bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none transition-colors font-medium`}
                 >
                   📁 Open Deck Manager
                 </button>

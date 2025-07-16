@@ -21,8 +21,7 @@ const DeckCard: React.FC<DeckCardProps> = ({ deck }) => {
   const navigate = useNavigate();
   
   // Handler for the drill button
-  const handleDrillClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent the whole card from being "clicked"
+  const handleDrillClick = () => {
     navigate(`/m/coach/${deck.id}`);
   };
 
@@ -38,24 +37,27 @@ const DeckCard: React.FC<DeckCardProps> = ({ deck }) => {
       onTouchStart={handleLongPress} // Simple long-press placeholder
       onContextMenu={(e) => e.preventDefault()} // Prevents context menu on long press
     >
-      <CardHeader className="flex flex-row items-center justify-between p-4">
-        <div>
-          <CardTitle className="text-lg">{deck.title}</CardTitle>
-          <p className="text-sm text-muted-foreground">{deck.language}</p>
+      <CardHeader className="p-4 pb-2">
+        <div className="flex flex-row items-center justify-between">
+          <div className="flex-1">
+            <CardTitle className="text-lg">{deck.title}</CardTitle>
+            <p className="text-sm text-muted-foreground">{deck.language}</p>
+          </div>
         </div>
+      </CardHeader>
+      <CardContent className="px-4 pb-4">
         <Button
-          variant="ghost"
-          size="icon"
           onClick={handleDrillClick}
-          aria-label={`Start drill for ${deck.title}`}
+          className="w-full h-11 text-base font-medium"
+          aria-label={`Start practice with ${deck.title}`}
         >
-          {/* Using a simple play icon placeholder. Replace with an actual SVG icon component if available */}
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
+          Start Practice
         </Button>
-      </CardHeader>
+      </CardContent>
     </Card>
   );
 };

@@ -7,3 +7,6 @@ apps/*/dist
 
 # UI Screenshots (local development only)
 docs/ui-screenshots/
+
+# AI chats sessions (local development only)
+docs/AI-Cli-chats/

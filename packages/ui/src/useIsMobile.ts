@@ -5,19 +5,24 @@ export function useIsMobile(maxWidth: number = 640) {
 
   useEffect(() => {
     const checkDevice = () => {
-      const match = window.matchMedia(`(max-width: ${maxWidth}px)`).matches;
-      if (match !== isMobile) {
-        setIsMobile(match);
+      // Check if matchMedia is available (not available in test environments)
+      if (typeof window !== 'undefined' && window.matchMedia) {
+        const match = window.matchMedia(`(max-width: ${maxWidth}px)`).matches;
+        if (match !== isMobile) {
+          setIsMobile(match);
+        }
       }
     };
 
     checkDevice();
 
-    window.addEventListener('resize', checkDevice);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', checkDevice);
 
-    return () => {
-      window.removeEventListener('resize', checkDevice);
-    };
+      return () => {
+        window.removeEventListener('resize', checkDevice);
+      };
+    }
   }, [isMobile, maxWidth]);
 
   return isMobile;

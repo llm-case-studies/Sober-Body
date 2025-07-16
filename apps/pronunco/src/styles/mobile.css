@@ -3,3 +3,93 @@
   padding-left: 1rem;
   padding-right: 1rem;
 }
+
+/* Mobile-specific button and card styles */
+.mobile-deck-card {
+  margin-bottom: 1rem;
+}
+
+.mobile-deck-card .card-content {
+  padding-top: 0;
+}
+
+.mobile-action-button {
+  min-height: 44px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Mobile settings optimizations */
+@media (max-width: 640px) {
+  /* Make all buttons larger and more touch-friendly on mobile */
+  button {
+    min-height: 44px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+  }
+  
+  /* Make select elements larger */
+  select {
+    min-height: 44px !important;
+    padding: 0.75rem !important;
+    font-size: 1rem !important;
+  }
+  
+  /* Make input elements larger */
+  input[type="range"] {
+    height: 44px !important;
+  }
+  
+  /* Improve spacing between settings items */
+  .space-y-4 > * + * {
+    margin-top: 1.5rem !important;
+  }
+  
+  /* Stack items vertically on mobile in settings */
+  .flex.items-center.justify-between {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+  
+  /* Make settings sections more readable */
+  .ml-8 {
+    margin-left: 1rem !important;
+  }
+  
+  /* Force single-column layouts on mobile */
+  .flex.flex-row {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+  
+  /* Override flex space-x classes on mobile */
+  .flex.space-x-2,
+  .flex.space-x-4,
+  .flex.space-x-6 {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  
+  /* Override specific gap classes that maintain horizontal layout */
+  .gap-12,
+  .gap-8,
+  .gap-6 {
+    gap: 1rem !important;
+  }
+  
+  /* Override inline width styles that prevent mobile layout */
+  div[style*="minWidth"],
+  div[style*="maxWidth"] {
+    min-width: auto !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  
+  /* Make sure flex items don't have fixed widths on mobile */
+  .flex-1 {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: auto !important;
+  }
+}
