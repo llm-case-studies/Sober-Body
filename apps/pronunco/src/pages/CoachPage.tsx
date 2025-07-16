@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, Navigate } from 'react-router-dom'
+import { useParams, Navigate, useLocation } from 'react-router-dom'
 import { PronunciationCoachUI } from 'coach-ui'
 import { useDeck, useDecks } from '../../../sober-body/src/features/games/deck-context'
 import { useIsMobile } from 'ui'
@@ -12,13 +12,21 @@ export default function CoachPage() {
   const { decks, setActiveDeck } = useDecks()
   const deck = useDeck(deckId)
   const [activeTab, setActiveTab] = useState<TabType>('drill')
+  const location = useLocation()
   const isMobile = useIsMobile()
+  
+  // Force mobile view if on /m/ route
+  const forceMobile = location.pathname.startsWith('/m/')
+  const useMobileView = isMobile || forceMobile
 
   useEffect(() => {
     if (deck) setActiveDeck(deck.id)
   }, [deck, setActiveDeck])
 
-  if (decks.length > 0 && !deck) return <Navigate to="/decks" replace />
+  if (decks.length > 0 && !deck) {
+    const redirectTo = forceMobile ? "/m/decks" : "/decks";
+    return <Navigate to={redirectTo} replace />;
+  }
 
   // Extended deck interface to handle additional fields from wizard
   const extendedDeck = deck as any; // Will contain grammarBrief, vocabulary, complexityLevel if present
@@ -26,7 +34,7 @@ export default function CoachPage() {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'drill':
-        return isMobile ? <CoachMobile /> : <PronunciationCoachUI />
+        return useMobileView ? <CoachMobile /> : <PronunciationCoachUI />
       
       case 'vocabulary':
         return (

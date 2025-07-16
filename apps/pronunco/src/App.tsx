@@ -54,7 +54,8 @@ function AppRoutes() {
   const location = useLocation();
   const isMobile = useIsMobile();
 
-  const isMobileView = isMobile || settings.enableMobileBeta || location.pathname.startsWith('/m/');
+  // Only force mobile if explicitly on /m/ routes or mobile device + beta enabled
+  const isMobileView = location.pathname.startsWith('/m/') || (isMobile && settings.enableMobileBeta);
 
   // Dynamically import mobile CSS only when needed
   useEffect(() => {
@@ -72,7 +73,8 @@ function AppRoutes() {
           <Route path="/m/c/:data" element={<ChallengePage />} />
           <Route path="/m/settings" element={<SettingsPage />} />
           <Route path="/m/teacher-wizard" element={<TeacherWizardPage />} />
-          <Route path="*" element={<Navigate to="/m/decks" replace />} />
+          <Route path="/m/*" element={<Navigate to="/m/decks" replace />} />
+          <Route path="/*" element={<Navigate to="/decks" replace />} />
         </Routes>
       </MobileShell>
     );

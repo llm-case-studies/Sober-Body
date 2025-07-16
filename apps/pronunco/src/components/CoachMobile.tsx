@@ -16,43 +16,13 @@ const CoachMobile: React.FC = () => {
         padding: 0 !important;
       }
       
-      .mobile-coach-wrapper .flex-row,
-      .mobile-coach-wrapper .flex.flex-row,
-      .mobile-coach-wrapper div.flex {
-        flex-direction: column !important;
-        gap: 1rem !important;
-        display: flex !important;
-      }
+      /* Layout fixes now handled in core component */
       
       .mobile-coach-wrapper .min-h-\\[600px\\] {
         min-height: auto !important;
       }
       
-      /* Override inline styles with !important */
-      .mobile-coach-wrapper div[style*="minWidth"] {
-        min-width: auto !important;
-        max-width: 100% !important;
-        width: 100% !important;
-      }
-      
-      /* Make the panels stack vertically and adjust sizes */
-      .mobile-coach-wrapper > div > div > div:first-child,
-      .mobile-coach-wrapper .flex-1:first-child {
-        max-height: 75vh !important;
-        max-width: 100% !important;
-        min-width: auto !important;
-        margin-bottom: 1rem !important;
-        flex: none !important;
-        width: 100% !important;
-      }
-      
-      .mobile-coach-wrapper > div > div > div:last-child,
-      .mobile-coach-wrapper .flex-1:last-child {
-        max-width: 100% !important;
-        min-width: auto !important;
-        flex: none !important;
-        width: 100% !important;
-      }
+      /* Width constraints now handled in core component */
       
       /* Adjust text areas for mobile */
       .mobile-coach-wrapper textarea {
