@@ -471,23 +471,67 @@ Generate a JSON object with THREE difficulty levels:
                       onChange={e => setSelectedDeckId(e.target.value)}
                     >
                       <option value="">Choose a deck... ({decks.length} available)</option>
-                      {decks.map(deck => {
-                        const extendedDeck = deck as any; // Type cast to access extended fields
-                        const hasVocab = extendedDeck.vocabulary && extendedDeck.vocabulary.length > 0;
-                        const hasGrammar = extendedDeck.grammarBrief && extendedDeck.grammarBrief.trim();
-                        const difficulty = extendedDeck.complexityLevel || 'Unknown';
+                      {(() => {
+                        // Group decks by folder
+                        const folderMap = new Map<string, typeof decks>();
+                        const unorganizedDecks: typeof decks = [];
                         
-                        const indicators = [];
-                        if (hasVocab) indicators.push('📖V');
-                        if (hasGrammar) indicators.push('📝G');
-                        indicators.push(`💡${difficulty.charAt(0)}`);
+                        decks.forEach(deck => {
+                          const folderTag = deck.tags?.find(tag => tag.startsWith('folder:'));
+                          if (folderTag) {
+                            const folderId = folderTag.replace('folder:', '');
+                            if (!folderMap.has(folderId)) {
+                              folderMap.set(folderId, []);
+                            }
+                            folderMap.get(folderId)!.push(deck);
+                          } else {
+                            unorganizedDecks.push(deck);
+                          }
+                        });
                         
-                        return (
-                          <option key={deck.id} value={deck.id}>
-                            {deck.title} ({deck.lang}) - {deck.lines?.length || 0} phrases {indicators.length > 0 ? `[${indicators.join(' ')}]` : '[Basic]'}
-                          </option>
-                        );
-                      })}
+                        const renderDeckOption = (deck: typeof decks[0]) => {
+                          const extendedDeck = deck as any;
+                          const hasVocab = extendedDeck.vocabulary && extendedDeck.vocabulary.length > 0;
+                          const hasGrammar = extendedDeck.grammarBrief && extendedDeck.grammarBrief.trim();
+                          const difficulty = extendedDeck.complexityLevel || 'Unknown';
+                          
+                          const indicators = [];
+                          if (hasVocab) indicators.push('📖V');
+                          if (hasGrammar) indicators.push('📝G');
+                          indicators.push(`💡${difficulty.charAt(0)}`);
+                          
+                          return (
+                            <option key={deck.id} value={deck.id}>
+                              {deck.title} ({deck.lang}) - {deck.lines?.length || 0} phrases {indicators.length > 0 ? `[${indicators.join(' ')}]` : '[Basic]'}
+                            </option>
+                          );
+                        };
+                        
+                        const elements = [];
+                        
+                        // Add folder groups
+                        Array.from(folderMap.entries()).forEach(([folderId, folderDecks]) => {
+                          const folder = folders.find(f => f.id === folderId);
+                          const folderName = folder?.name || 'Unknown Folder';
+                          
+                          elements.push(
+                            <optgroup key={folderId} label={`📁 ${folderName}`}>
+                              {folderDecks.map(renderDeckOption)}
+                            </optgroup>
+                          );
+                        });
+                        
+                        // Add unorganized decks
+                        if (unorganizedDecks.length > 0) {
+                          elements.push(
+                            <optgroup key="unorganized" label="📂 Unorganized">
+                              {unorganizedDecks.map(renderDeckOption)}
+                            </optgroup>
+                          );
+                        }
+                        
+                        return elements;
+                      })()}
                     </select>
                     {decks.length === 0 && (
                       <p className="text-sm text-gray-500 mt-1">

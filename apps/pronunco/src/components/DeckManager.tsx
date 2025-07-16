@@ -21,6 +21,32 @@ import DeckEditor from "./DeckEditor";
 import { useSettings } from "../features/core/settings-context";
 import type { Deck } from "../../../sober-body/src/features/games/deck-types";
 
+// Helper function to generate metadata indicators
+const getDeckMetadataIndicators = (deck: Deck): string => {
+  const indicators = [];
+  const extendedDeck = deck as any;
+  
+  // Vocabulary indicator
+  if (extendedDeck.vocabulary?.length > 0) {
+    indicators.push('📖V');
+  }
+  
+  // Grammar indicator
+  if (extendedDeck.grammarBrief) {
+    indicators.push('📝G');
+  }
+  
+  // Difficulty indicator
+  if (extendedDeck.complexityLevel) {
+    const level = extendedDeck.complexityLevel.toLowerCase();
+    if (level === 'basic') indicators.push('💡B');
+    else if (level === 'intermediate') indicators.push('💡I');
+    else if (level === 'advanced') indicators.push('💡A');
+  }
+  
+  return indicators.join(' ');
+};
+
 const backgroundThemes = [
   'bg-gradient-to-br from-blue-100 via-indigo-100 to-cyan-100',
   'bg-gradient-to-br from-slate-100 via-gray-100 to-blue-100',
@@ -645,7 +671,17 @@ export default function DeckManager() {
               <div key={d.id} className="flex items-center gap-4 p-2 border-t">
                 <input type="checkbox" aria-label={`Select deck ${d.title}`} checked={selectedIds.has(d.id)} onChange={() => toggleId(d.id)} />
                 <div className="flex-1">
-                  <div className="font-bold">{d.title}</div>
+                  <div className="flex items-center gap-2">
+                    <div className="font-bold">{d.title}</div>
+                    {getDeckMetadataIndicators(d) && (
+                      <span 
+                        className="text-sm text-gray-600 font-medium cursor-help"
+                        title="📖V = Vocabulary available, 📝G = Grammar explanation, 💡B/I/A = Basic/Intermediate/Advanced difficulty"
+                      >
+                        {getDeckMetadataIndicators(d)}
+                      </span>
+                    )}
+                  </div>
                   <div className="text-sm text-gray-500">{d.lang}</div>
                 </div>
                 
