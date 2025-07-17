@@ -21,6 +21,31 @@ See `docs/AI-COLLAB.md` for multi-AI workflow.
 5. **CI**: GitHub Actions in `.github/workflows/ci.yml` must pass.
 6. **Docs**: Update `BACKLOG.md` check‑box and relevant white‑paper links if scope changes.
 
+## 2.1 · Branch Strategy
+
+**Use organized branch prefixes by main concern area:**
+
+```
+deployment/         # All deployment-related features
+cloud-services/     # External service integrations (Azure, OpenAI, etc.)
+core-features/      # Main app functionality and user features
+mobile/            # Mobile-specific improvements and PWA
+docs/              # Documentation updates and architecture
+```
+
+**Examples:**
+- `cloud-services/azure-speech-system` - Azure Speech Assessment integration
+- `deployment/nginx-docker` - Docker deployment pipeline
+- `core-features/sound-muscle-memory` - New pronunciation training system
+- `mobile/pwa-offline-mode` - Offline pronunciation practice
+- `docs/api-documentation` - Technical documentation updates
+
+**Benefits:**
+- Clear separation of concerns for easier review
+- Helps AI contributors understand scope and context
+- Prevents mixing unrelated changes in single PRs
+- Makes branch purpose immediately obvious
+
 ---
 
 ## 3 · Repository Layout (TL;DR)
