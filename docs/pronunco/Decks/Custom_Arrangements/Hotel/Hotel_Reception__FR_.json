@@ -4,7 +4,8 @@
   "lang": "fr",
   "tags": [
     "official",
-    "cat:hotel"
+    "cat:hotel",
+    "folder:941b6b24-cd5a-43d3-9542-b251ea18ab85"
   ],
   "lines": [
     "J’ai une réservation au nom de...",
@@ -12,5 +13,6 @@
     "À quelle heure est le check-out ?",
     "Pourrais-je avoir le mot de passe Wi-Fi ?",
     "Avez-vous un service d’étage ?"
-  ]
+  ],
+  "updated": 1752549416668
 }

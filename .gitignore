@@ -10,3 +10,6 @@ docs/ui-screenshots/
 
 # AI chats sessions (local development only)
 docs/AI-Cli-chats/
+
+# Local Netlify folder
+.netlify

@@ -1,10 +1,11 @@
 # Current Development Priorities
 
 ## Active Work Stream
-**Status**: 🚀 IMPLEMENTING - Coach Desktop UI Enhancements
-**Started**: 2025-07-16
+**Status**: 🔧 FIXING - GitHub Deployment Pipeline
+**Started**: 2025-07-17
 
 ## Shelved/Interrupted Work
+- **Coach Desktop UI Enhancements**: 3-tabbed right panel completed, ready for next PR
 - **Mobile UI refinements**: Two-column coach layout issues documented in PR
 - **Device testing**: Mobile layouts on actual devices (low priority)
 
@@ -32,6 +33,29 @@
    - Need better AI prompt engineering for language-specific content
 
 *Captured: 2025-07-16 - User feedback after coach UI improvements*
+
+### **Technical Debt** 🔧
+1. **Fix TypeScript build errors**: Currently skipping TS checks for deployment
+   - Source code has type errors (missing properties, module imports)
+   - Need to fix type definitions and imports
+   - ~25 TypeScript errors to resolve
+2. **Clean up test files**: Some test files have outdated imports/types
+   - Already excluded from build, but should be fixed for development
+
+*Captured: 2025-07-16 - Build deployment preparation*
+
+### **GitHub Deployment Pipeline Issues** 🚀
+1. ✅ **Claude CLI VS Code extension**: Fixed corrupted VSIX file issue
+2. **GitHub CLI authentication**: `gh` commands failing with git permissions
+   - Cannot access GitHub Actions runs or create PRs via CLI
+   - Need to fix authentication/permissions
+3. **Missing deployment automation**: No automated Netlify deployment
+   - Currently manual drag-and-drop via `deploy-to-netlify.html`
+   - Need `netlify.toml` configuration
+   - Need GitHub Actions workflow for deployment
+4. **Netlify plugin failures**: GitHub plugin checks blocking git pushes
+
+*Captured: 2025-07-17 - Deployment pipeline investigation*
 
 ### **Coach UI Polish** 🎤
 1. ✅ **Remove redundant top tab bar**: Student pane tabs duplicate top navigation

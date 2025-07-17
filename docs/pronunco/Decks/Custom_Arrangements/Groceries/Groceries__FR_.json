@@ -4,7 +4,8 @@
   "lang": "fr",
   "tags": [
     "official",
-    "cat:groceries"
+    "cat:groceries",
+    "folder:da504270-cd44-4404-816d-de170121020c"
   ],
   "lines": [
     "Où est le rayon des produits laitiers ?",
@@ -12,5 +13,6 @@
     "Acceptez-vous la carte de crédit ?",
     "Pouvez-vous peser ces pommes, s’il vous plaît ?",
     "Avez-vous des sacs réutilisables ?"
-  ]
+  ],
+  "updated": 1752549416671
 }

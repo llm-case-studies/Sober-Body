@@ -1,0 +1,39 @@
+{
+  "id": "996a5da7-a23c-4768-a672-aed9c44fbe35",
+  "title": "Uso e Benefícios do Computador",
+  "lang": "pt-BR",
+  "lines": [
+    "O computador é uma máquina muito útil.",
+    "Com ele, podemos escrever textos, ver vídeos, jogar, fazer pesquisas e conversar com outras pessoas.",
+    "Muitas escolas e empresas usam computadores para estudar e trabalhar.",
+    "Ele pode ser de mesa, como os que ficam em escritórios, ou portátil, como os notebooks."
+  ],
+  "grammarBrief": "Este texto destaca o uso do presente do indicativo para descrever hábitos e características: 'é', 'podemos', 'usam'. O uso do artigo definido 'o' em 'O computador' identifica um sujeito específico. Frases simples e compostas, como 'Com ele, podemos escrever textos, ver vídeos, jogar, fazer pesquisas e conversar com outras pessoas', utilizam conjunções para listar ações. Exemplos incluem o uso da conjunção 'ou' para contrastar tipos de computadores: 'de mesa, como os que ficam em escritórios, ou portátil'.",
+  "vocabulary": [
+    {
+      "word": "computador",
+      "definition": "Aparelho eletrônico usado para processar dados e executar tarefas."
+    },
+    {
+      "word": "máquina",
+      "definition": "Dispositivo criado para realizar um trabalho específico."
+    },
+    {
+      "word": "útil",
+      "definition": "Que tem utilidade, que serve para alguma coisa."
+    },
+    {
+      "word": "pesquisas",
+      "definition": "Atividades de busca e investigação de informações."
+    },
+    {
+      "word": "portátil",
+      "definition": "Que pode ser transportado facilmente; móvel."
+    }
+  ],
+  "complexityLevel": "Intermediário",
+  "tags": [
+    "folder:folder_1752706957449"
+  ],
+  "updated": 1752707752979
+}

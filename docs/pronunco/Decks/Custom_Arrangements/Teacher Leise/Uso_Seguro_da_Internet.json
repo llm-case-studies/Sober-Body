@@ -1,0 +1,54 @@
+{
+  "id": "7081028c-2007-43fc-9779-dd10381c1eb4",
+  "title": "Uso Seguro da Internet",
+  "lang": "pt-BR",
+  "lines": [
+    "A internet é uma rede que conecta milhões de computadores no mundo inteiro.",
+    "Com ela, podemos ver vídeos, falar com amigos, usar redes sociais, pesquisar assuntos e aprender muitas coisas.",
+    "Mas é importante usar a internet com cuidado, evitando sites perigosos e protegendo as informações pessoais."
+  ],
+  "grammarBrief": "Este texto em português do Brasil apresenta uma série de estruturas e tempos verbais úteis para a compreensão e uso correto do idioma. \n\n1. **Estruturas de Frase:** As frases do texto são compostas por uma sequência de sujeito-verbo-objeto, uma estrutura comum nas línguas latinas, como em 'A internet é uma rede'.\n\n2. **Uso de Verbos no Presente:** O texto utiliza o presente do indicativo para descrever ações atuais e hábitos, como 'podemos ver', 'falar', 'usar', 'pesquisar', e 'aprender'. Este tempo verbal expressa ações que ocorrem no momento presente ou hábitos comuns.\n\n3. **Uso do Infinitivo:** Os verbos no infinitivo aparecem depois de preposições ou verbos auxiliares, como em 'evitando' e 'protegendo'. Eles são usados para indicar ações que complementam a ideia principal ou mostram uma sequência de ações.\n\n4. **Expressão de Necessidade e Cuidado:** A expressão 'é importante usar a internet com cuidado' demonstra uso de estrutura impessoal para dar conselhos ou alertas, um recurso comum em português para associar a ideia à responsabilidade geral, sem identificar um sujeito específico.",
+  "vocabulary": [
+    {
+      "word": "internet",
+      "definition": "Rede mundial de computadores interconectados."
+    },
+    {
+      "word": "rede",
+      "definition": "Conjunto de sistemas interconectados."
+    },
+    {
+      "word": "computadores",
+      "definition": "Máquinas eletrônicas capazes de processar dados."
+    },
+    {
+      "word": "vídeos",
+      "definition": "Gravações audiovisuais."
+    },
+    {
+      "word": "redes sociais",
+      "definition": "Plataformas online para interação social."
+    },
+    {
+      "word": "pesquisar",
+      "definition": "Fazer uma busca por informações."
+    },
+    {
+      "word": "assuntos",
+      "definition": "Temas ou tópicos de interesse."
+    },
+    {
+      "word": "perigosos",
+      "definition": "Que apresentam risco ou ameaça."
+    },
+    {
+      "word": "informações pessoais",
+      "definition": "Dados individuais de caráter privado."
+    }
+  ],
+  "complexityLevel": "Intermediário",
+  "tags": [
+    "folder:folder_1752706957449"
+  ],
+  "updated": 1752708007196
+}
