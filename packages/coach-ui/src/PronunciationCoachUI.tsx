@@ -14,6 +14,7 @@ import type { BriefWithRefs } from "../../../apps/sober-body/src/grammar-loader"
 import { loadBrief } from "../../../apps/sober-body/src/brief-storage";
 import useBriefExists from "../../../apps/sober-body/src/useBriefExists";
 import { useAzurePronunciation, useAzureBudget, type AzureScore } from "../../azure-speech/src";
+import { analyzeProblematicSounds, shouldOfferDrillSuggestions } from "../../azure-speech/src/pronunciationAnalyzer";
 
 interface ChallengePayload {
   id: string;
@@ -82,6 +83,8 @@ export default function PronunciationCoachUI() {
   const [azureScore, setAzureScore] = useState<AzureScore | null>(null);
   const [azureLoading, setAzureLoading] = useState(false);
   const [showAzureDetails, setShowAzureDetails] = useState(false);
+  const [drillSuggestion, setDrillSuggestion] = useState<any>(null);
+  const [loadingDrill, setLoadingDrill] = useState(false);
   const audioRecordingRef = useRef<Blob | null>(null);
   const budget = useAzureBudget();
   
@@ -163,6 +166,9 @@ export default function PronunciationCoachUI() {
         // Track usage for budget monitoring
         const durationSecs = audioRecordingRef.current.size / 32000;
         budget.addUsageEntry(durationSecs, azureResult.costUSD);
+        
+        // Clear previous drill suggestion
+        setDrillSuggestion(null);
       } catch (error) {
         console.error('Azure scoring failed:', error);
       } finally {
@@ -170,11 +176,30 @@ export default function PronunciationCoachUI() {
       }
     }
   };
+
+  // Generate AI drill suggestions for problematic sounds
+  const generateDrillSuggestion = async () => {
+    if (!azureScore || !shouldOfferDrillSuggestions(azureScore)) return;
+    
+    setLoadingDrill(true);
+    try {
+      const suggestion = await analyzeProblematicSounds(azureScore.json);
+      setDrillSuggestion(suggestion);
+    } catch (error) {
+      console.error('Failed to generate drill suggestion:', error);
+    } finally {
+      setLoadingDrill(false);
+    }
+  };
   
   const coach = usePronunciationCoach({ 
     phrase: current, 
     locale: settings.locale,
-    onScore: handleScore
+    onScore: handleScore,
+    onAudioRecorded: (audioBlob: Blob) => {
+      // Store audio blob for Azure processing
+      audioRecordingRef.current = audioBlob;
+    }
   });
   const translation = useTranslation(lookupWord ?? '', settings.nativeLang);
   const speak = () => {
@@ -525,11 +550,120 @@ export default function PronunciationCoachUI() {
                                       <div>Completeness: {azureScore.completeness}%</div>
                                       <div>Latency: {azureScore.latencyMs}ms</div>
                                     </div>
-                                    <div className="text-center font-medium text-amber-600">
+                                    <div className="text-center font-medium text-amber-600 mb-2">
                                       Cost: ${azureScore.costUSD.toFixed(4)}
                                     </div>
+                                    
+                                    {/* Word-by-word analysis */}
+                                    {azureScore.json.NBest && azureScore.json.NBest[0] && azureScore.json.NBest[0].Words && (
+                                      <details className="mb-2">
+                                        <summary className="cursor-pointer text-blue-600 font-medium">🔍 Word Analysis</summary>
+                                        <div className="mt-2 space-y-2">
+                                          {azureScore.json.NBest[0].Words.map((word: any, index: number) => (
+                                            <div key={index} className="bg-white p-2 rounded border">
+                                              <div className="font-medium flex justify-between">
+                                                <span>"{word.Word}"</span>
+                                                <span className={`px-1 rounded text-xs ${
+                                                  word.AccuracyScore >= 90 ? 'bg-green-100 text-green-800' :
+                                                  word.AccuracyScore >= 70 ? 'bg-yellow-100 text-yellow-800' :
+                                                  'bg-red-100 text-red-800'
+                                                }`}>
+                                                  {word.AccuracyScore}%
+                                                </span>
+                                              </div>
+                                              
+                                              {/* Phonemes */}
+                                              {word.Phonemes && (
+                                                <div className="mt-1">
+                                                  <div className="text-xs text-gray-500 mb-1">Sounds:</div>
+                                                  <div className="flex flex-wrap gap-1">
+                                                    {word.Phonemes.map((phoneme: any, pIndex: number) => (
+                                                      <span 
+                                                        key={pIndex}
+                                                        className={`px-1 py-0.5 rounded text-xs border ${
+                                                          phoneme.AccuracyScore >= 90 ? 'bg-green-50 border-green-200 text-green-700' :
+                                                          phoneme.AccuracyScore >= 70 ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
+                                                          'bg-red-50 border-red-200 text-red-700'
+                                                        }`}
+                                                        title={`${phoneme.Phoneme}: ${phoneme.AccuracyScore}%`}
+                                                      >
+                                                        /{phoneme.Phoneme}/
+                                                      </span>
+                                                    ))}
+                                                  </div>
+                                                </div>
+                                              )}
+                                              
+                                              {/* Error type if present */}
+                                              {word.ErrorType && word.ErrorType !== 'None' && (
+                                                <div className="mt-1 text-xs text-red-600">
+                                                  ⚠️ {word.ErrorType}
+                                                </div>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </details>
+                                    )}
+
+                                    {/* AI Drill Suggestions */}
+                                    {shouldOfferDrillSuggestions(azureScore) && (
+                                      <div className="mb-2">
+                                        {!drillSuggestion ? (
+                                          <button
+                                            onClick={generateDrillSuggestion}
+                                            disabled={loadingDrill}
+                                            className="w-full px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 disabled:opacity-50"
+                                          >
+                                            {loadingDrill ? (
+                                              <span className="flex items-center justify-center">
+                                                <div className="animate-spin w-3 h-3 border border-white border-t-transparent rounded-full mr-2"></div>
+                                                Generating targeted drill...
+                                              </span>
+                                            ) : (
+                                              '🎯 Get targeted practice drill'
+                                            )}
+                                          </button>
+                                        ) : (
+                                          <details className="bg-blue-50 border border-blue-200 rounded">
+                                            <summary className="cursor-pointer text-blue-600 font-medium p-2">
+                                              🎯 Targeted Practice Drill
+                                            </summary>
+                                            <div className="p-3 border-t border-blue-200">
+                                              <div className="mb-2">
+                                                <div className="font-medium text-blue-800">{drillSuggestion.focus}</div>
+                                                <div className="text-xs text-blue-600 mt-1">{drillSuggestion.explanation}</div>
+                                              </div>
+                                              
+                                              <div className="mb-2">
+                                                <div className="font-medium text-xs text-gray-700 mb-1">Practice Exercises:</div>
+                                                <div className="space-y-1">
+                                                  {drillSuggestion.exercises.map((exercise: string, i: number) => (
+                                                    <div key={i} className="text-xs bg-white p-2 rounded border">
+                                                      "{exercise}"
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              </div>
+                                              
+                                              <div>
+                                                <div className="font-medium text-xs text-gray-700 mb-1">Pronunciation Tips:</div>
+                                                <div className="space-y-1">
+                                                  {drillSuggestion.tips.map((tip: string, i: number) => (
+                                                    <div key={i} className="text-xs text-gray-600">
+                                                      • {tip}
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </details>
+                                        )}
+                                      </div>
+                                    )}
+                                    
                                     <details className="mt-2">
-                                      <summary className="cursor-pointer text-blue-600">Raw JSON</summary>
+                                      <summary className="cursor-pointer text-blue-600">🔧 Raw JSON</summary>
                                       <pre className="mt-1 text-xs overflow-auto max-h-32 bg-white p-2 rounded border">
                                         {JSON.stringify(azureScore.json, null, 2)}
                                       </pre>

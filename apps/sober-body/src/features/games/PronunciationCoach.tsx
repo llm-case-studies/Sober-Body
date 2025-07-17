@@ -7,19 +7,25 @@ export interface PronunciationCoachProps {
   locale: string
   maxSecs?: number
   onScore?: (r: { score: number; transcript: string; millis: number }) => void
+  onAudioRecorded?: (audioBlob: Blob) => void
 }
 
-export function usePronunciationCoach({ phrase, locale, maxSecs, onScore }: PronunciationCoachProps) {
+export function usePronunciationCoach({ phrase, locale, maxSecs, onScore, onAudioRecorded }: PronunciationCoachProps) {
   const [recording, setRecording] = useState(false)
   const [result, setResult] = useState<number | null>(null)
   const recRef = useRef<SpeechRecognition | null>(null)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
   const tRef = useRef('')
   const startTime = useRef(0)
   const dur = useRef(0)
 
   const limit = Math.min(6000, Math.max(2000, Math.round((maxSecs ?? phrase.length / 8) * 1000)))
 
-  useEffect(() => () => recRef.current?.stop(), [])
+  useEffect(() => () => {
+    recRef.current?.stop()
+    mediaRecorderRef.current?.stop()
+  }, [])
 
   const play = () => {
     const u = new SpeechSynthesisUtterance(phrase)
@@ -36,7 +42,53 @@ export function usePronunciationCoach({ phrase, locale, maxSecs, onScore }: Pron
     }
     const Rec = w.SpeechRecognition || w.webkitSpeechRecognition
     if (!Rec) return
-    await navigator.mediaDevices.getUserMedia({ audio: true })
+
+    // Get microphone access
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    
+    // Set up MediaRecorder for audio capture (if available)
+    audioChunksRef.current = []
+    let mediaRecorder: MediaRecorder | null = null
+    let mimeType = 'audio/wav' // default
+    
+    if (typeof MediaRecorder !== 'undefined') {
+      // Test various formats for Azure compatibility
+      const formats = [
+        'audio/wav',
+        'audio/webm;codecs=pcm',
+        'audio/ogg;codecs=opus',
+        'audio/webm;codecs=opus'
+      ];
+      
+      for (const format of formats) {
+        if (MediaRecorder.isTypeSupported(format)) {
+          mimeType = format;
+          break;
+        }
+      }
+      
+      console.log('Selected audio format:', mimeType);
+      console.log('Format support test:', formats.map(f => ({ format: f, supported: MediaRecorder.isTypeSupported(f) })));
+      
+      mediaRecorder = new MediaRecorder(stream, { mimeType })
+    }
+    mediaRecorderRef.current = mediaRecorder
+    
+    if (mediaRecorder) {
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data)
+        }
+      }
+      
+      mediaRecorder.onstop = () => {
+        // Create audio blob and pass to callback
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType })
+        onAudioRecorded?.(audioBlob)
+      }
+    }
+
+    // Set up SpeechRecognition for transcription
     const r: SpeechRecognition = new Rec()
     recRef.current = r
     r.lang = locale
@@ -50,14 +102,38 @@ export function usePronunciationCoach({ phrase, locale, maxSecs, onScore }: Pron
       if (s >= 80) confetti({ particleCount: 80, spread: 55 })
       onScore?.({ score: s, transcript: tRef.current, millis: dur.current })
       setRecording(false)
+      
+      // Stop MediaRecorder when speech recognition ends
+      if (mediaRecorderRef.current?.state === 'recording') {
+        mediaRecorderRef.current.stop()
+      }
+      
+      // Stop the stream (if it has getTracks method)
+      if (stream && typeof stream.getTracks === 'function') {
+        stream.getTracks().forEach(track => track.stop())
+      }
     }
+
+    // Start both recording systems
     startTime.current = Date.now()
+    if (mediaRecorder) {
+      mediaRecorder.start()
+    }
     r.start()
     setRecording(true)
-    setTimeout(() => r.stop(), limit)
+    
+    // Auto-stop after time limit
+    setTimeout(() => {
+      r.stop()
+    }, limit)
   }
 
-  const stop = () => recRef.current?.stop()
+  const stop = () => {
+    recRef.current?.stop()
+    if (mediaRecorderRef.current?.state === 'recording') {
+      mediaRecorderRef.current.stop()
+    }
+  }
 
   return { play, start, stop, recording, result }
 }
