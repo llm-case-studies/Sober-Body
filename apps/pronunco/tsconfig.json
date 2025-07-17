@@ -13,5 +13,6 @@
       "ui": ["../../packages/ui/src", "../../packages/ui/src/components"]
     }
   },
-  "include": ["src", "test", "__tests__"]
+  "include": ["src"],
+  "exclude": ["**/*.test.tsx", "**/*.test.skip.tsx", "__tests__/**", "test/**"]
 }

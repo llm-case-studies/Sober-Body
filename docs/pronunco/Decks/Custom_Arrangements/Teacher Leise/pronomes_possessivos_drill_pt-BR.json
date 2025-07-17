@@ -1,0 +1,17 @@
+{
+  "id": "drill-pronomes-possessivos-pt-BR",
+  "version": 1,
+  "title": "Pronomes Possessivos – Exercício 1",
+  "lang": "pt-BR",
+  "tags": [
+    "cat:grammar",
+    "type:possessive-pronouns"
+  ],
+  "lines": [
+    "Eu gosto do meu cachorro. E você, gosta do ___?",
+    "Ela trouxe o casaco dela, mas esqueceu o ___.",
+    "Nós vamos levar os nossos livros. E vocês, vão levar os ___?",
+    "Pedro e João encontraram os pais ___.",
+    "Maria viu sua amiga, mas a amiga não viu ___."
+  ]
+}

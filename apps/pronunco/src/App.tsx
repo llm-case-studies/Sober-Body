@@ -108,7 +108,7 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter basename="/pc">
+    <BrowserRouter basename={import.meta.env.VITE_ROUTER_BASE ?? '/'}>
       <Routes>
         <Route path="/*" element={<AppRoutes />} />
       </Routes>

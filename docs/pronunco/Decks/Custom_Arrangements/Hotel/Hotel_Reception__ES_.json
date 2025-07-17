@@ -4,7 +4,8 @@
   "lang": "es",
   "tags": [
     "official",
-    "cat:hotel"
+    "cat:hotel",
+    "folder:941b6b24-cd5a-43d3-9542-b251ea18ab85"
   ],
   "lines": [
     "Tengo una reserva a nombre de...",
@@ -12,5 +13,6 @@
     "¿A qué hora es el check-out?",
     "¿Me puede dar la contraseña del Wi-Fi?",
     "¿Tienen servicio de habitaciones?"
-  ]
+  ],
+  "updated": 1752549416669
 }

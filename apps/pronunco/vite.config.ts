@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
     console.log(`  ${key}=${value}`)
   }
   return {
-    base: '/pc/',
+    base: '/',
     envDir,
     plugins: [react()],
     resolve: { alias: { '@': resolve(__dirname, 'src'), 'ui': resolve(__dirname, '../../packages/ui/src') } },

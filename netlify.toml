@@ -1,0 +1,47 @@
+[build]
+  publish = "apps/pronunco/dist"
+  command = "pnpm install --no-frozen-lockfile && cd apps/pronunco && VITE_ROUTER_BASE=/ BUILD_BASE=/ npx vite build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PNPM_VERSION = "10.12.4"
+
+# Install pnpm
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+# SPA routing support
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Cache static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"

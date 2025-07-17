@@ -4,7 +4,8 @@
   "lang": "de",
   "tags": [
     "official",
-    "cat:hotel"
+    "cat:hotel",
+    "folder:941b6b24-cd5a-43d3-9542-b251ea18ab85"
   ],
   "lines": [
     "Ich habe eine Reservierung auf den Namen...",
@@ -12,5 +13,6 @@
     "Wann ist Check-out?",
     "Könnte ich das WLAN-Passwort bekommen?",
     "Haben Sie Zimmerservice?"
-  ]
+  ],
+  "updated": 1752549416668
 }

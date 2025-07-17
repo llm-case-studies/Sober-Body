@@ -1,0 +1,46 @@
+{
+  "id": "6d4ed3c8-d537-4de2-8be1-3c4e7201a0b9",
+  "title": "Smalltalk (DE-DE) (Enhanced)",
+  "lang": "de",
+  "lines": [
+    "Wie war dein Wochenende?",
+    "Was machst du beruflich?",
+    "Hast du in letzter Zeit einen guten Film gesehen?",
+    "Das Wetter ist heute schön.",
+    "Es war schön, mit dir zu plaudern."
+  ],
+  "grammarBrief": "The phrases in this deck primarily use the present and perfect tenses. Phrase 1 ('Wie war dein Wochenende?') uses the simple past tense to ask about past experiences, similar to English 'How was your weekend?'. Here, 'war' is the past tense of 'sein' (to be). Phrase 3 ('Hast du in letzter Zeit einen guten Film gesehen?') uses the present perfect tense, a common way to discuss past events with relevance to the present. 'Hast' (have) is an auxiliary verb, and 'gesehen' is the past participle of 'sehen' (to see), forming the present perfect construction. Declarative sentence structure often follows the Subject-Verb-Object order, although questions may invert the subject and verb as seen in phrases like 'Was machst du beruflich?', where 'machst' and 'du' are inverted to form a question.",
+  "vocabulary": [
+    {
+      "word": "Wochenende",
+      "definition": "weekend"
+    },
+    {
+      "word": "beruflich",
+      "definition": "professionally"
+    },
+    {
+      "word": "in letzter Zeit",
+      "definition": "lately"
+    },
+    {
+      "word": "Film",
+      "definition": "movie/film"
+    },
+    {
+      "word": "Wetter",
+      "definition": "weather"
+    },
+    {
+      "word": "schön",
+      "definition": "nice/beautiful"
+    },
+    {
+      "word": "plaudern",
+      "definition": "to chat"
+    }
+  ],
+  "complexityLevel": "Beginner",
+  "tags": [],
+  "updated": 1752687040680
+}

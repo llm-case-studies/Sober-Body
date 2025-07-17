@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deploy PronunCo to Netlify</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .highlight { background: #f0f8ff; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .step { background: #e8f5e8; padding: 10px; margin: 10px 0; border-left: 4px solid #4CAF50; }
+    </style>
+</head>
+<body>
+    <h1>📦 Deploy PronunCo to Netlify - Manual Instructions</h1>
+    
+    <div class="highlight">
+        <h2>📁 Files Ready for Deployment</h2>
+        <p><strong>Location:</strong> <code>/media/alex/LargeStorage/Projects/Sober-Body/apps/pronunco/dist/</code></p>
+        <p><strong>Contains:</strong></p>
+        <ul>
+            <li>✅ index.html (main app file)</li>
+            <li>✅ assets/ folder (CSS, JavaScript, images)</li>
+            <li>✅ All dependencies bundled</li>
+        </ul>
+    </div>
+
+    <h2>🚀 Deployment Steps</h2>
+
+    <div class="step">
+        <h3>Step 1: Open Netlify</h3>
+        <p>Go to <strong>https://app.netlify.com</strong> (you should already be logged in)</p>
+    </div>
+
+    <div class="step">
+        <h3>Step 2: Create New Site</h3>
+        <p>Click <strong>"Add new site"</strong> → <strong>"Deploy manually"</strong></p>
+    </div>
+
+    <div class="step">
+        <h3>Step 3: Upload Files</h3>
+        <p>Instead of uploading the folder, upload the <strong>contents</strong>:</p>
+        <ol>
+            <li>Navigate to: <code>/media/alex/LargeStorage/Projects/Sober-Body/apps/pronunco/dist/</code></li>
+            <li>Select ALL files inside the dist folder:
+                <ul>
+                    <li>index.html</li>
+                    <li>assets/ folder</li>
+                </ul>
+            </li>
+            <li>Drag them to the Netlify upload area</li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h3>Step 4: Configure</h3>
+        <p>After upload, Netlify will give you a random URL like:</p>
+        <p><code>https://amazing-name-123.netlify.app</code></p>
+        <p>You can rename it to something like:</p>
+        <p><code>https://pronunco-teacher-test.netlify.app</code></p>
+    </div>
+
+    <div class="highlight">
+        <h2>🇧🇷 For Your Teacher in São Paulo</h2>
+        <p>Once deployed, send your teacher:</p>
+        <ol>
+            <li><strong>The Netlify URL</strong> (works immediately)</li>
+            <li><strong>Instructions:</strong> Use Chrome/Firefox, allow microphone access</li>
+            <li><strong>Requirements:</strong> Modern browser with internet connection</li>
+        </ol>
+    </div>
+
+    <div class="highlight">
+        <h2>📱 Testing Checklist</h2>
+        <ul>
+            <li>✅ HTTPS enabled (required for microphone)</li>
+            <li>✅ Responsive design (works on mobile)</li>
+            <li>✅ Speech recognition works</li>
+            <li>✅ AI features functional</li>
+            <li>✅ Fast loading in Brazil</li>
+        </ul>
+    </div>
+
+    <h2>🆘 If Upload Still Doesn't Work</h2>
+    <p>Alternative: Create a ZIP file with the contents and upload that:</p>
+    <pre>cd /media/alex/LargeStorage/Projects/Sober-Body/apps/pronunco/dist
+zip -r pronunco-deploy.zip .</pre>
+    <p>Then upload <code>pronunco-deploy.zip</code> to Netlify</p>
+
+</body>
+</html>

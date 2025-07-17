@@ -1,0 +1,40 @@
+{
+  "id": "23048591-5247-4624-8e23-0a10d63c4877",
+  "title": "No Táxi (PT-BR) (Enhanced)",
+  "lang": "de-DE",
+  "lines": [
+    "Pode me deixar na ...?",
+    "Quanto tempo leva a corrida?",
+    "Pode ligar o taxímetro?",
+    "Por favor, pegue o caminho mais rápido.",
+    "Obrigado, fique com o troco."
+  ],
+  "grammarBrief": "The phrases in this deck mostly utilize imperative forms and polite requests. For example, 'Pode me deixar na...?' uses the verb 'poder' in the present indicative, which is a common way to form polite requests by asking if something is possible or permissible. In 'Pode ligar o taxímetro?', the verb 'ligar' is in its infinitive form following 'pode', maintaining the polite request format. Sentence structures in these examples tend to follow a pattern of [verb] + [object or complement], such as 'Pode ligar o taxímetro?' (Can you turn on the meter?) and 'Por favor, pegue o caminho mais rápido.' (Please take the fastest route.) These phrases often include polite additions like 'por favor' or 'obrigado' to enhance courtesy.",
+  "vocabulary": [
+    {
+      "word": "taxímetro",
+      "definition": "a device in a taxi that calculates the fare based on distance traveled and time spent."
+    },
+    {
+      "word": "caminho",
+      "definition": "route or path, the way to get somewhere."
+    },
+    {
+      "word": "troco",
+      "definition": "change; the money returned to someone who's paid at excess beyond the asked price."
+    },
+    {
+      "word": "correr",
+      "definition": "to run; in transportation context, 'corrida' is used to refer to 'ride' or 'journey'."
+    },
+    {
+      "word": "deixar",
+      "definition": "to leave or let; in this context, it means to drop off or allow someone to disembark at a location."
+    }
+  ],
+  "complexityLevel": "Beginner",
+  "tags": [
+    "folder:45a0674b-dee9-45f4-bdbd-9028c8cd7f4b"
+  ],
+  "updated": 1752693848438
+}

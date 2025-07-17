@@ -4,7 +4,8 @@
   "lang": "de",
   "tags": [
     "official",
-    "cat:groceries"
+    "cat:groceries",
+    "folder:da504270-cd44-4404-816d-de170121020c"
   ],
   "lines": [
     "Wo finde ich die Milchprodukteabteilung?",
@@ -12,5 +13,6 @@
     "Nehmen Sie Kreditkarten?",
     "Können Sie diese Äpfel bitte wiegen?",
     "Haben Sie wiederverwendbare Taschen?"
-  ]
+  ],
+  "updated": 1752549416671
 }

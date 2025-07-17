@@ -4,7 +4,8 @@
   "lang": "es",
   "tags": [
     "official",
-    "cat:groceries"
+    "cat:groceries",
+    "folder:da504270-cd44-4404-816d-de170121020c"
   ],
   "lines": [
     "¿Dónde está la sección de lácteos?",
@@ -12,5 +13,6 @@
     "¿Aceptan tarjeta de crédito?",
     "¿Podría pesar estas manzanas, por favor?",
     "¿Tienen bolsas reutilizables?"
-  ]
+  ],
+  "updated": 1752549416670
 }

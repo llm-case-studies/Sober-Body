@@ -1,0 +1,40 @@
+{
+  "id": "02733ef3-e302-46ae-963a-86659c356f96",
+  "title": "Hotelrezeption (DE-DE) (Enhanced)",
+  "lang": "de-DE",
+  "lines": [
+    "Ich habe eine Reservierung auf den Namen...",
+    "Ist das Frühstück inbegriffen?",
+    "Wann ist Check-out?",
+    "Könnte ich das WLAN-Passwort bekommen?",
+    "Haben Sie Zimmerservice?"
+  ],
+  "grammarBrief": "The phrases demonstrate various sentence structures and verb tenses: \n1. 'Ich habe eine Reservierung auf den Namen...' uses the present perfect tense with 'haben' as the auxiliary verb, showing a completed action relevant to the present.\n2. 'Ist das Frühstück inbegriffen?' uses a present tense verb 'ist' (is) and a past participle 'inbegriffen' (included) to ask about a current state or condition.\n3. Questions like 'Wann ist Check-out?' and 'Haben Sie Zimmerservice?' illustrate the use of inversion to form questions, placing the verb before the subject.",
+  "vocabulary": [
+    {
+      "word": "Reservierung",
+      "definition": "reservation"
+    },
+    {
+      "word": "Frühstück",
+      "definition": "breakfast"
+    },
+    {
+      "word": "WLAN-Passwort",
+      "definition": "Wi-Fi password"
+    },
+    {
+      "word": "Zimmerservice",
+      "definition": "room service"
+    },
+    {
+      "word": "inbegriffen",
+      "definition": "included"
+    }
+  ],
+  "complexityLevel": "Beginner",
+  "tags": [
+    "folder:941b6b24-cd5a-43d3-9542-b251ea18ab85"
+  ],
+  "updated": 1752682621392
+}

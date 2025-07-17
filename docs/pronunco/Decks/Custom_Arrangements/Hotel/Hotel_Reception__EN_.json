@@ -4,7 +4,8 @@
   "lang": "en",
   "tags": [
     "official",
-    "cat:hotel"
+    "cat:hotel",
+    "folder:941b6b24-cd5a-43d3-9542-b251ea18ab85"
   ],
   "lines": [
     "I have a reservation under...",
@@ -12,5 +13,6 @@
     "What time is check-out?",
     "Could I get the Wi-Fi password?",
     "Do you have room service?"
-  ]
+  ],
+  "updated": 1752549416670
 }

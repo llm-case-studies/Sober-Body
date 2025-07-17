@@ -11,6 +11,8 @@ echo "────────────────────────�
 #   -s | --start     start dev servers (default when no args)
 #   -p | --pull      git pull --rebase --autostash (use with caution)
 #   -i | --install   pnpm install (usually not needed locally)
+#   -b | --build     build pronunco for production
+#   -d | --deploy    serve built pronunco locally for testing
 #
 # Common combinations:
 #   ./dev.sh         → start servers (local dev)
@@ -27,12 +29,14 @@ set -euo pipefail
 SESSION=sober
 PORT_SB=5173
 PORT_PC=5174
-DEV_PORTS=("$PORT_SB" "$PORT_PC")
+PORT_SERVE=8080
+DEV_PORTS=("$PORT_SB" "$PORT_PC" "$PORT_SERVE")
 URL_SB="http://localhost:${PORT_SB}/decks"
 URL_PC="http://localhost:${PORT_PC}/pc/decks"
 # ──────────────────────────────────
 
 run_pull=false run_install=false run_tests=false run_start=false
+run_build=false run_deploy=false
 debug_handles=false
 [[ $# -eq 0 ]] && run_start=true        # default action
 
@@ -44,7 +48,9 @@ while [[ $# -gt 0 ]]; do
     -i|--install)  run_install=true;;
     -t|--test)     run_tests=true ;;
     -s|--start)    run_start=true ;;
-    *) echo "Usage: $0 [--debug-handles] [-r] [-t] [-s] [-p] [-i]" && exit 1;;
+    -b|--build)    run_build=true ;;
+    -d|--deploy)   run_deploy=true ;;
+    *) echo "Usage: $0 [--debug-handles] [-r] [-t] [-s] [-p] [-i] [-b] [-d]" && exit 1;;
   esac
   shift
 done
@@ -64,7 +70,7 @@ edge () {
 }
 
 cleanup_ports () {
-  for port in "$PORT_SB" "$PORT_PC"; do
+  for port in "$PORT_SB" "$PORT_PC" "$PORT_SERVE"; do
     lsof -ti tcp:"$port" 2>/dev/null || true | while read -r pid; do
       [[ -z $pid ]] && continue
       echo "  • SIGTERM $pid (port $port)"; kill -15 "$pid" 2>/dev/null || true
@@ -94,6 +100,24 @@ report_ports () {
 
 $run_pull    && { echo "↻ git pull …";      git pull --rebase --autostash; }
 $run_install && { echo "📦 pnpm install …";  pnpm install; }
+
+# ─── Build & Deploy ───
+if $run_build; then
+  echo "📦 Building PronunCo for static deploy…"
+  cd apps/pronunco
+  VITE_ROUTER_BASE=/ BUILD_BASE=/ npx vite build
+  cd ../..
+  echo "✅ Build complete: apps/pronunco/dist/"
+fi
+
+if $run_deploy; then
+  echo "🚀 Serving PronunCo dist on http://localhost:${PORT_SERVE}"
+  cleanup_ports  # Free up the port first
+  cd apps/pronunco/dist
+  echo "Starting server... Press Ctrl+C to stop"
+  python3 -m http.server "${PORT_SERVE}"
+  exit 0
+fi
 if $run_tests; then
   echo -e "\n🏃‍♂️  Running unit tests with per-file timing …\n"
 

@@ -1,0 +1,63 @@
+{
+  "id": "338c5faa-ed92-4a97-ae94-610752f21464",
+  "title": "A Importância da Tecnologia no Dia a Dia",
+  "lang": "pt-BR",
+  "lines": [
+    "Tecnologia é tudo o que o ser humano cria para facilitar a vida.",
+    "Pode ser uma ferramenta, uma máquina ou até um aplicativo de celular.",
+    "Por exemplo, o celular, o computador e a internet são tecnologias que usamos todos os dias.",
+    "Elas ajudam a estudar, trabalhar, conversar e aprender coisas novas."
+  ],
+  "grammarBrief": "O texto usa o presente do indicativo, típico para descrever ações habituais ou verdades universais. Há o uso de orações relacionadas por vírgulas, criando enumerações, como em 'Pode ser uma ferramenta, uma máquina ou até um aplicativo de celular.' A estrutura 'Tecnologia é tudo o que o ser humano cria' apresenta uma definição utilizando uma oração relativa 'o que'. Verbo no presente: 'ajudam', do verbo 'ajudar', na forma plural para concordar com 'tecnologias'. Outra observação é o uso de preposição 'para' para indicar finalidade: 'para facilitar a vida'.",
+  "vocabulary": [
+    {
+      "word": "tecnologia",
+      "definition": "conjunto de conhecimentos ou instrumentos usados para resolver problemas ou facilitar tarefas"
+    },
+    {
+      "word": "ferramenta",
+      "definition": "instrumento utilizado para realizar uma tarefa"
+    },
+    {
+      "word": "máquina",
+      "definition": "aparelho com um propósito ou função específica"
+    },
+    {
+      "word": "aplicativo",
+      "definition": "programa de computador que executa uma função específica"
+    },
+    {
+      "word": "celular",
+      "definition": "aparelho portátil de comunicação"
+    },
+    {
+      "word": "computador",
+      "definition": "máquina eletrônica que processa dados"
+    },
+    {
+      "word": "internet",
+      "definition": "rede global de computadores que permite a troca de informações"
+    },
+    {
+      "word": "estudar",
+      "definition": "ação de adquirir conhecimento através da aprendizagem"
+    },
+    {
+      "word": "trabalhar",
+      "definition": "realizar uma atividade remunerada ou não, exercer uma profissão"
+    },
+    {
+      "word": "conversar",
+      "definition": "ato de manter diálogo ou trocar ideias"
+    },
+    {
+      "word": "aprender",
+      "definition": "adquirir conhecimento ou habilidade"
+    }
+  ],
+  "complexityLevel": "Iniciante",
+  "tags": [
+    "folder:folder_1752706957449"
+  ],
+  "updated": 1752707143915
+}
