@@ -13,6 +13,7 @@ echo "────────────────────────�
 #   -i | --install   pnpm install (usually not needed locally)
 #   -b | --build     build pronunco for production
 #   -d | --deploy    serve built pronunco locally for testing
+#   --syncdocs       regenerate docs/INDEX.md from folder structure
 #
 # Common combinations:
 #   ./dev.sh         → start servers (local dev)
@@ -22,6 +23,7 @@ echo "────────────────────────�
 #   ./dev.sh -r -t   → pull + install + test
 #   ./dev.sh -r -s   → pull + install + start
 #   ./dev.sh -r -t -s → pull + install + test + start
+#   ./dev.sh --syncdocs → regenerate docs index
 
 set -euo pipefail
 
@@ -36,7 +38,7 @@ URL_PC="http://localhost:${PORT_PC}/pc/decks"
 # ──────────────────────────────────
 
 run_pull=false run_install=false run_tests=false run_start=false
-run_build=false run_deploy=false
+run_build=false run_deploy=false run_syncdocs=false
 debug_handles=false
 [[ $# -eq 0 ]] && run_start=true        # default action
 
@@ -50,7 +52,8 @@ while [[ $# -gt 0 ]]; do
     -s|--start)    run_start=true ;;
     -b|--build)    run_build=true ;;
     -d|--deploy)   run_deploy=true ;;
-    *) echo "Usage: $0 [--debug-handles] [-r] [-t] [-s] [-p] [-i] [-b] [-d]" && exit 1;;
+    --syncdocs)    run_syncdocs=true ;;
+    *) echo "Usage: $0 [--debug-handles] [-r] [-t] [-s] [-p] [-i] [-b] [-d] [--syncdocs]" && exit 1;;
   esac
   shift
 done
@@ -116,6 +119,20 @@ if $run_deploy; then
   cd apps/pronunco/dist
   echo "Starting server... Press Ctrl+C to stop"
   python3 -m http.server "${PORT_SERVE}"
+  exit 0
+fi
+
+# ─── Sync Docs ───
+if $run_syncdocs; then
+  echo "📚 Regenerating docs/INDEX.md from folder structure…"
+  if [[ -f "docs/scripts/build-index.js" ]]; then
+    node docs/scripts/build-index.js
+    echo "✅ Documentation index updated"
+  else
+    echo "❌ Error: docs/scripts/build-index.js not found"
+    echo "   Make sure you're in the repository root directory"
+    exit 1
+  fi
   exit 0
 fi
 if $run_tests; then

@@ -58,20 +58,22 @@ pnpm test:unit
 
 - `apps/sober-body/` &mdash; main PWA codebase
 - `packages/pronunciation-coach/` &mdash; standalone playground
-- `docs/ARCHITECTURE.md` &mdash; developer architecture overview
-- `docs/BACKLOG.md` &mdash; upcoming features and milestones
-- `docs/sober-body/` &mdash; white-paper drafts and context
-- `docs/pronunco/` &mdash; PronunCo white-papers
-- `docs/HTMX_SETUP.md` &mdash; repo root instructions for htmx
+- `docs/` &mdash; organized documentation (see [docs/INDEX.md](docs/INDEX.md) for full navigation)
+  - `00_overview/` &mdash; architecture, contributing, roadmap
+  - `10_pronunco/` &mdash; PronunCo features, whitepapers, mobile guide
+  - `20_sober-body/` &mdash; Sober-Body whitepapers and features
+  - `30_shared/` &mdash; cross-product features and ideas
+  - `80_archive/` &mdash; historical documents
+  - `90_sprints/` &mdash; sprint documentation
 
 ## Whitepapers
 
-- [Sober-Body Framework](docs/sober-body/sober_body_framework_top_level_whitepaper.md)
+- [Sober-Body Framework](docs/20_sober-body/whitepapers/sober_body_framework_top_level_whitepaper.md)
 - [PronunCo White-Papers](docs/pronunco/00_index.md)
 
 ## Contributing
 
-See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for commit rules, PR workflow and testing requirements.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for commit rules, PR workflow and testing requirements.
 
 ## License & contact
 
@@ -80,7 +82,7 @@ License information will be added in a future release. For questions, open an is
 ## Deck Manager
 
 The Coach now includes a simple Deck Manager for creating, editing and sharing custom phrase decks.
-![Deck Manager screenshot](docs/images/deck-manager.png)
+![Deck Manager screenshot](docs/99_assets/images/deck-manager.png)
 
 Decks are organised by `cat:<topic>` tags. Filter chips appear automatically when at least one deck uses a category.
 
