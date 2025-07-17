@@ -7,6 +7,8 @@
 * **00_overview/**
   * [ARCHITECTURE](00_overview/ARCHITECTURE.md)
   * [CONTRIBUTING](00_overview/CONTRIBUTING.md)
+  * [GLOSSARY](00_overview/GLOSSARY.md)
+  * [ROADMAP](00_overview/ROADMAP.md)
 * **10_pronunco/**
   * **features/**
     * [ui-vocab-decks](10_pronunco/features/001-ui-vocab-decks.md)
