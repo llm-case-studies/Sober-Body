@@ -13,6 +13,8 @@ echo "────────────────────────�
 #   -i | --install   pnpm install (usually not needed locally)
 #   -b | --build     build pronunco for production
 #   -d | --deploy    serve built pronunco locally for testing
+#   --nginx          deploy in nginx Docker container (production-like)
+#   --nginx-stop     stop nginx container
 #   --syncdocs       regenerate docs/INDEX.md from folder structure
 #
 # Common combinations:
@@ -24,6 +26,8 @@ echo "────────────────────────�
 #   ./dev.sh -r -s   → pull + install + start
 #   ./dev.sh -r -t -s → pull + install + test + start
 #   ./dev.sh --syncdocs → regenerate docs index
+#   ./dev.sh --nginx → production-like nginx deployment
+#   ./dev.sh --nginx-stop → stop nginx container
 
 set -euo pipefail
 
@@ -38,7 +42,7 @@ URL_PC="http://localhost:${PORT_PC}/pc/decks"
 # ──────────────────────────────────
 
 run_pull=false run_install=false run_tests=false run_start=false
-run_build=false run_deploy=false run_syncdocs=false
+run_build=false run_deploy=false run_syncdocs=false run_nginx=false
 debug_handles=false
 [[ $# -eq 0 ]] && run_start=true        # default action
 
@@ -53,7 +57,15 @@ while [[ $# -gt 0 ]]; do
     -b|--build)    run_build=true ;;
     -d|--deploy)   run_deploy=true ;;
     --syncdocs)    run_syncdocs=true ;;
-    *) echo "Usage: $0 [--debug-handles] [-r] [-t] [-s] [-p] [-i] [-b] [-d] [--syncdocs]" && exit 1;;
+    --nginx)       run_nginx=true ;;
+    --nginx-stop)  
+      echo "🛑 Stopping nginx container..."
+      # Try without sudo first, then with sudo if needed
+      docker stop pronunco-nginx 2>/dev/null || sudo docker stop pronunco-nginx 2>/dev/null || true
+      docker rm pronunco-nginx 2>/dev/null || sudo docker rm pronunco-nginx 2>/dev/null || true
+      echo "✅ Nginx container stopped and removed"
+      exit 0 ;;
+    *) echo "Usage: $0 [--debug-handles] [-r] [-t] [-s] [-p] [-i] [-b] [-d] [--syncdocs] [--nginx] [--nginx-stop]" && exit 1;;
   esac
   shift
 done
@@ -119,6 +131,89 @@ if $run_deploy; then
   cd apps/pronunco/dist
   echo "Starting server... Press Ctrl+C to stop"
   python3 -m http.server "${PORT_SERVE}"
+  exit 0
+fi
+
+# ─── Nginx Docker Deployment ───
+if $run_nginx; then
+  echo "🐳 Setting up nginx deployment in Docker..."
+  
+  # Build first if no dist exists
+  if [[ ! -d "apps/pronunco/dist" ]]; then
+    echo "📦 No dist found, building PronunCo..."
+    cd apps/pronunco
+    VITE_ROUTER_BASE=/ BUILD_BASE=/ npx vite build
+    cd ../..
+  fi
+  
+  # Stop existing container
+  docker stop pronunco-nginx 2>/dev/null || sudo docker stop pronunco-nginx 2>/dev/null || true
+  docker rm pronunco-nginx 2>/dev/null || sudo docker rm pronunco-nginx 2>/dev/null || true
+  
+  # Create nginx config
+  cat > nginx.conf << 'NGINX_EOF'
+server {
+    listen 80;
+    server_name localhost;
+    root /usr/share/nginx/html;
+    index index.html;
+    
+    # Enable gzip
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+    
+    # Handle SPA routing
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    
+    # API proxy if needed (future)
+    # location /api/ {
+    #     proxy_pass http://host.docker.internal:3001;
+    # }
+    
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+NGINX_EOF
+  
+  echo "🚀 Starting nginx container on http://localhost:${PORT_SERVE}"
+  # Try without sudo first, fallback to sudo if needed
+  docker run -d \
+    --name pronunco-nginx \
+    -p ${PORT_SERVE}:80 \
+    -v "$(pwd)/apps/pronunco/dist:/usr/share/nginx/html:ro" \
+    -v "$(pwd)/nginx.conf:/etc/nginx/conf.d/default.conf:ro" \
+    nginx:alpine 2>/dev/null || \
+  sudo docker run -d \
+    --name pronunco-nginx \
+    -p ${PORT_SERVE}:80 \
+    -v "$(pwd)/apps/pronunco/dist:/usr/share/nginx/html:ro" \
+    -v "$(pwd)/nginx.conf:/etc/nginx/conf.d/default.conf:ro" \
+    nginx:alpine
+  
+  # Wait for container to start
+  sleep 2
+  
+  if docker ps 2>/dev/null | grep -q pronunco-nginx || sudo docker ps | grep -q pronunco-nginx; then
+    echo "✅ Nginx container running!"
+    echo "🌐 Access app at: http://localhost:${PORT_SERVE}"
+    echo "🛑 Stop with: ./dev.sh --nginx-stop"
+    
+    # Open browser
+    edge "http://localhost:${PORT_SERVE}"
+    
+    # Show logs (Ctrl+C to exit)
+    echo "📊 Container logs (Ctrl+C to exit):"
+    docker logs -f pronunco-nginx 2>/dev/null || sudo docker logs -f pronunco-nginx
+  else
+    echo "❌ Failed to start nginx container"
+    exit 1
+  fi
+  
   exit 0
 fi
 
