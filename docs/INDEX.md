@@ -38,6 +38,7 @@
   * [SPRINT-3-ACHIEVEMENT-SUMMARY](90_sprints/SPRINT-3-ACHIEVEMENT-SUMMARY.md)
   * [sprint-3-retro](90_sprints/sprint-3-retro.md)
   * [SPRINT-4-KICKOFF](90_sprints/SPRINT-4-KICKOFF.md)
+  * [sprint-4-plan](90_sprints/sprint-4-plan.md)
 * **99_assets/**
   * **ui-screenshots/**
     * [README](99_assets/ui-screenshots/README.md)
@@ -46,6 +47,7 @@
   * [current-priorities](development/current-priorities.md)
 * **pronunco/**
   * [index](pronunco/00_index.md)
+  * [BACKLOG_PRONUNCO](pronunco/BACKLOG_PRONUNCO.md)
   * [UX-USER-JOURNEY](pronunco/UX-USER-JOURNEY.md)
 * [AI-COLLAB](AI-COLLAB.md)
 * [BUSINESS-WOW-BRIEF](BUSINESS-WOW-BRIEF.md)
