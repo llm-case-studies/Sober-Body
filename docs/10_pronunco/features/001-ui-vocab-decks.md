@@ -129,5 +129,5 @@ Alternate structure:
 
 ---
 
-Let me know if you’d like me to generate JSON seed files for any specific target languages.
+Let me know if you'd like me to generate JSON seed files for any specific target languages.
 

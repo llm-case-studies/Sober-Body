@@ -39,4 +39,11 @@ git push origin <branch-name>
 - **When interrupted**: Update priorities doc with current context
 - **Before new work**: Review priorities doc to resume properly
 
+## Crash Recovery Protocol 🔄
+**When Claude CLI crashes/disconnects:**
+1. Run `/export` command to save current session state
+2. Move exported files to `/media/alex/LargeStorage/Projects/Sober-Body/docs/AI-Cli-chats/`
+3. Update `docs/development/current-priorities.md` with current context
+4. On restart, review priorities doc and previous chat files to resume work
+
 Full workflow details: `docs/development/check-in-dance.md`
